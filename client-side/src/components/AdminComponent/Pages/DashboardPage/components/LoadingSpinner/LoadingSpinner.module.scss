@@ -1,0 +1,35 @@
+// src/components/AdminComponent/Pages/DashboardPage/components/LoadingSpinner/LoadingSpinner.module.scss
+
+.loadingSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+
+    .spinnerContainer {
+        text-align: center;
+
+        .spinner {
+            font-size: 3em;
+            color: #4299e1;
+            animation: spin 1s linear infinite;
+        }
+
+        p {
+            margin-top: 16px;
+            color: #718096;
+            font-size: 1.1em;
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

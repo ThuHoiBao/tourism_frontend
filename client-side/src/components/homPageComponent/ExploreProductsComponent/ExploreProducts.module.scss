@@ -1,0 +1,140 @@
+/* File: src/components/homPageComponent/ExploreProductsComponent/ExploreProducts.module.scss */
+$primary-color: #1a67ba;
+.exploreProductsContainer {
+    padding: 60px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+span {
+    /* Cho phép thiết lập width/height và margin/padding đầy đủ */
+    padding-right: 10px;
+}
+.header {
+    text-align: left;
+    margin-bottom: 40px;
+    position: relative;
+    padding-right: 400px; 
+    
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        /* Thêm đường gạch chân cho tiêu đề */
+        &::after {
+            content: '';
+            display: block;
+            width: 150px;
+            height: 3px;
+            background-color: #007bff; /* Màu chủ đạo của VietTravel/Future Travel */
+            margin-top: 5px;
+        }
+    }
+
+    .description {
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .navigation {
+        position: absolute;
+        top: 90px;
+        right: 0;
+        display: flex;
+        gap: 15px;
+        
+        .navArrow {
+            width: 40px;
+            height: 40px;
+            padding: 8px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            transition: background-color 0.3s, opacity 0.3s;
+            
+            &:hover {
+                background-color: #f0f0f0;
+                border-color: #aaa;
+            }
+        }
+    }
+}
+
+/* Khung nhìn (Viewport) cho slider */
+.productsWrapper {
+    overflow-x: hidden; 
+    padding-bottom: 20px; 
+}
+
+/* Container chứa các card, thực hiện trượt (transform: translateX) */
+.productsGrid {
+    display: flex; 
+    gap: 20px;
+    /* transition cho hiệu ứng trượt */
+    transition: transform 0.5s ease-in-out; 
+}
+
+.productCard {
+    height: 300px; 
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+
+    /* Kích thước của mỗi card (Hiển thị 3 cột, trừ đi gap 20px) */
+    flex: 0 0 calc((100% / 3) - (40px / 3)); 
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.imageWrapper {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    transition: transform 0.5s ease; /* Thêm transition cho zoom nhẹ khi hover nếu cần */
+}
+
+.cardOverlay {
+    width: 100%;
+    padding: 15px;
+    /* Overlay chuyển màu từ đen đậm ở dưới lên trong suốt */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    color: white;
+    text-align: left;
+    
+    .cardTitle {
+        font-size: 16px; /* Giảm size chữ để phù hợp với hình ảnh bạn cung cấp */
+        font-weight: 600;
+        margin: 0;
+        text-transform: uppercase;
+        /* Đảm bảo chữ không bị ngắt quãng, phù hợp với thiết kế của bạn */
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+}
+
+.viewAllButton {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+        background-color: darken($primary-color, 20%);
+    }
+}

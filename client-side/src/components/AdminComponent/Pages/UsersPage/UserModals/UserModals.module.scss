@@ -1,0 +1,150 @@
+$primary-blue: #2c70f8;
+$success: #52c41a;
+$danger: #ff4d4f;
+$warning: #faad14;
+$border: #e0e0e0;
+$text-color: #333;
+
+.modalOverlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modalContent {
+    background: white; width: 500px; max-width: 95%;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s;
+    display: flex; flex-direction: column;
+    max-height: 90vh; 
+
+    &.wideModal { width: 1000px; }
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+// --- Header ---
+.header {
+    padding: 20px; display: flex; align-items: center; gap: 10px; color: white;
+    h2 { margin: 0; font-size: 18px; }
+    &.headerLock { background: linear-gradient(135deg, #ff7875, #d9363e); }
+    &.headerUnlock { background: linear-gradient(135deg, #95de64, #389e0d); }
+}
+
+.orderHeader { 
+    padding: 20px; border-bottom: 1px solid $border; background-color: #fff; flex-shrink: 0;
+    h2 { margin: 0; color: $text-color; } 
+    .stats { color: #666; font-size: 14px; margin-top: 5px; } 
+}
+
+.closeBtnTop { 
+    position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; 
+    cursor: pointer; color: #999; z-index: 10;
+    &:hover { color: $danger; } 
+}
+
+// --- Body ---
+.body { padding: 20px; overflow-y: auto; }
+.userInfoBox { display: flex; gap: 10px; padding: 10px; background: #f5f5f5; border-radius: 6px; margin-bottom: 20px; img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #ddd; object-fit: cover; } p { margin: 2px 0; font-size: 14px; color: $text-color; } }
+.optionsList { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+.radioLabel { display: flex; gap: 8px; cursor: pointer; font-size: 14px; color: $text-color; }
+.customInput { width: 100%; border: 1px solid $border;  border-radius: 4px; margin-right: 100px;height: 80px; resize: none; &:focus { outline: 1px solid $primary-blue; } }
+.footer { padding: 15px 20px; border-top: 1px solid $border; display: flex; justify-content: flex-end; gap: 10px; background: #fafafa; flex-shrink: 0; }
+.btnCancel { padding: 8px 16px; border: 1px solid $border; background: white; border-radius: 4px; cursor: pointer; &:hover { background: #f0f0f0; } }
+.btnConfirm { padding: 8px 16px; border: none; color: white; border-radius: 4px; cursor: pointer; }
+.btnConfirmLock { background: $danger; &:hover { background: darken($danger, 10%); } }
+.btnConfirmUnlock { background: $success; &:hover { background: darken($success, 10%); } }
+
+// --- Table Styles ---
+.tableContainer { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+.orderTable {
+    width: 100%; border-collapse: collapse;
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid $border; font-size: 14px; vertical-align: middle; }
+    th { background: #f7fafc; font-weight: 600; color: #555; position: sticky; top: 0; z-index: 1; }
+    .code { font-weight: bold; color: $primary-blue; width: 120px; }
+    
+    .tourName { 
+        max-width: 250px; 
+        .tourInfo {
+            display: flex; align-items: center; gap: 10px;
+            img { width: 45px; height: 35px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+            span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; color: $text-color; }
+        }
+    }
+    
+    .price { font-weight: bold; color: #d9363e; white-space: nowrap; }
+    .statusHeader { width: 1%; white-space: nowrap; }
+    .statusCell { width: 1%; white-space: nowrap; }
+}
+
+.badge {
+    padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; width: auto; white-space: nowrap;
+    &.PAID { background: #f6ffed; color: $success; border: 1px solid lighten($success, 30%); }
+    &.CANCELLED { background: #fff1f0; color: $danger; border: 1px solid lighten($danger, 30%); }
+    &.PENDING_PAYMENT { background: #fffbe6; color: $warning; border: 1px solid lighten($warning, 30%); }
+    &.REVIEWED { background: #e6fffa; color: #13c2c2; border: 1px solid #87e8de; }
+    &.OVERDUE_PAYMENT { background: #fff1f0; color: #d4380d; border: 1px solid #ffbb96; }
+    &.PENDING_REFUND { background: #fff2e8; color: #fa541c; border: 1px solid #ffc069; }
+    &.PENDING_CONFIRMATION { background: #f0f5ff; color: #2f54eb; border: 1px solid #adc6ff; }
+}
+
+.rowActions { display: flex; gap: 8px; align-items: center; justify-content: flex-start; }
+
+.btnIconAction {
+    width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all 0.2s ease-in-out; background-color: white; border: 1px solid #d9d9d9;
+    &.detailIcon {
+        color: $primary-blue;
+        &:hover { border-color: $primary-blue; background-color: lighten($primary-blue, 45%); transform: translateY(-2px); box-shadow: 0 2px 5px rgba($primary-blue, 0.2); }
+    }
+    &.starIcon {
+        color: $warning;
+        &:hover { border-color: $warning; background-color: lighten($warning, 45%); transform: translateY(-2px); box-shadow: 0 2px 5px rgba($warning, 0.2); }
+    }
+}
+
+.loading, .error, .empty { text-align: center; color: #999; padding: 40px 0; }
+.error { color: $danger; }
+
+// --- STYLE CHO NOTIFICATION MODAL ---
+.notificationOverlay {
+    position: absolute; // Đè lên modal cha (hoặc fixed nếu muốn đè toàn màn hình)
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); 
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; // Cao hơn các thành phần khác trong modal
+    border-radius: 8px;
+    animation: fadeIn 0.2s ;
+}
+
+.notificationContent {
+    background: white; padding: 30px; border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    text-align: center; width: 320px;
+    border: 1px solid #eee;
+    animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    h3 { margin: 15px 0 10px; font-size: 18px; color: $text-color; }
+    p { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+}
+
+@keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.notificationIcon {
+    font-size: 50px;
+    &.iconSuccess { color: $success; }
+    &.iconDanger { color: $danger; }
+    &.iconWarning { color: $warning; }
+    &.iconInfo { color: $primary-blue; }
+}
+
+.btnOk {
+    background-color: $primary-blue; color: white; border: none;
+    padding: 10px 30px; border-radius: 6px; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+    &:hover { background-color: darken($primary-blue, 10%); }
+}

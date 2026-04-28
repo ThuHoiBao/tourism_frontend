@@ -1,0 +1,231 @@
+/* src/components/ToursPageComponent/ToursPage.module.scss (CẬP NHẬT) */
+
+.toursPageLayout {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Giảm khoảng cách với top, vẫn giữ đệm nhỏ cho header cố định */
+    margin-top: 20px;  
+}
+
+.pageHero {
+    width: 100%;
+    margin: 50px 0 20px 0;
+    padding: 22px 26px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: linear-gradient(120deg, #e9f3ff 0%, #f7fbff 50%, #ffffff 100%);
+    border-radius: 0;
+    box-shadow: 0 16px 40px -24px rgba(0, 76, 140, 0.4);
+    border: 1px solid rgba(31, 106, 175, 0.08);
+    border-left: none;
+    border-right: none;
+    margin-bottom: -20px;
+}
+
+.heroIconWrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(150deg, #2f6ac5, #1e4f9f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    box-shadow: 0 12px 24px -16px rgba(47, 106, 197, 0.8);
+}
+
+.heroTextBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.heroEyebrow {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f6aaf;
+    letter-spacing: 0.02em;
+}
+
+.heroTitle {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #0f1f3a;
+    font-weight: 700;
+}
+
+.heroSub {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.5;
+    max-width: 780px;
+}
+
+.heroBreadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #1f6aaf;
+    font-weight: 600;
+}
+
+.crumbDivider {
+    color: #94a3b8;
+}
+
+.crumbActive {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.filterColumn {
+    flex: 0 0 300px;
+    
+    /* ✨ ĐIỀU CHỈNH GIÁ TRỊ TOP ✨ */
+    position: sticky;
+    top: 120px; /* Thử nghiệm với 70px (Chiếu cao Header khoảng 60px + 10px đệm) */
+    align-self: flex-start;
+    height: fit-content;
+}
+
+.resultsColumn {
+    flex: 1; /* Cột kết quả chiếm phần còn lại */
+}
+
+.resultsColumn {
+    flex: 1; 
+}
+
+/* KIỂU DÁNG CHO KHỐI THÔNG TIN ĐIỂM ĐẾN (destinationHeader) */
+.destinationHeader {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #e6f7ff;
+    border-left: 5px solid #1f6aaf;
+    border-radius: 4px;
+    
+    h2 {
+        margin-top: 0;
+        color: #1f6aaf;
+        font-size: 1.5em;
+    }
+    p {
+        margin-bottom: 0;
+        color: #595959;
+        line-height: 1.5;
+    }
+}
+
+/* HEADER KẾT QUẢ VÀ SẮP XẾP MỚI */
+.resultHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tourCount {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    margin: 0; 
+    
+    strong {
+        color: #1f6aaf;
+    }
+}
+
+/* STYLES CHO DROP DOWN SẮP XẾP */
+.sortContainer {
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    color: #595959;
+}
+
+.sortLabel {
+    margin-right: 10px;
+    font-weight: normal;
+}
+
+.sortDropdown {
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: white;
+    min-width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    i {
+        margin-left: 10px;
+        font-size: 0.8em;
+    }
+}
+
+.sortOptionsList {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.sortOption {
+    padding: 10px 12px;
+    cursor: pointer;
+    
+    &:hover {
+        background-color: #f0f0f0;
+        color: #1f6aaf;
+    }
+}
+
+.activeSort {
+    background-color: #e6f7ff;
+    color: #1f6aaf;
+    font-weight: bold;
+}
+
+.errorMessage {
+    color: #f5222d;
+    padding: 10px;
+    background-color: #fff1f0;
+    border: 1px solid #ffa39e;
+    border-radius: 4px;
+}
+.tourCountValue {
+    color: #1f6aaf; /* Màu xanh nổi bật */
+    font-weight: bold;
+    font-size: 23px;
+    /* Thêm chút khoảng cách xung quanh số */
+    margin-right: -5px;
+    
+}

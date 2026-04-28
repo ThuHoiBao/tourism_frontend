@@ -1,0 +1,224 @@
+$primary-color: #0a4685;
+$text-color: #fff;
+$card-radius: 8px;
+
+.favoriteDestinationsContainer {
+    padding: 60px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: left;
+    margin-bottom: 40px;
+    
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        &::after {
+            content: '';
+            display: block;
+            width: 150px;
+            height: 3px;
+            background-color: #007bff;
+            margin-top: 5px;
+        }
+    }
+    .description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-right: 385px;
+    }
+}
+
+.destinationsGrid {
+    display: grid;
+    // Lưới 3 cột
+    grid-template-columns: repeat(4, 1fr);
+    // 4 hàng, mỗi hàng tối thiểu 300px để chứa 9 item với span 2
+    grid-template-rows: repeat(3, minmax(300px, auto)); 
+    gap: 12px;
+}
+
+/* --- Định nghĩa kích thước đặc biệt cho từng item --- */
+
+/* 1. QUẢNG NINH (Index 0): Chiếm 2 hàng */
+.item0 { 
+    grid-row: span 2;
+     
+}
+.item2 { 
+    grid-column: span 2; 
+}
+/* 4. NINH BÌNH (Index 3): Chiếm 2 hàng */
+.item3 { 
+    grid-column: span 2; 
+}
+.item4 { 
+    grid-row: span 2; 
+}
+
+
+
+/* --- FavoriteDestinationItem Styles --- */
+.destinationItem {
+    position: relative;
+    overflow: hidden;
+    border-radius: $card-radius;
+    height: auto; 
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    
+    &:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .backgroundImage {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.6s ease;
+    }
+    
+    /* LỚP LÀM TỐI ẢNH (DIM/DARKEN) */
+    .dimOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0); /* Mặc định trong suốt */
+        transition: background-color 0.3s ease;
+        z-index: 1; /* Nằm dưới nội dung overlay */
+    }
+
+    /* HIỆU ỨNG TỐI KHI HOVER */
+    &:hover .dimOverlay {
+        background-color: rgba(0, 0, 0, 0.5); /* Làm tối 30% khi di chuột vào */
+    }
+
+    /* LỚP CHỨA NỘI DUNG (CHỮ VÀ NÚT) */
+    .contentOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* CĂN GIỮA DỌC */
+        align-items: center; /* CĂN GIỮA NGANG */
+       
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+        z-index: 2; /* Nằm trên lớp tối */
+    }
+    
+    .name {
+        color: $text-color;
+        font-size: 23px; 
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 20px;
+        transition: opacity 0.3s;
+        // Bắt đầu ẩn nhẹ, hiện rõ hơn khi hover nếu bạn muốn hiệu ứng này
+        opacity: 0.9;
+    }
+    
+    .exploreButton {
+        opacity: 0; 
+        visibility: hidden;
+        transform: scale(0.8); 
+        transition: opacity 0.3s, transform 0.3s, background-color 0.2s;
+        
+        background-color: $primary-color;
+        color: $text-color;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+    }
+    
+    /* HIỆN NÚT KHI HOVER CHO TẤT CẢ ITEM */
+    &:hover .exploreButton {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1); 
+    }
+
+    /* GHI ĐÈ: NÚT KHÁM PHÁ CỦA QUẢNG NINH VÀ NINH BÌNH LUÔN HIỆN (như trong ảnh) */
+    .item0 .exploreButton,
+    .item3 .exploreButton {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
+}
+
+// FavoriteDestinations.module.scss (ĐÃ CHỈNH SỬA CHO ĐỘ DÀI BẰNG CHỮ)
+
+// ... (Các styles header, title, description giữ nguyên) ...
+
+/* --- STYLE CHO TABS MIỀN --- */
+.regionTabs {
+    display: flex;
+    margin-top: 20px;
+    // Bỏ border-bottom xám dài
+}
+
+.regionTab {
+    background: none;
+    border: none;
+    // Giữ padding ngang
+    padding: 10px 20px; 
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #666;
+    position: relative;
+    transition: color 0.3s;
+    
+    // Gạch chân transparent để giữ chiều cao nhất quán
+    border-bottom: 2px solid transparent; 
+    
+    &:hover {
+        color: #333;
+    }
+}
+
+.activeTab {
+    color: $primary-color; 
+    font-weight: 700;
+    border-bottom: 2px solid transparent; 
+}
+
+// Gạch chân màu xanh chỉ hiển thị cho tab active
+.activeIndicator {
+    position: absolute;
+    bottom: -2px; /* Đẩy xuống một chút để nằm dưới padding */
+    
+    // ✨ CẬP NHẬT 1: Giảm chiều rộng để chỉ bằng nội dung
+    width: 60%; /* Giả sử 60% là gần bằng chiều rộng chữ */
+    
+    // ✨ CẬP NHẬT 2: Căn giữa gạch chân
+    left: 50%;
+    transform: translateX(-50%); 
+    
+    height: 3px;
+    background-color: $primary-color;
+    transition: all 0.3s ease; 
+}
+
+// ... (destinationItem styles và các styles khác giữ nguyên) ...

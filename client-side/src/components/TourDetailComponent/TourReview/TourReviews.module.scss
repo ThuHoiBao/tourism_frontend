@@ -1,0 +1,362 @@
+// Variables cho dễ chỉnh sửa
+$primary-color: #00b894; // Màu xanh ngọc kiểu du lịch (hoặc dùng #3b82f6 nếu thích xanh dương)
+$text-dark: #2d3436;
+$text-gray: #636e72;
+$bg-light: #f9f9f9;
+$star-color: #fdcb6e;
+
+.reviewsContainer {
+  max-width: 1000px; // Thu hẹp lại một chút để nội dung tập trung hơn
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: $text-dark;
+  margin-bottom: 40px;
+  position: relative;
+  
+  // Thêm gạch chân nhỏ trang trí
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: $primary-color;
+    margin-top: 8px;
+    border-radius: 2px;
+  }
+}
+
+// ==================== STATISTICS (Clean Style) ====================
+.statisticsWrapper {
+  display: flex;
+  gap: 60px;
+  padding: 30px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05); // Bóng mờ nhẹ
+  margin-bottom: 50px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+  }
+}
+
+.ratingOverview {
+  text-align: center;
+  min-width: 200px;
+  border-right: 1px solid #eee;
+  padding-right: 40px;
+
+  @media (max-width: 768px) {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    width: 100%;
+  }
+}
+
+.bigScore {
+  font-size: 72px;
+  font-weight: 800;
+  color: $text-dark;
+  line-height: 1;
+}
+
+.bigStars {
+  font-size: 24px;
+  color: $star-color;
+  margin: 8px 0;
+}
+
+.totalCount {
+  font-size: 14px;
+  color: $text-gray;
+  
+  strong {
+    color: $text-dark;
+    font-weight: 600;
+  }
+}
+
+.ratingBars {
+  flex: 1;
+  width: 100%;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.starLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 45px;
+  font-size: 15px;
+  font-weight: 600;
+  color: $text-dark;
+  
+  svg { color: $star-color; font-size: 14px; }
+}
+
+.progressTrack {
+  flex: 1;
+  height: 8px;
+  background: #f1f2f6;
+  border-radius: 10px;
+  margin: 0 15px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $primary-color; // Dùng màu chủ đạo phẳng, bỏ gradient lòe loẹt
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.percentLabel {
+  width: 40px;
+  text-align: right;
+  font-size: 14px;
+  color: $text-gray;
+}
+
+// ==================== REVIEWS LIST ====================
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reviewItem {
+  background: #fff;
+  padding: 0; // Reset padding
+  border-bottom: 1px solid #f1f1f1; // Chỉ dùng gạch ngang mờ ngăn cách
+  padding-bottom: 30px;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.userAvatar, .avatarPlaceholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.avatarPlaceholder {
+  background: #dfe6e9;
+  color: $text-gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-size: 16px;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0 0 4px 0;
+}
+
+.timeAgo {
+  font-size: 13px;
+  color: #b2bec3;
+  font-weight: 400;
+}
+
+.miniStars {
+  font-size: 14px;
+  color: $star-color;
+  background: #fffbf0; // Nền vàng siêu nhạt
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.reviewBody {
+  padding-left: 63px; // Thụt vào thẳng hàng với tên user (48px avatar + 15px margin)
+  
+  @media (max-width: 768px) {
+    padding-left: 0;
+  }
+}
+
+.comment {
+  font-size: 15px;
+  line-height: 1.6;
+  color: $text-gray;
+  margin-bottom: 15px;
+}
+
+// ==================== IMAGES ====================
+.reviewImages {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.imageWrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px; // Bo góc mềm hơn
+  overflow: hidden;
+  cursor: zoom-in;
+  position: relative;
+  
+  &:hover {
+    .reviewImage {
+      transform: scale(1.1);
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.1);
+    }
+  }
+}
+
+.reviewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+// ==================== PAGINATION ====================
+.pagination {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.paginationBtn, .pageNumber {
+  height: 40px;
+  min-width: 40px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px; // Hình con nhộng (Pill shape)
+  border: none;
+  background: transparent;
+  color: $text-dark;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+
+  &:hover:not(:disabled) {
+    background: #f1f2f6;
+  }
+
+  &:disabled {
+    color: #dfe6e9;
+    cursor: not-allowed;
+  }
+}
+
+// Nút số trang đang active
+.pageNumber.active {
+  background: $text-dark; // Đen hoặc màu chủ đạo
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  
+  &:hover {
+    background: lighten($text-dark, 10%);
+  }
+}
+
+// ==================== LOADING & MISC ====================
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid $primary-color;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+// Modal
+.imageModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95); // Nền trắng mờ thay vì đen thui
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .modalContent {
+    position: relative;
+    max-width: 90%;
+  }
+
+  .modalImage {
+    max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .closeButton {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: transparent;
+    border: 2px solid #333;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    
+    &:hover {
+      background: #333;
+      color: #fff;
+    }
+  }
+}

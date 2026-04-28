@@ -1,0 +1,591 @@
+.pageContainer {
+  background-color: #f5f7fa; 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 15px 60px; 
+  width: 100%;
+  flex: 1;
+}
+
+.stepperContainer {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.pageTitle {
+  color: #2d5a9e;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ccc;
+    font-weight: 600;
+    font-size: 14px;
+    position: relative;
+    width: 140px;
+
+    .icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #eee;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      z-index: 2;
+    }
+
+    &.active {
+      color: #2d5a9e;
+      .icon {
+        background: #2d5a9e;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(45, 90, 158, 0.3);
+      }
+    }
+  }
+
+  .line {
+    flex: 1;
+    height: 2px;
+    background: #e0e0e0;
+    margin-top: -30px;
+    max-width: 100px;
+  }
+}
+
+.bookingLayout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+
+  @media (max-width: 992px) {
+    flex-direction: column; 
+  }
+}
+
+.leftColumn {
+  flex: 1; 
+  width: 100%; 
+  min-width: 0; 
+}
+
+.rightColumn {
+  width: 380px;
+  flex-shrink: 0; 
+  position: sticky;
+  top: 100px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (max-width: 992px) {
+    width: 100%; 
+    position: static;
+  }
+}
+
+.section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.sectionHeader {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    .required { color: #e31b23; margin-left: 3px; }
+  }
+
+  input, select, textarea {
+    height: 45px;
+    padding: 0 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    background-color: #fff;
+    transition: border-color 0.2s;
+
+    &:focus { 
+      border-color: #2d5a9e; 
+      box-shadow: 0 0 0 3px rgba(45, 90, 158, 0.1);
+    }
+  }
+}
+
+.passengerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.passengerCounter {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    .type { font-weight: 700; color: #333; font-size: 15px; }
+    .desc { font-size: 12px; color: #777; margin-top: 3px; }
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    button {
+      width: 32px; height: 32px;
+      border: none; background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 18px; font-weight: bold;
+      color: #333; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+
+      &:hover { 
+        background: #2d5a9e; 
+        color: #fff; 
+        border-color: #2d5a9e; 
+      }
+    }
+    .count { font-weight: 700; font-size: 18px; color: #2d5a9e; min-width: 20px; text-align: center; }
+  }
+}
+
+.passengerGroup {
+  margin-bottom: 30px;
+  &:last-child { margin-bottom: 0; }
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f0f9ff; 
+  padding: 12px 15px;
+  border-radius: 6px;
+  color: #0050b3;
+  font-weight: 700;
+  margin-bottom: 15px;
+  border: 1px solid #bae7ff;
+
+  .note {
+    font-weight: 400;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+  }
+}
+
+.singlePassengerForm {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #eee;
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .passengerIndexLabel {
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto; 
+  gap: 20px;
+  align-items: flex-start;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+  
+  &.noSingleRoom {
+    grid-template-columns: 2fr 1fr 1fr; 
+  }
+}
+
+.nameInput {
+  min-width: 0; 
+}
+
+.smallInput {
+  min-width: 0; 
+}
+
+.dateWrapper {
+  position: relative;
+  width: 100%; 
+  
+  input { 
+    width: 100%; 
+    padding-right: 40px; 
+  }
+  
+  .iconDate {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+    font-size: 16px;
+  }
+}
+
+.singleRoomOption {
+  flex: 1; 
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 0;
+  
+  label { 
+    font-size: 14px; 
+    font-weight: 600; 
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.5; 
+    white-space: nowrap;
+  }
+  
+  .switchWrapper {
+    height: 45px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .surchargePrice {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e31b23;
+    margin-top: 2px; 
+  }
+}
+
+.switch {
+  position: relative; display: inline-block; width: 44px; height: 24px;
+  input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc; transition: .4s; border-radius: 34px;
+    &:before {
+      position: absolute; content: ""; height: 18px; width: 18px;
+      left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+    }
+  }
+  input:checked + .slider { background-color: #2d5a9e; }
+  input:checked + .slider:before { transform: translateX(20px); }
+}
+
+.noteArea textarea {
+  width: 100%; height: 100px; resize: vertical; margin-top: 10px; font-family: inherit;
+}
+
+.summaryCard, .couponCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+}
+
+.tourSummary {
+  display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed #ccc;
+  .tourImg { width: 90px; height: 70px; object-fit: cover; border-radius: 6px; }
+  .tourText {
+    flex: 1;
+    h4 { font-size: 14px; margin: 0 0 5px 0; line-height: 1.4; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+    .tourCode { font-size: 12px; color: #666; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+  }
+}
+
+// --- A. FLIGHT INFO (TIMELINE) ---
+.flightInfoContainer {
+  margin-top: 10px;
+  
+  .sectionTitle {
+    font-size: 13px; font-weight: 700; color: #444; margin-bottom: 15px;
+    display: flex; align-items: center; gap: 8px; text-transform: uppercase;
+  }
+}
+
+.flightSection {
+  display: flex; flex-direction: column; gap: 15px;
+}
+
+.dividerDashed {
+  border-bottom: 1px dashed #ddd; margin: 5px 0;
+}
+
+.flightColumn {
+  display: flex; flex-direction: column; gap: 4px;
+
+  .topRow {
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+    .label { color: #666; font-weight: 500; }
+    .flightCode {
+      font-weight: bold; color: #007bff; background: #e3f2fd;
+      padding: 2px 6px; border-radius: 4px; font-size: 11px;
+    }
+  }
+
+  .timeRow {
+    display: flex; justify-content: space-between;
+    font-weight: 700; font-size: 16px; color: #333; margin-top: 4px;
+  }
+
+  // THANH TIMELINE CHUYẾN BAY
+  .timelineBar {
+    position: relative; height: 14px;
+    display: flex; align-items: center; margin: 4px 0;
+
+    .line { flex: 1; height: 2px; background-color: #ccc; margin: 0 4px; }
+    .dotLeft, .dotRight {
+      width: 8px; height: 8px; border-radius: 50%;
+      border: 2px solid #007bff; background: #fff;
+    }
+    .planeIcon {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      font-size: 20px; color: #007bff; background: #fff; padding: 0 4px;
+    }
+  }
+
+  .routeInfo {
+    display: flex; justify-content: space-between; font-size: 12px; color: #555;
+    .airportCode { font-weight: 600; cursor: help; }
+  }
+}
+
+// --- B. COUPON CARD ---
+.couponCard {
+  .sectionTitle { font-weight: 700; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase;}
+  
+  .btnAddCoupon {
+    width: 100%; color: #d32f2f; background: none;
+    border: 1px dashed #d32f2f; padding: 10px; border-radius: 4px;
+    cursor: pointer; font-weight: bold; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.2s;
+    &:hover { background: #fff5f5; }
+  }
+
+  .appliedCoupon {
+    background: #e3f2fd; padding: 12px; border-radius: 6px; position: relative;
+    .couponCode { font-weight: bold; color: #1976d2; display: block; font-size: 14px; }
+    .couponDesc { font-size: 12px; margin-top: 4px; color: #555; }
+    .couponRemove {
+      position: absolute; top: 12px; right: 12px;
+      font-size: 12px; color: #d32f2f; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+// --- C. PRICING & TOTAL ---
+.summaryTitle {
+  text-transform: uppercase; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #333;
+}
+
+.pricingSummary {
+  border-bottom: 1px dashed #ccc; padding-bottom: 20px; margin-bottom: 20px;
+
+  .priceRow {
+    display: flex; justify-content: space-between;
+    font-size: 14px; margin-bottom: 10px; color: #555;
+    span:last-child { font-weight: 600; color: #333; }
+    
+    &.discountRow { 
+      color: #d32f2f; 
+      span:last-child { color: #d32f2f; }
+    }
+  }
+  
+  .divider { margin: 15px 0; border-top: 1px solid #eee; }
+
+  .finalTotal {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    span { font-size: 16px; font-weight: 700; color: #333; }
+    .amount { color: #e31b23; font-size: 24px; line-height: 1; }
+  }
+}
+
+// --- D. CHECKBOX TERMS ---
+.termsAgreement {
+  margin: 15px 0; font-size: 13px; color: #555;
+  
+  .checkboxContainer {
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+    
+    input { width: 16px; height: 16px; margin-top: 2px; accent-color: #2d5a9e; cursor: pointer; }
+    .text { line-height: 1.4; }
+    a { color: #007bff; text-decoration: underline; }
+  }
+}
+
+.btnSubmit {
+  width: 100%; padding: 15px;
+  background: #e31b23; color: #fff;
+  border: none; border-radius: 8px;
+  font-weight: 700; font-size: 16px; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(227, 27, 35, 0.3);
+
+  &:hover { background: #c4161d; }
+  
+  &:disabled {
+    background: #ccc; cursor: not-allowed; box-shadow: none;
+  }
+}
+
+// =========================================
+// 4. MODAL (POPUP COUPON)
+// =========================================
+.modalOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 1000;
+  display: flex; justify-content: center; align-items: center;
+
+  .modalContent {
+    background: #fff; width: 450px; max-width: 90%;
+    border-radius: 12px; overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+
+    .modalHeader {
+      padding: 15px 20px; border-bottom: 1px solid #eee;
+      display: flex; justify-content: space-between; align-items: center;
+      h3 { margin: 0; font-size: 18px; color: #333; }
+      button { background: none; border: none; font-size: 20px; cursor: pointer; color: #888; &:hover { color: #333; } }
+    }
+
+    .modalBody {
+      padding: 20px;
+
+      .couponInputGroup {
+        display: flex; gap: 10px; margin-bottom: 20px;
+        input { 
+          flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; outline: none;
+          &:focus { border-color: #2d5a9e; }
+        }
+        button {
+          padding: 0 20px; background: #2d5a9e; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+          &:hover { background: #1a428a; }
+        }
+      }
+
+      .couponList {
+        max-height: 350px; overflow-y: auto;
+        
+        .couponItem {
+          display: flex; align-items: center; padding: 12px;
+          border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px;
+          cursor: pointer; transition: 0.2s;
+          
+          &:hover { background: #f9fbff; border-color: #2d5a9e; }
+
+          .couponIcon { 
+            width: 40px; height: 40px; background: #fff3e0; color: #ff9800;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-size: 18px;
+          }
+          
+          .couponInfo { 
+            flex: 1; 
+            .code { font-weight: 700; font-size: 15px; color: #333; margin-bottom: 2px; }
+            .desc { font-size: 13px; color: #666; }
+          }
+          
+          .selectBtn { color: #ddd; font-size: 20px; }
+          &:hover .selectBtn { color: #2d5a9e; }
+        }
+      }
+    }
+  }
+}
+
+.flightInfo { 
+  text-align: center;
+  margin-top: 0px;
+  font-size: 12px;
+  font-weight: 500;
+  color: black;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

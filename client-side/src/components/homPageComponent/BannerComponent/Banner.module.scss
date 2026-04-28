@@ -1,0 +1,357 @@
+$primary-color: #0a4685;
+$accent-color: #4c84bf;
+$text-color: #333;
+$border-color: #e0e0e0;
+$light-bg: #f5f5f5;
+
+.bannerContainer {
+    background-image: url('../../../assets/images/nuidoi.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 650px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 0;
+    position: relative;
+    width: 100%;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.content {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 90%;
+    display: grid;
+    grid-template-areas:
+        "title info"
+        "subtitle info"
+        "search info" 
+        "error info"; 
+    grid-template-columns: 2fr 1fr; 
+    gap: 15px;
+    padding-top: 100px;
+}
+
+.headline {
+    grid-area: title;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.subHeadline {
+    grid-area: subtitle;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 0px;
+    margin-bottom: 30px;
+}
+
+/* ------------------------------------------- */
+/* SEARCH BOX STYLES */
+/* ------------------------------------------- */
+.searchBox {
+    grid-area: search;
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr) auto;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    min-height: 72px;
+    width: 100%;
+    max-width: 1100px;
+    overflow: visible;
+    position: relative;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.inputGroup {
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    flex-grow: 1;
+    border-right: none;
+    transition: background-color 0.2s;
+    position: relative;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:not(:last-of-type) {
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    &:last-of-type {
+        border-right: none;
+    }
+
+    &.destinationGroup {
+        flex-grow: 2;
+    }
+    &.budgetGroup {
+        flex-grow: 1.2;
+    }
+}
+
+.inputLabels {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 5px 0;
+
+    label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+}
+
+.icon {
+    color: rgba(255, 255, 255, 0.9);
+    margin-right: 18px;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.inputField, .selectDisplay {
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+    color: rgba(255, 255, 255, 0.95); 
+    padding: 0;
+    font-weight: 500;
+    background-color: transparent;
+    cursor: pointer;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 400;
+    }
+}
+
+.inputField {
+    cursor: text;
+}
+
+/* STYLES CHO CUSTOM SELECT (Ngân sách) */
+.selectDisplay {
+    &.placeholder {
+        color: #a0a0a0;
+        font-weight: 400;
+    }
+}
+
+.customSelectMenu {
+    position: absolute;
+    top: calc(100% + 12px); 
+    left: 0; 
+    background-color: white;
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+    border-radius: 14px;
+    padding: 12px;
+    z-index: 50;
+    width: 260px;
+}
+
+.menuItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    color: $text-color;
+    font-weight: 500;
+    transition: background-color 0.15s;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    border: 1px solid $border-color;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &:hover {
+        background-color: $light-bg;
+        border-color: $accent-color;
+    }
+}
+
+.searchButton {
+    background: linear-gradient(135deg, #3275ce, #1f4c99);
+    color: white;
+    border: none;
+    padding: 0 48px;
+    border-radius: 0 15px 15px 0;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background: linear-gradient(135deg, darken(#3275ce, 5%), darken(#1f4c99, 5%));
+        transform: translateY(0px);
+    }
+}
+
+.searchIcon {
+    font-size: 2rem;
+}
+
+/* Validation Message */
+.validationMessage {
+    grid-area: error;
+    color: #faf8f8;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: left;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 270px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------- SIDE INFO BOX (Giữ nguyên) */
+.sideInfoBox {
+    grid-area: info;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    right: 0;
+    top: 0;
+    width: 100%; 
+    z-index: 15;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.sideTitle {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+/* ... (các styles khác của sideInfoBox, priceValue giữ nguyên) */
+/* ------------------------------------------- */
+/* SIDE INFO BOX (Thông tin Tour bên phải) */
+/* ------------------------------------------- */
+.sideInfoBox {
+    grid-area: info;
+    background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
+    padding: 15px;
+    border-radius: 4px;
+    position: absolute; 
+    right: 5%;
+    top: 50px; 
+    width: 300px;
+    z-index: 15;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.sideTitle {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.sideDetails {
+    font-size: 0.9rem;
+    margin: 3px 0;
+    font-weight: 300;
+}
+
+.priceLabel {
+    font-size: 0.8rem;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    color: #ccc;
+}
+
+.priceValue {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffc107; 
+    margin-top: 5px;
+    small {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: white;
+    }
+}
+
+.arrowIcon {
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%);
+    background: $accent-color;
+    padding: 10px 15px;
+    border-radius: 10%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ------------------------------------------- */
+/* BOTTOM INFO STRIP (Giữ nguyên) */
+/* ------------------------------------------- */
+.bottomInfoStrip {
+    position: absolute;
+    bottom: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1000px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 0;
+    
+}
+
+.infoItem {
+    text-align: center;
+    color: $text-color;
+    flex: 1;
+    padding: 0 10px;
+    border-right: 1px solid #eee;
+
+    &:last-child {
+        border-right: none;
+    }
+
+    img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin: 2px 0;
+        font-size: 0.9rem;
+    }
+    strong {
+        color: $primary-color;
+    }
+}

@@ -1,0 +1,105 @@
+.policyContainer {
+  margin-top: 40px;
+  padding-top: 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.sectionTitle {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 20px;
+}
+
+.gridWrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau */
+  gap: 15px; /* Khoảng cách giữa các ô */
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; /* Mobile xuống 1 cột */
+  }
+}
+
+.policyItem {
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9; /* Màu nền xám mặc định */
+
+  /* Khi mở thì đổi màu nền nhẹ */
+  &.active {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    
+    .header {
+      background-color: #e6f4ff; /* Màu xanh nhạt khi active giống ảnh */
+      color: #0050b3;
+      font-weight: 700;
+    }
+  }
+}
+
+.header {
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e6e6e6;
+  }
+
+  .icon {
+    font-size: 12px;
+    color: #666;
+  }
+}
+
+/* Animation xổ xuống (Giống TourItinerary) */
+.body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+  
+  &.open {
+    grid-template-rows: 1fr;
+  }
+
+  .bodyInner {
+    overflow: hidden;
+  }
+}
+
+.content {
+  padding: 15px 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #444;
+  text-align: justify;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+
+  /* Style cho HTML content */
+  ul {
+    padding-left: 20px;
+    margin: 0;
+    list-style-type: disc;
+  }
+  
+  li {
+    margin-bottom: 5px;
+  }
+  
+  strong {
+    font-weight: 700;
+  }
+}

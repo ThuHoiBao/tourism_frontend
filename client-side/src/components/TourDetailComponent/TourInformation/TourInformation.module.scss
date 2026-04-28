@@ -1,0 +1,69 @@
+.infoContainer {
+  margin-top: 40px; /* Cách phần Lịch khởi hành bên trên */
+  background: #fff;
+  padding-top: 20px;
+  border-top: 1px solid #eee; /* Đường kẻ mờ phân cách nếu thích */
+}
+
+.sectionTitle {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 20px;
+}
+
+.infoGrid {
+  display: grid;
+  /* Chia 3 cột đều nhau như trong ảnh */
+  grid-template-columns: repeat(3, 1fr); 
+  column-gap: 30px;
+  row-gap: 40px;
+
+  /* Responsive: Màn hình nhỏ (Tablet) xuống 2 cột */
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Mobile xuống 1 cột */
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.iconWrapper {
+  font-size: 32px; /* Kích thước icon */
+  color: #2d5a9e; /* Màu xanh dương giống ảnh (hoặc dùng #007bff) */
+  margin-bottom: 5px;
+  
+  /* Nếu muốn icon có viền tròn mờ như một số thiết kế khác */
+  /* width: 50px; height: 50px; 
+  border: 1px solid #2d5a9e; 
+  border-radius: 50%; 
+  display: flex; align-items: center; justify-content: center;
+  */
+}
+
+.textWrapper {
+  .label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d2d2d;
+    margin-bottom: 8px;
+  }
+
+  .content {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+  }
+}

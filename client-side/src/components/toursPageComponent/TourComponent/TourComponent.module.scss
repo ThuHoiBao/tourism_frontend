@@ -1,0 +1,7 @@
+/* src/components/ToursPageComponent/TourComponent/TourComponent.module.scss */
+
+.toursListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Khoảng cách giữa các TourItem */
+}

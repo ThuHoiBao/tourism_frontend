@@ -1,0 +1,13 @@
+.adminLayout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f7fafc;
+}
+
+.mainContent {
+    flex-grow: 1; 
+    margin-left: 250px; 
+    padding: 30px 10px 10px 10px; 
+    min-height: calc(100vh - 60px - 55px); 
+}

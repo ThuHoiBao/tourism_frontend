@@ -1,0 +1,104 @@
+/* src/components/Commons/ConfirmModal/ConfirmModal.module.scss */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    // Fade-in effect cho overlay
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    
+    // Scale-up effect cho content
+    animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.warningIcon {
+    color: #faad14; /* Màu vàng cảnh báo */
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #333;
+}
+
+.modalBody {
+    margin-bottom: 25px;
+    p {
+        line-height: 1.5;
+        color: #595959;
+    }
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cancelButton, .confirmButton {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    font-weight: 500;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #595959;
+    border: 1px solid #d9d9d9;
+    
+    &:hover {
+        background-color: #e6e6e6;
+    }
+}
+
+.confirmButton {
+    background-color: #f5222d; /* Màu đỏ cho hành động xác nhận */
+    color: white;
+    border: none;
+    
+    &:hover {
+        background-color: #a8071a;
+    }
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

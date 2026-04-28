@@ -1,0 +1,70 @@
+// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/BookingStatusChart/BookingStatusChart.module.scss
+
+.bookingStatusChart {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    .chartHeader {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #f7fafc;
+
+        .icon {
+            font-size: 1.8em;
+            color: #ed8936;
+        }
+
+        h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.2em;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+            color: #718096;
+            font-size: 0.85em;
+        }
+    }
+
+    .chartContainer {
+        padding: 10px 0;
+
+        .legendCustom {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+
+            .legendItem {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                .legendColor {
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 3px;
+                }
+
+                .legendName {
+                    flex: 1;
+                    font-size: 0.85em;
+                    color: #4a5568;
+                }
+
+                .legendValue {
+                    font-weight: 700;
+                    color: #2d3748;
+                    font-size: 0.9em;
+                }
+            }
+        }
+    }
+}

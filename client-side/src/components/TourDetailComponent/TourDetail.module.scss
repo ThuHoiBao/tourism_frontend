@@ -1,0 +1,290 @@
+.pageContainer {
+  background-color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 15px 20px 15px; /* Cách top 100px để tránh Header fixed */
+  width: 100%;
+  flex: 1;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+  
+  span {
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.tourTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+/* --- LAYOUT CHÍNH (Chia 2 cột) --- */
+.detailLayout {
+  display: flex;
+  gap: 30px;
+  position: relative;
+  align-items: flex-start; /* Quan trọng cho sticky */
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+  }
+}
+
+/* --- CỘT TRÁI (Nội dung chính) --- */
+.leftColumn {
+  flex: 2; /* Chiếm 2/3 chiều rộng */
+  width: 100%; 
+}
+
+/* --- CỘT PHẢI (Sidebar Giá) --- */
+.rightColumn {
+  flex: 1; /* Chiếm 1/3 chiều rộng */
+  position: sticky;
+  top: 100px; /* Dính cách mép trên 100px */
+  z-index: 10;
+  height: fit-content;
+}
+
+/* --- GALLERY SECTION (Nằm trong cột trái) --- */
+.gallerySection {
+  display: flex;
+  gap: 10px;
+  height: 450px;
+  margin-bottom: 40px; 
+  
+  .thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 140px; /* Chiều rộng cố định cho cột ảnh nhỏ */
+
+    .thumbItem {
+      flex: 1;
+      cursor: pointer;
+      border-radius: 8px;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+        &:hover { transform: scale(1.1); }
+      }
+    }
+
+    .thumbMore {
+        flex: 1;
+        background: #333;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 20px;
+        cursor: pointer;
+        position: relative;
+        /* Thay URL ảnh thật của bạn vào đây */
+        background-image: url('https://res.cloudinary.com/dnt8vx1at/image/upload/v1763972311/HL5_qe5zld.jpg'); 
+        background-size: cover;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.5);
+        }
+        span { z-index: 2; font-weight: bold; }
+    }
+  }
+
+  .mainImage {
+    flex: 1; /* Chiếm hết phần còn lại của gallery */
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+/* --- BOOKING SIDEBAR (Nằm trong cột phải) --- */
+.bookingSidebar {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.priceBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+
+  .originalPrice {
+    text-decoration: line-through;
+  }
+}
+
+.finalPrice {
+  font-size: 28px;
+  font-weight: bold;
+  color: #e31b23; 
+  margin-bottom: 15px;
+
+  .currency {
+    font-size: 20px;
+    text-decoration: underline;
+  }
+  .unit {
+    font-size: 14px;
+    color: #333;
+    font-weight: normal;
+  }
+}
+
+.infoGrid {
+  margin-bottom: 20px;
+
+  .infoRow {
+    display: flex;
+    align-items: flex-start; 
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #333;
+
+    .icon {
+      color: #666;
+      margin-right: 10px;
+      margin-top: 3px;
+      width: 16px;
+    }
+
+    .infoLabel {
+      width: 120px; 
+      color: #666;
+    }
+
+    .infoValue {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .infoValueLink {
+        font-weight: 500;
+        flex: 1;
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    .infoValueHighlight {
+        font-weight: bold;
+        flex: 1;
+        color: #e31b23;
+    }
+  }
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+
+  button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .btnOtherDate {
+    background: #fff;
+    border: 1px solid #e31b23;
+    color: #e31b23;
+
+    &:hover {
+      background: #fff5f5;
+    }
+  }
+
+  .btnBookNow {
+    background: #e31b23;
+    border: 1px solid #e31b23;
+    color: #fff;
+
+    &:hover {
+      background: #c4161d;
+    }
+  }
+}
+
+.btnConsult {
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover {
+    border-color: #007bff;
+    background: #f0f7ff;
+  }
+}
+
+.videoThumb {
+  position: relative;
+  
+  .playOverlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    pointer-events: none;
+  }
+}
+
+.thumbItem.active {
+  border: 2px solid #1890ff;
+  box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+}

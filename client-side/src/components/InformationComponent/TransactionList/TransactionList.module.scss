@@ -1,0 +1,227 @@
+/* TransactionList.module.scss - Header cố định với thanh tìm kiếm */
+
+.transactionList {
+    width: 100%;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+// Header cố định - tone trắng hiện đại
+.pageHeader {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef1f6;
+    position: sticky;
+    top: -30px;
+    background: #ffffff;
+    z-index: 5;
+    padding-top: 12px;
+    margin-top: -30px;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -20px;
+        right: -20px;
+        bottom: 0;
+        background: #ffffff;
+        z-index: -1;
+    }
+}
+
+.headerTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pageTitle {
+    font-size: 26px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.headerActions {
+    display: flex;
+    gap: 10px;
+}
+
+.searchBox {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #fafafa;
+
+    &:focus {
+        outline: none;
+        border-color: #1890ff;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.08);
+    }
+
+    &::placeholder {
+        color: #bdbdbd;
+    }
+}
+
+.searchIcon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bdbdbd;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+// Status Tabs - Pill style, cố định dưới header
+.statusTabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 2px;
+    
+    &::-webkit-scrollbar {
+        height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 4px;
+        &:hover {
+            background: #bdbdbd;
+        }
+    }
+}
+
+.tab {
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid #e7ecf3;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #6b7280;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+        border-color: #cbd5e1;
+        color: #111827;
+    }
+    
+    &:focus {
+        outline: none;
+    }
+
+    &.active {
+        background: #1890ff;
+        color: #ffffff;
+        border-color: #1890ff;
+        box-shadow: 0 6px 16px rgba(24, 144, 255, 0.2);
+    }
+}
+
+// Booking List - Đảm bảo z-index thấp hơn header
+.bookingList {
+    margin-top: 20px;
+    position: relative;
+    z-index: 1; // ⬅️ THÊM DÒNG NÀY
+}
+
+// States
+.loading, .error, .emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 15px;
+}
+
+.loading {
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.error {
+    color: #ff4d4f;
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 8px;
+}
+
+.emptyState {
+    color: #999;
+    
+    strong {
+        color: #666;
+    }
+}
+
+// Summary Bar
+.summaryBar {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    margin-bottom: 10px;
+}
+
+.summaryItem {
+    display: flex;
+    flex-direction: column;
+    
+    .label {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 4px;
+    }
+    
+    .value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .headerTop {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .searchBox {
+        width: 100%;
+        max-width: none;
+    }
+
+    .statusTabs {
+        gap: 6px;
+    }
+
+    .tab {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    .summaryBar {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}

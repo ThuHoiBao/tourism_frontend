@@ -1,0 +1,22 @@
+// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/ChartsSection.module.scss
+
+.chartsSection {
+    margin-bottom: 24px;
+
+    .fullWidthChart {
+        margin-bottom: 24px;
+    }
+
+    .twoColumnCharts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+
+        .chartCard {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+    }
+}

@@ -1,0 +1,522 @@
+// src/ChatbotWidget/ChatbotWidget.module.scss
+
+// --- Variables (Blue Theme - Messenger Style) ---
+$primary-color: #0084ff;
+$primary-gradient: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
+$secondary-bg: #f0f2f5; 
+$text-color: #050505;
+$user-bubble-bg: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
+$bot-bubble-bg: #ffffff;
+$shadow-soft: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+$shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1);
+$radius-window: 18px;
+$radius-bubble: 18px;
+
+.widgetContainer {
+  position: fixed;
+  bottom: 20px; 
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  font-family: Helvetica, Arial, sans-serif;
+  
+  
+  // Làm cho container "trong suốt" với chuột, cho phép click xuyên qua
+  pointer-events: none; 
+}
+
+// --- Launcher Button (Nút tròn mở chat) ---
+.launcher {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: $primary-gradient;
+  border: none;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 132, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  margin-top: 10px;
+
+  // ✅ FIX: Bật lại tương tác cho nút này (để bấm được)
+  pointer-events: auto; 
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.hideLauncher {
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.6;
+    z-index: -1;
+    animation: pulse-animation 2s infinite;
+  }
+}
+
+@keyframes pulse-animation {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+// --- Chat Window (Khung chat) ---
+.chatWindow {
+  width: 360px;
+  height: 540px;
+  max-height: calc(100vh - 110px); 
+  background: #fff;
+  border-radius: $radius-window;
+  box-shadow: $shadow-soft;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform-origin: bottom right;
+  
+  
+  transform: scale(0);
+  opacity: 0;
+  
+  
+  pointer-events: none; 
+  visibility: hidden; 
+
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  margin-bottom: 10px;
+
+  // Trạng thái MỞ
+  &.showWindow {
+    transform: scale(1);
+    opacity: 1;
+    
+    
+    pointer-events: auto; 
+    visibility: visible;
+  }
+}
+// --- Header ---
+.header {
+  background: $primary-gradient;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+
+  .headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .avatarWrapper {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 3px;
+      opacity: 0.9;
+      display: block;
+    }
+  }
+
+  .closeBtn {
+    background: transparent;
+    border: none;
+    color: white;
+    opacity: 0.9;
+    cursor: pointer;
+    transition: background 0.2s;
+    padding: 6px;
+    border-radius: 50%;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+// --- Messages Area ---
+.messagesArea {
+  flex: 1;
+  background-color: $secondary-bg;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.15);
+    border-radius: 10px;
+  }
+}
+
+// --- Individual Message ---
+.messageRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease-out;
+
+  &.userRow {
+    justify-content: flex-end;
+    .bubble {
+      background: $user-bubble-bg;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .timestamp {
+      text-align: right;
+    }
+  }
+
+  &.botRow {
+    justify-content: flex-start;
+    .bubble {
+      background: $bot-bubble-bg;
+      color: $text-color;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #e4e6eb; 
+    }
+  }
+}
+
+.botAvatar {
+  width: 28px;
+  height: 28px;
+  background: $primary-gradient;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.messageContent {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+  gap: 4px;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: $radius-bubble;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+  p { margin: 0 0 6px 0; &:last-child { margin-bottom: 0; } }
+  ul, ol { margin: 6px 0; padding-left: 20px; }
+  li { margin: 2px 0; }
+  strong { font-weight: 700; }
+}
+
+.timestamp {
+  font-size: 10px;
+  color: #65676b;
+  margin-top: 2px;
+  padding: 0 4px;
+}
+
+.tourLink {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+  
+  .botRow & {
+    color: $primary-color;
+  }
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// --- Tour Card Suggestions ---
+.tourGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tourCard {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e4e6eb;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .cardImage {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .cardInfo {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #050505;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .cardMeta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #65676b;
+
+      .price {
+        font-weight: 700;
+        color: #e41e3f;
+      }
+    }
+  }
+}
+
+// --- Quick Actions ---
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+
+  .actionBtn {
+    background: white;
+    border: 1px solid $primary-color;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: $primary-color;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+
+    &:hover {
+      background: $primary-color;
+      color: white;
+    }
+  }
+}
+
+// --- Loading / Typing Indicator (Messenger Style) ---
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-top: 4px; // Cách tin nhắn trước 1 chút
+}
+
+.typingIndicator {
+  background: #e4e6eb; // Màu nền xám chuẩn Messenger
+  padding-left: 3px; 
+  padding-bottom: 3px;
+  padding-top: 3px;
+  padding-right: 3px;// Padding cân đối
+  border-radius: 15px; // Bo tròn hoàn toàn (Pill shape)
+  border-bottom-left-radius: 4px; // Góc nhọn phía avatar
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; // Khoảng cách giữa các chấm
+  height: 34px; // Chiều cao cố định
+  width: 54px;  // Chiều rộng cố định
+  box-shadow: none; // Messenger không có bóng đổ ở đây
+
+  span {
+    display: block;
+    height: 10px;
+    background: #65676b; // Màu chấm xám đậm
+    border-radius: 50%;
+    animation: typing-bounce 1.3s infinite ease-in-out both;
+
+    // Chỉnh delay để tạo hiệu ứng sóng
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+  }
+}
+
+.loadingText {
+  font-size: 11px;
+  color: #8a8d91; // Màu chữ xám nhạt hơn
+  font-style: normal;
+  margin-left: 6px;
+  animation: fadeIn 0.4s ease-in;
+  font-weight: 500;
+}
+
+// Keyframes tạo hiệu ứng nảy nhẹ nhàng
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  30% {
+    transform: translateY(-4px); // Nảy lên 4px
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// --- Input Area (ĐÃ NÂNG CẤP) ---
+.inputArea {
+  padding: 12px 16px;
+  background: white;
+  border-top: 1px solid #e4e6eb;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+
+  textarea {
+    flex: 1;
+    background: #ffffff; // Nền trắng
+    border: 2px solid #f0f2f5; // Viền xám nhạt mặc định
+    border-radius: 22px;
+    padding: 10px 14px;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    max-height: 80px;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    // Hiệu ứng viền Gradient khi Focus (background-clip trick)
+    &:focus {
+      border: 2px solid transparent;
+      background: 
+        linear-gradient(white, white) padding-box, 
+        linear-gradient(135deg, #0099ff 0%, #0066cc 100%) border-box;
+      box-shadow: 0 4px 12px rgba(0, 132, 255, 0.15); 
+    }
+
+    &::placeholder {
+      color: #b0b3b8;
+    }
+  }
+
+  // Nút gửi Gradient đẹp mắt
+  .sendBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $primary-gradient; // Gradient xanh
+    border: none;
+    color: white; // Icon màu trắng
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 10px rgba(0, 132, 255, 0.3);
+
+    &:hover:not(:disabled) {
+      transform: scale(1.1) rotate(-10deg);
+      box-shadow: 0 6px 16px rgba(0, 132, 255, 0.45);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &:disabled {
+      background: #e4e6eb;
+      color: #b0b3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// --- Responsive ---
+@media (max-width: 480px) {
+  .chatWindow {
+    width: calc(100vw - 40px);
+    right: 20px;
+    bottom: 90px;
+    height: calc(100vh - 120px);
+  }
+  
+  .widgetContainer {
+    right: 20px;
+    bottom: 20px;
+  }
+}

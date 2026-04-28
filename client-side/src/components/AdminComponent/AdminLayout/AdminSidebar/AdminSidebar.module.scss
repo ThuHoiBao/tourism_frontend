@@ -1,0 +1,123 @@
+/* src/components/AdminComponent/AdminLayout/AdminSidebar/AdminSidebar.module.scss */
+
+$sidebar-width: 250px;
+$primary-blue: #2c70f8;
+$active-bg: #e6f0ff; // Nền xanh nhạt cho item active không được chọn
+
+.adminSidebar {
+    width: $sidebar-width;
+    height: 100vh;
+    background-color: white; /* Nền Sidebar: Trắng */
+    color: #4a5568; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- LOGO SECTION --- */
+.logoSection {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    border-bottom: 1px solid #edf2f7;
+    flex-shrink: 0;
+    
+    .logo {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: $primary-blue; 
+        margin: 0;
+    }
+    .logo1 {
+        font-size: 1em;
+        font-weight: 700;
+        color:#0d0e0e; 
+        margin: 0;
+    }
+}
+
+
+/* --- MENU LISTS --- */
+.menuList {
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    flex-grow: 1; 
+}
+
+.menuItem {
+    margin: 5px 10px; 
+    border-radius: 5px; 
+    position: relative; /* Dùng cho activeLine */
+    
+    a {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px; 
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s;
+        border-radius: 5px; /* Áp dụng bo tròn cho Link */
+    }
+    
+    &:hover {
+        background-color: transparent; 
+        color: $primary-blue; /* Chữ màu xanh khi hover */
+
+        a {
+            background-color: #f7fafc; /* Nền rất nhạt khi hover */
+        }
+    }
+}
+
+/* --- ACTIVE STATE --- */
+
+.menuItemActive {
+    
+    a {
+        background-color: $primary-blue !important; /* Nền xanh click */
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 4px 6px rgba($primary-blue, 0.4);
+    }
+}
+
+/* ✨ LINE ĐỨNG XANH BÊN TRÁI ✨ */
+.activeLine {
+    position: absolute;
+    top: 0;
+    left: -10px; /* Đẩy ra ngoài margin */
+    width: 5px;
+    height: 100%;
+    
+    background-color: $primary-blue;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.menuIcon {
+    font-size: 1.1em;
+    margin-right: 15px;
+}
+
+.footerSection {
+    margin-top: auto; 
+    padding-bottom: 20px;
+}
+
+.divider {
+    border: 0;
+    border-top: 1px solid #edf2f7; /* Line nhẹ nhàng */
+    margin: 10px 20px;
+}
+
+.logout:hover a {
+    background-color: #f56565 !important;
+    color: white !important;
+}

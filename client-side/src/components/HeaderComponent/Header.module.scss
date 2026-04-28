@@ -1,0 +1,643 @@
+$primary-color: #007bff; // Màu xanh dương
+$accent-color: #ff5722; // Màu cam Tours
+$dark-blue: #0d3257; // Màu xanh đậm
+$profile-bg: #e0ac65; // Màu nền modal header
+$coin-color: #ffc107; // Màu vàng coin
+
+.header {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100; 
+    
+    background-color: transparent;
+    box-shadow: none;
+    
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    
+    padding: 10px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    height: 50px; 
+    font-size: 0.9rem;
+}
+
+/* Trạng thái khi cuộn (Scrolled State) */
+.headerScrolled {
+    background-color: $dark-blue; /* Màu xanh đậm khi cuộn */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Header cho trang Tours - background nhạt, chữ đen */
+.headerTours {
+    background: linear-gradient(90deg, rgba(233, 243, 255, 0.95) 0%, rgba(241, 247, 255, 0.95) 100%) !important;
+    box-shadow: none !important;
+    border: none !important;
+
+    .navLink {
+        color: #333333;
+        
+        &:hover {
+            color: #1f6aaf;
+        }
+    }
+
+    .navLinkActive {
+        color: #1f6aaf;
+        border-bottom-color: #1f6aaf;
+    }
+
+    .phone {
+        color: #333333;
+    }
+
+    .logo {
+        color: #1f6aaf;
+    }
+
+    .user {
+        color: #333333;
+        
+        .userAvatar {
+            border: 2px solid #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+        
+        &:hover {
+            color: #1f6aaf;
+        }
+    }
+
+    .notificationBell {
+        color: #333333;
+        
+        &:hover {
+            color: #1f6aaf;
+        }
+    }
+
+    .loginButton {
+        color: #1f6aaf !important;
+        border-color: #1f6aaf !important;
+        
+        &:hover {
+            background-color: #f0f7ff;
+        }
+    }
+
+    .registerButton {
+        background-color: #1f6aaf !important;
+        color: white !important;
+        
+        &:hover {
+            background-color: #0f4c7a !important;
+        }
+    }
+
+    /* Khi scroll, header tours chuyển sang xanh đậm như scrolled state */
+    &.headerScrolled {
+        background: $dark-blue !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+
+        .navLink {
+            color: white;
+            
+            &:hover {
+                color: white;
+            }
+        }
+
+        .navLinkActive {
+            color: white;
+            border-bottom-color: $accent-color;
+        }
+
+        .phone {
+            color: white;
+        }
+
+        .logo {
+            color: white;
+        }
+
+        .user {
+            color: white;
+            
+            &:hover {
+                color: white;
+            }
+        }
+
+        .notificationBell {
+            color: white;
+            
+            &:hover {
+                color: white;
+            }
+        }
+
+        .loginButton {
+            color: white !important;
+            border-color: white !important;
+            
+            &:hover {
+                background-color: rgba(255,255,255,0.1);
+            }
+        }
+
+        .registerButton {
+            background-color: white !important;
+            color: $dark-blue !important;
+            
+            &:hover {
+                background-color: rgba(255,255,255,0.9) !important;
+            }
+        }
+    }
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-right: 30px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.logos {
+  margin-left: -20px;
+  margin-top: 5px;
+  width: 100px;
+}
+
+.navLink {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 5px 0;
+    transition: color 0.3s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  
+    
+    svg {
+        margin-right: 4px;
+    }
+}
+
+.navLinkActive {
+    text-decoration: none;
+    border-bottom: 3px solid $accent-color; 
+    font-weight: bold;
+    color: white;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.authContainer, .profileContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 30; 
+}
+
+.phone {
+    font-weight: bold;
+    margin-right: 20px; 
+    display: flex;
+    align-items: center;
+    
+    svg {
+        margin-right: 5px;
+        font-size: 1.1rem;
+    }
+}
+
+.user {
+    background-color: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+.coinIndicator {
+    color: $coin-color;
+    margin-left: 10px;
+    font-size: 1.1rem;
+}
+.userActive {
+    border-color: $coin-color;
+    box-shadow: 0 0 0 2px rgba($coin-color, 0.5);
+}
+
+.authButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.loginButton, .registerButton {
+    text-decoration: none;
+    border: 1px solid white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.loginButton {
+    background: transparent;
+    color: white;
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.registerButton {
+    background: $primary-color;
+    color: white;
+    border-color: $primary-color;
+    &:hover {
+        background: darken($primary-color, 10%);
+    }
+}
+
+.profileModal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    z-index: 10000;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #333;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.modalHeader {
+    background-color: $profile-bg; 
+    color: white;
+    padding: 20px 15px;
+    line-height: 1.5;
+}
+
+.modalUsername {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.modalStatus {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.memberTier {
+    font-size: 0.8rem;
+    font-weight: normal;
+    display: block;
+    margin-top: 5px;
+}
+
+.coinIcon {
+    color: $coin-color; 
+    margin-right: 5px;
+}
+
+.modalMenu {
+    list-style: none;
+    padding: 10px 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+
+        svg {
+            margin-right: 10px;
+            color: #777;
+        }
+    }
+}
+
+.highlightNew {
+    font-weight: bold;
+    color: $accent-color;
+
+    svg {
+        color: $accent-color;
+    }
+}
+
+.newBadge {
+    background-color: $accent-color;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.notificationBellContainer {
+  position: relative;
+  display: inline-block;
+  margin: 0 15px;
+}
+
+.notificationBell {
+  color: white;
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+  }
+
+  &.active {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+  }
+
+  svg {
+    font-size: 22px;
+  }
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ff4444;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(255, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// Notification Dropdown
+.notificationDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 380px;
+  max-height: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notificationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  color: #e6f2ff;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.markAllButton {
+  background: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 123, 255, 0.1);
+  }
+}
+
+.notificationList {
+  max-height: 400px;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+.notificationItem {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+
+  &.unread {
+    background: #f0f7ff;
+    
+    &:hover {
+      background: #e6f2ff;
+    }
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.notificationIcon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f7ff;
+  border-radius: 50%;
+}
+
+.notificationContent {
+  flex: 1;
+  min-width: 0;
+
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.notificationTime {
+  font-size: 11px;
+  color: #999;
+}
+
+.unreadDot {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 8px;
+  height: 8px;
+  background: #007bff;
+  border-radius: 50%;
+}
+
+.emptyNotification {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #999;
+
+  .emptyIcon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.viewAllLink {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  background: #f8f9fa;
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-top: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e9ecef;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .notificationDropdown {
+    width: 320px;
+    right: -20px;
+  }
+
+  .notificationBellContainer {
+    margin: 0 10px;
+  }
+}

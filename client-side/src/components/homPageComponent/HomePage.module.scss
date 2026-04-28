@@ -1,0 +1,23 @@
+/* src/HomePage.module.scss */
+
+.homePageWrapper {
+    position: relative; /* Quan trọng: Để Header (absolute) neo vào đây */
+    width: 100%;
+}
+
+.mainContent {
+    max-width: 1200px;
+    /* Đẩy nội dung chính xuống dưới dải thông tin (bottomInfoStrip) */
+    margin: 80px auto 20px; 
+    padding: 0 20px;
+    text-align: left;
+}
+
+.recentToursTitle {
+    color: #333;
+    font-weight: 500;
+    font-size: 1.5rem;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}

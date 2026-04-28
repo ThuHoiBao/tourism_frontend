@@ -1,0 +1,295 @@
+// src/components/homPageComponent/SpecialToursComponent/SpecialTours.module.scss
+
+$primary-color: #1a67ba;
+$text-color: #333;
+$secondary-text-color: #666;
+$border-color: #ddd;
+$card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+.specialToursContainer {
+    padding: 60x 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: left;
+    margin-bottom: 40px;
+    position: relative;
+    padding-right: 400px; 
+    
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        /* Thêm đường gạch chân cho tiêu đề */
+        &::after {
+            content: '';
+            display: block;
+            width: 150px;
+            height: 3px;
+            background-color: #007bff; /* Màu chủ đạo của VietTravel/Future Travel */
+            margin-top: 5px;
+        }
+    }
+
+    .description {
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .navigation {
+        position: absolute;
+        top: 90px;
+        right: 0;
+        display: flex;
+        gap: 15px;
+        
+        .navArrow {
+            width: 40px;
+            height: 40px;
+            padding: 8px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            transition: background-color 0.3s, opacity 0.3s;
+            
+            &:hover {
+                background-color: #f0f0f0;
+                border-color: #aaa;
+            }
+        }
+    }
+}
+/* Khung nhìn (Viewport) cho slider */
+.toursWrapper {
+    overflow-x: hidden; 
+    padding: 0 0 20px 0; 
+}
+
+/* Container chứa các card, thực hiện trượt (transform: translateX) */
+.toursGrid {
+    display: flex; 
+    gap: 10px; /* Giảm gap cho 4 cột */
+    transition: transform 0.5s ease-in-out; 
+}
+
+/* --- SpecialTourItem Styles --- */
+
+.tourCard {
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: $card-shadow;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    border: 1px solid transparent;
+    margin-top: 2px;
+    margin-left: 1px;
+    
+    /* Kích thước của mỗi card (Hiển thị 4 cột, trừ đi gap 10px) */
+    /* Công thức: (100% / 4) - (3 * 10px / 4) */
+    flex: 0 0 calc((100% / 4) - 7.5px); 
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 0 1px #4a9eff, 0 0 15px rgba(74, 158, 255, 0.4);
+        border-color: #4a9eff;
+    }
+}
+
+.imageWrapper {
+    width: 100%;
+    height: 200px; 
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    
+.saleRibbon {
+        position: absolute;
+        top: 10px; /* Khoảng cách từ trên xuống */
+        left: 0;
+        z-index: 10;
+        
+        background-color: #e53935; /* Màu đỏ nổi bật như trong ảnh */
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem; /* Kích thước chữ nhỏ hơn một chút cho card item */
+        padding: 8px 15px 8px 30px; /* Padding, padding-left lớn hơn để tạo khoảng trồi ra */
+        line-height: 1;
+        white-space: nowrap; /* Giữ chữ trên một hàng */
+        
+        /* Tạo hình dạng đặc biệt: cắt chéo bên phải */
+        /* Kỹ thuật: Sử dụng skewX() để tạo hình bình hành */
+        transform: skewX(-15deg); 
+        transform-origin: 0 50%; /* Quan trọng: Giữ mép trái cố định khi skew */
+        
+        /* Điều chỉnh vị trí để dải màu trồi ra khỏi mép trái */
+        margin-left: -20px; /* Đẩy sang trái một lượng nhất định */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Thêm bóng nhẹ cho nổi bật */
+
+        /* Hoàn tác transform méo chữ cho nội dung bên trong */
+        span {
+            display: inline-block; /* Quan trọng để transform hoạt động */
+            transform: skewX(15deg); /* Áp dụng ngược lại transform cho nội dung chữ */
+        }
+    }
+
+    .favoriteButton {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+    
+    .timeInfoOverlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: $text-color;
+        font-weight: 600;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+
+        .timeBadge {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            
+            .timeIcon {
+                width: 16px;
+                height: 16px;
+                margin-right: 5px;
+            }
+        }
+        .timeValue {
+            font-size: 16px;
+        }
+    }
+}
+
+.cardContent {
+    padding: 15px;
+    
+    .cardTitle {
+        font-size: 16px;
+        font-weight: 700;
+        color: $text-color;
+        margin-top: 0;
+        margin-bottom: 10px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        min-height: 40px; 
+        line-height: 1.3;
+    }
+    
+    .tourCode {
+        color: $secondary-text-color;
+        font-size: 15px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: rgb(3, 3, 3);
+    }
+
+    .detailRow {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: $secondary-text-color;
+        margin-bottom: 8px;
+        
+        .detailIcon {
+            color: $primary-color;
+            margin-right: 8px;
+            width: 16px;
+        }
+        .detailValue {
+            color: $text-color;
+            font-weight: 600;
+        }
+        .seatsIcon {
+            width: 18px;
+            height: 18px;
+            margin-left: 15px;
+            margin-right: 5px;
+        }
+        .seatsLeft {
+            font-weight: 700;
+            color: red;
+        }
+    }
+}
+
+.priceSection {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed $border-color;
+    
+    .originalPrice {
+        font-size: 12px;
+        color: $secondary-text-color;
+        text-decoration: line-through;
+        margin-right: 10px;
+    }
+    
+    .promotionalPrice {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ff4500; /* Màu đỏ nổi bật cho giá ưu đãi */
+        margin-right: auto; 
+    }
+    
+    .bookingButton {
+        background-color: white;
+        color: #ff4500;
+        border: 1px solid #ff4500;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+            background-color: #ff4500;
+            color: white;
+        }
+    }
+}
+
+.viewAllButton {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+        background-color: darken($primary-color, 20%);
+    }
+}

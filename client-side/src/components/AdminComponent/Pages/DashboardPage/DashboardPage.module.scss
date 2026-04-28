@@ -1,0 +1,41 @@
+/* src/components/AdminComponent/Pages/DashboardPage/DashboardPage.module.scss */
+.pageContainer {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.pageTitle {
+    font-size: 2em;
+    color: #1a202c;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 15px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 10px;
+    color: #4299e1; /* Màu xanh thương hiệu */
+}
+
+.infoText {
+    color: #4a5568;
+    margin-bottom: 20px;
+}
+
+.placeholderBox {
+    background-color: #f7fafc;
+    border: 2px dashed #a0aec0;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #718096;
+    font-style: italic;
+    border-radius: 6px;
+    padding: 20px;
+}

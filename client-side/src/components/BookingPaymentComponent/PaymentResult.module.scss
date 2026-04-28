@@ -1,0 +1,255 @@
+// PaymentResult.module.scss
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.resultCard {
+  background: white;
+  border-radius: 20px;
+  padding: 60px 40px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.5s ease-out;
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .iconSuccess {
+    font-size: 100px;
+    color: #52c41a;
+    margin-bottom: 20px;
+    animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .iconFailed {
+    font-size: 100px;
+    color: #ff4d4f;
+    margin-bottom: 20px;
+    animation: shake 0.6s;
+  }
+
+  .iconError {
+    font-size: 100px;
+    color: #faad14;
+    margin-bottom: 20px;
+    animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes scaleIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-10px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(10px);
+    }
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #262626;
+  }
+
+  p {
+    font-size: 16px;
+    color: #595959;
+    margin-bottom: 12px;
+    line-height: 1.6;
+
+    strong {
+      color: #1890ff;
+      font-weight: 600;
+      font-size: 18px;
+    }
+  }
+
+  .bookingCode {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #262626;
+    margin: 10px 0;
+  }
+
+  .actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    button {
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 180px;
+
+      &:first-child {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      &:last-child {
+        background: white;
+        color: #595959;
+        border: 2px solid #d9d9d9;
+
+        &:hover {
+          border-color: #667eea;
+          color: #667eea;
+        }
+      }
+    }
+  }
+
+  .infoList {
+    text-align: left;
+    margin: 30px auto;
+    max-width: 400px;
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 12px;
+
+    .infoItem {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #e8e8e8;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: #8c8c8c;
+        font-size: 14px;
+      }
+
+      .value {
+        color: #262626;
+        font-weight: 600;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .countdown {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #8c8c8c;
+
+    .timer {
+      font-weight: 600;
+      color: #ff4d4f;
+      font-size: 16px;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .resultCard {
+    padding: 40px 20px;
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .iconSuccess,
+    .iconFailed,
+    .iconError {
+      font-size: 80px;
+    }
+
+    .actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Loading overlay (optional)
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

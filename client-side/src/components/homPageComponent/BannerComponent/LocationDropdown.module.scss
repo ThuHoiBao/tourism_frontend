@@ -1,0 +1,104 @@
+.dropdownWrapper {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  width: auto;
+  max-height: 360px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 14px;
+  padding: 1rem;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-weight: 600;
+  color: #1f3c88;
+  margin: 0;
+}
+
+.keyword {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.helperText {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.errorText {
+  font-size: 0.9rem;
+  color: #d64545;
+}
+
+.locationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.locationItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.locationItem:hover {
+  background: #f1f5ff;
+}
+
+.locationItem img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.locationName {
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
+}
+
+.locationDescription {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+}
+

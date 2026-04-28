@@ -1,0 +1,69 @@
+.container {
+    width: 100%;
+    position: relative;
+}
+
+.inputWrapper {
+    position: relative;
+    width: 100%;
+
+    .inputField {
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &:focus {
+            border-color: #2d5a9e;
+        }
+
+        &.error {
+            border-color: #e31b23;
+            background-color: #fff5f5;
+        }
+    }
+
+    .icon {
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        cursor: pointer;
+        z-index: 1;
+        
+        &:hover { color: #2d5a9e; }
+    }
+}
+
+.errorMessage {
+    color: #e31b23;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.calendarHeader {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    gap: 5px;
+    
+    select {
+        padding: 2px 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        border: none;
+        background: #eee;
+        width: 25px;
+        height: 25px;
+        border-radius: 4px;
+        cursor: pointer;
+        &:hover { background: #ddd; }
+    }
+}

@@ -1,0 +1,136 @@
+// File: DestinationSearch.module.scss
+/* Thay thế đường dẫn nếu bạn không có file biến SCSS chung */
+
+$primary-color: #3a77b8;
+$accent-color: #ff5722;
+$text-color: #333;
+$light-bg: #f5f5f5;
+
+.autocompleteContainer {
+    position: absolute;
+    top: 75px; 
+    left: 0;
+    width: 300px; /* GIẢM CHIỀU RỘNG về kích thước phù hợp 1 cột */
+    max-height: 400px;
+    overflow-y: auto; 
+    background-color: white;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    border-radius: 0 0 8px 8px; 
+    padding: 15px;
+    z-index: 2000; 
+    color: $text-color; 
+    text-align: left;
+    
+    /* STYLE CHO LAYOUT 1 CỘT */
+    display: flex; /* Thay grid bằng flex để dễ dàng quản lý 1 cột */
+    flex-direction: column;
+}
+
+.closeButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #a0a0a0;
+    line-height: 1;
+    padding: 5px;
+    z-index: 2010; 
+
+    &:hover {
+        color: $accent-color;
+    }
+}
+
+.section {
+    margin-bottom: 0;
+    padding-top: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sectionTitle {
+    font-size: 1rem; 
+    font-weight: 700;
+    color: $primary-color;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    border-bottom: 2px solid $primary-color; 
+    padding-bottom: 5px;
+    position: sticky; 
+    top: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: 10px 5px; 
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.15s;
+    margin-bottom: 4px;
+
+    &:hover {
+        background-color: $light-bg;
+    }
+}
+
+.placeImage {
+    width: 40px; 
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+    border: 2px solid $primary-color; 
+}
+
+.attractionIcon {
+    width: 40px; 
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem; 
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.mainText {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $text-color;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.secondaryText {
+    font-size: 0.85rem; 
+    color: #666; 
+    margin-top: 2px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+.status, .error {
+    font-size: 0.9rem;
+    padding: 10px 5px;
+    color: #a0a0a0;
+}
+
+.error {
+    color: red;
+}

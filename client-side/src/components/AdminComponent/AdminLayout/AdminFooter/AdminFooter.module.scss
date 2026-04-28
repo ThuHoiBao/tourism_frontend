@@ -1,0 +1,22 @@
+/* src/components/AdminComponent/AdminLayout/AdminFooter/AdminFooter.module.scss */
+
+.adminFooter {
+    padding: 15px 20px;
+    background-color: #e2e8f0; /* Màu nền nhẹ */
+    color: #4a5568;
+    text-align: center;
+    font-size: 0.85em;
+    flex-shrink: 0; /* Quan trọng để footer không bị co lại */
+    margin-left: 250px; /* Offset Sidebar */
+}
+
+.footerContent {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.copyright, .company {
+    flex-shrink: 0;
+}

@@ -1,0 +1,260 @@
+/* src/components/InformationComponent/TransactionList/TransactionDetailModal/TransactionDetailModal.module.scss */
+$primary-color: #1890ff;
+$danger-color: #ff4d4f;
+$success-color: #52c41a;
+$text-color: #333;
+$border-light: #e0e0e0;
+
+// Keyframes cho hiệu ứng mở modal
+// @keyframes fadeIn {
+//     from { opacity: 0; }
+//     to { opacity: 1; }
+// }
+
+// @keyframes scaleUp {
+//     from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+//     to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+// }
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 5px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh; /* Giới hạn chiều cao */
+    overflow-y: auto;
+    z-index: 10000;
+    position: relative;
+    animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover {
+        color: $danger-color;
+    }
+}
+
+.modalTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: #100f0f;
+    border-bottom: 2px solid $border-light;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+// --- Section General ---
+.section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed $border-light;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    svg {
+        color: $primary-color;
+    }
+}
+
+// --- Tour Summary ---
+.tourSummary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+
+    .tourImage {
+        width: 250px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .tourInfo {
+        h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: $text-color;
+            margin-bottom: 5px;
+        }
+        p {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            
+            strong {
+                color: $text-color;
+            }
+        }
+    }
+}
+
+// --- Info Grid (Contact) ---
+.infoGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    .infoItem {
+        flex: 1 1 calc(50% - 15px);
+        font-size: 14px;
+        color: #555;
+        
+        svg {
+            color: #999;
+            margin-right: 5px;
+        }
+        strong {
+            color: $text-color;
+            font-weight: 600;
+        }
+    }
+    
+    .infoItemFull {
+        flex: 1 1 100%;
+        font-size: 14px;
+        color: #555;
+        
+        svg {
+            color: #999;
+            margin-right: 5px;
+        }
+        strong {
+            font-weight: 600;
+            color: $text-color;
+        }
+    }
+}
+
+// --- Passenger List ---
+.passengerList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .passengerItem {
+        padding: 10px 15px;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+        border-left: 3px solid $primary-color;
+
+        h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: $primary-color;
+            margin-bottom: 5px;
+        }
+        p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+            
+            strong {
+                color: $text-color;
+                font-weight: 500;
+            }
+        }
+        .singleRoom {
+            color: $danger-color;
+            font-weight: 600;
+        }
+    }
+}
+
+// --- Payment Summary ---
+.paymentSummary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .paymentItem {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        font-size: 15px;
+        color: #555;
+        border-bottom: 1px dotted #ccc;
+
+        span {
+            font-weight: 500;
+        }
+        strong {
+            font-weight: 600;
+            color: $text-color;
+        }
+        
+        .surcharge {
+            color: $danger-color;
+        }
+        .discount {
+            color: $success-color;
+        }
+        .coinUsed {
+            color: #ff8c00; /* Màu cam cho coin */
+        }
+    }
+
+    .total {
+        margin-top: 10px;
+        border-top: 2px solid $primary-color;
+        border-bottom: none;
+        padding-top: 10px;
+        
+        span {
+            font-size: 17px;
+            font-weight: 700;
+            color: $text-color;
+        }
+        strong {
+            font-size: 17px;
+            font-weight: 700;
+            color: $danger-color;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .modalContent {
+        padding: 20px;
+    }
+    .infoGrid {
+        .infoItem {
+            flex: 1 1 100%;
+        }
+    }
+}

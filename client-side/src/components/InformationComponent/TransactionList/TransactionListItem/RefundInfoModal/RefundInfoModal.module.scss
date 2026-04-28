@@ -1,0 +1,489 @@
+/* RefundInfoModal.module.scss - Modern Design */
+
+$primary-color: #3b82f6;
+$primary-dark: #1e3a8a;
+$secondary-color: #475569;
+$success-color: #10b981;
+$error-color: #ef4444;
+$bg-light: #f8fafc;
+$bg-lighter: #f1f5f9;
+$border-light: #e2e8f0;
+$text-dark: #0f172a;
+$text-default: #334155;
+$header-img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80';
+
+/* ===== MAIN MODAL ===== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2010;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 92%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+/* ===== HEADER SECTION ===== */
+.headerSection {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 58, 138, 0.78) 50%, rgba(96, 165, 250, 0.7) 100%),
+    url(#{$header-img});
+  background-size: cover;
+  background-position: center;
+  padding: 32px 28px;
+  border-radius: 16px 16px 0 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 60%);
+  }
+}
+
+.icon {
+  font-size: 48px;
+  color: #fff;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-size: 15px;
+}
+
+/* ===== FORM SECTION ===== */
+.formSection {
+  padding: 28px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: $text-default;
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid $border-light;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fff;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:hover {
+      border-color: #d1d5db;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+}
+
+/* ===== BANK SELECT TRIGGER ===== */
+.bankSelectTrigger {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #d1d5db;
+    background: $bg-light;
+  }
+
+  &:active {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .placeholder {
+    color: #9ca3af;
+  }
+
+  .selected {
+    color: $text-dark;
+    font-weight: 500;
+  }
+
+  .selectedBankInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .selectedBankText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &::after {
+    content: '';
+    color: $secondary-color;
+    font-size: 12px;
+  }
+}
+
+/* ===== BANK SELECTION MODAL ===== */
+.bankSelectOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.bankSelectContent {
+  background: #fff;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+.bankSelectHeader {
+  padding: 20px 28px;
+  border-bottom: 1px solid $border-light;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  .closeIcon {
+    cursor: pointer;
+    font-size: 24px;
+    color: #9ca3af;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: $error-color;
+      transform: scale(1.1);
+    }
+  }
+}
+
+/* ===== BANK GRID ===== */
+.bankGrid {
+  padding: 20px 28px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bankCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid $border-light;
+
+  &:hover {
+    border-color: $primary-color;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+.bankEmblem {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: $bg-lighter;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid $border-light;
+}
+
+.bankLogo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.logoFallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.bankInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bankName {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text-dark;
+}
+
+.bankCode {
+  font-size: 12px;
+  color: $secondary-color;
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error {
+  background-color: #fee2e2;
+  color: $error-color;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-left: 4px solid $error-color;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ===== BUTTON GROUP ===== */
+.buttonGroup {
+  padding: 20px 28px;
+  border-top: 1px solid $border-light;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: $bg-light;
+  border-radius: 0 0 16px 16px;
+}
+
+.btnPrimary,
+.btnSecondary {
+  padding: 11px 24px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, $primary-color, $primary-dark);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btnSecondary {
+  background: $bg-lighter;
+  color: $text-default;
+  border: 1px solid $border-light;
+
+  &:hover:not(:disabled) {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* ===== SUCCESS MESSAGE ===== */
+.successIcon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 46px;
+  color: #fff;
+  background: radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.9), rgba(16, 185, 129, 0.75)),
+    linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.35);
+  animation: scaleIn 0.45s ease-out;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.successMessage {
+  font-size: 15px;
+  color: $text-default;
+  margin: 0 0 28px 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.successContent {
+  max-width: 460px;
+  width: 92%;
+  padding: 34px 32px 28px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.successActions {
+  display: flex;
+  justify-content: center;
+}
+
+.successButton {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,172 @@
+// src/components/AdminComponent/Pages/BookingsPage/BookingItem.module.scss
+
+$primary-blue: #2c70f8;
+$success-color: #52c41a;
+$danger-color: #ff4d4f;
+$text-default: #333;
+$border-color: #e0e0e0;
+$hover-color: #f7fafc;
+
+.bookingItem {
+    border-bottom: 1px solid $border-color;
+    transition: background-color 0.2s;
+    
+    &:hover {
+        background-color: $hover-color;
+    }
+
+    td {
+        padding: 15px 10px;
+        vertical-align: middle;
+        font-size: 14px;
+        color: $text-default;
+    }
+}
+
+.bookingCode {
+    font-weight: 600;
+    color: $primary-blue;
+}
+
+.tourInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .tourImage {
+        width: 60px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+
+    .tourName {
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .tourCode {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+    }
+}
+
+// --- Status Badges ---
+.statusBadge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusPending {
+    background-color: #fffbe6;
+    color: #faad14;
+}
+
+.statusProcessing {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.statusCompleted {
+    background-color: #f6ffed;
+    color: #52c41a;
+}
+
+.statusRejected {
+    background-color: #fff1f0;
+    color: #ff4d4f;
+}
+
+.statusOnHold {
+    background-color: #f0f5ff;
+    color: #722ed1;
+}
+
+.statusReviewed {
+    background-color: #e6fffa;
+    color: #389e0d;
+}
+
+.statusRefund {
+    background-color: #fff0f6;
+    color: #eb2f96;
+}
+
+// --- Action Icons ---
+.actionIcons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+
+    .actionBtn {
+        background: white;
+        border: 1px solid $border-color;
+        color: #666;
+        padding: 6px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+
+        &:hover {
+            border-color: $primary-blue;
+            color: $primary-blue;
+            background-color: #e6f0ff;
+            transform: translateY(-2px);
+        }
+    }
+
+    .btnSuccess {
+        color: $success-color;
+        border-color: $success-color;
+
+        &:hover {
+            background-color: #f6ffed;
+            border-color: darken($success-color, 10%);
+            color: darken($success-color, 10%);
+        }
+    }
+
+    .btnDanger {
+        color: $danger-color;
+        border-color: $danger-color;
+
+        &:hover {
+            background-color: #fff1f0;
+            border-color: darken($danger-color, 10%);
+            color: darken($danger-color, 10%);
+        }
+    }
+
+    .btnRefund {
+        color: #eb2f96;
+        border-color: #eb2f96;
+
+        &:hover {
+            background-color: #fff0f6;
+            border-color: darken(#eb2f96, 10%);
+            color: darken(#eb2f96, 10%);
+        }
+    }
+
+    .reviewBtn {
+        color: #ffc107;
+        border-color: #ffc107;
+
+        &:hover {
+            background-color: #fff9e8;
+            border-color: darken(#ffc107, 10%);
+            color: darken(#ffc107, 10%);
+        }
+    }
+}

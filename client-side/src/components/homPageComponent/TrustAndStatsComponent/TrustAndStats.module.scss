@@ -1,0 +1,239 @@
+$text-color-dark: #333;
+$text-color-secondary: #666;
+$primary-green: #5cb85c; 
+$primary-color: #1a67ba; 
+$background-light: #f9f9f9;
+$text-color: #fff; 
+
+// Keyframes cho quỹ đạo xoay của icon (BÁN KÍNH MỚI: 270px)
+@keyframes orbit {
+    0% { transform: rotate(0deg) translateX(270px) rotate(0deg); } 
+    100% { transform: rotate(360deg) translateX(270px) rotate(-360deg); } 
+}
+
+.trustAndStatsContainer {
+    padding: 80px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.textColumn {
+    flex: 1;
+    max-width: 50%;
+    padding-right: 20px;
+}
+
+.title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        /* Thêm đường gạch chân cho tiêu đề */
+        &::after {
+            content: '';
+            display: block;
+            width: 200px;
+            height: 3px;
+            background-color: #5cb85c; /* Màu chủ đạo của VietTravel/Future Travel */
+            margin-top: 5px;
+        }
+    }
+
+.description {
+    font-size: 16px;
+    color: $text-color-secondary;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.experiencePill {
+    display: inline-block;
+    padding: 5px 15px;
+    background-color: #eee;
+    color: $text-color-secondary;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 30px;
+
+    span {
+        font-weight: 700;
+        color: $text-color-dark;
+    }
+}
+
+.statsRow {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 30px;
+}
+
+.statItem {
+    .statNumber {
+        font-size: 32px;
+        font-weight: 600;
+        color: $primary-green; 
+        line-height: 1;
+    }
+    .statLabel {
+        font-size: 16px;
+        color: $text-color-dark;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+}
+
+.exploreButton {
+    background-color: $primary-green;
+    color: $text-color; 
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        background-color: darken($primary-green, 10%);
+    }
+
+    .arrow {
+        margin-left: 8px;
+        font-size: 18px;
+        transition: transform 0.3s;
+    }
+
+    &:hover .arrow {
+        transform: translateX(5px);
+    }
+}
+
+/* --- Phần Hình ảnh và Chi tiết Trang trí --- */
+.imageColumn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 50%;
+    height: 500px; 
+    overflow: visible; 
+}
+
+.mainImage {
+    width: 70%; 
+    height: 70%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.decorativeElements {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    // Tăng kích thước container lên 140% để phù hợp với bán kính 270px
+    width: 140%; 
+    height: 140%;
+    z-index: 15;
+}
+
+/* Kiểu dáng chung cho các icon trang trí */
+.decorativeIcon {
+    position: absolute;
+    width: 30px; 
+    height:30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 20; 
+    
+    top: 50%; 
+    left: 50%;
+    margin-left: -20px; /* Căn giữa ngang icon */
+    margin-top: -20px;  /* Căn giữa dọc icon */
+    transform-origin: 50% 50%; 
+    
+    animation: orbit 20s linear infinite; 
+}
+
+/* Định vị và animation delay riêng cho từng icon (BÁN KÍNH MỚI: 270px) */
+.icon1 { 
+    transform: rotate(0deg) translateX(270px) rotate(0deg); 
+    animation-delay: 0s; 
+} 
+.icon2 { 
+    transform: rotate(72deg) translateX(270px) rotate(-72deg); 
+    animation-delay: -4s; 
+} 
+.icon3 { 
+    transform: rotate(144deg) translateX(270px) rotate(-144deg); 
+    animation-delay: -8s; 
+} 
+.icon4 { 
+    transform: rotate(216deg) translateX(270px) rotate(-216deg); 
+    animation-delay: -12s; 
+} 
+.icon5 { 
+    transform: rotate(288deg) translateX(270px) rotate(-288deg); 
+    animation-delay: -16s; 
+} 
+
+/* Responsive cho màn hình nhỏ hơn */
+@media (max-width: 992px) {
+    // Điều chỉnh lại quỹ đạo xoay cho màn hình nhỏ (Bán kính MỚI: 160px)
+    @keyframes orbit {
+        0% { transform: rotate(0deg) translateX(160px) rotate(0deg); } 
+        100% { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+    }
+
+    .content {
+        flex-direction: column;
+        gap: 50px;
+        text-align: center;
+    }
+    .textColumn {
+        max-width: 100%;
+        padding-right: 0;
+    }
+    .imageColumn {
+        max-width: 100%;
+        height: 400px;
+        overflow: visible; 
+    }
+    .mainImage {
+        width: 100%;
+        height: 100%;
+    }
+    .decorativeElements {
+        width: 160%; // Tăng thêm để icon không bị cắt trên mobile
+        height: 160%;
+    }
+    .statsRow {
+        justify-content: center;
+    }
+    .decorativeIcon {
+        width: 30px;
+        height: 30px;
+        margin-left: -15px; 
+        margin-top: -15px;
+    }
+    // Cập nhật transform cho bán kính 160px trên mobile
+    .icon1 { transform: rotate(0deg) translateX(160px) rotate(0deg); }
+    .icon2 { transform: rotate(72deg) translateX(160px) rotate(-72deg); }
+    .icon3 { transform: rotate(144deg) translateX(160px) rotate(-144deg); }
+    .icon4 { transform: rotate(216deg) translateX(160px) rotate(-216deg); }
+    .icon5 { transform: rotate(288deg) translateX(160px) rotate(-288deg); }
+}

@@ -1,0 +1,260 @@
+/* src/components/InformationComponent/TransactionList/TransactionListItem/CancelOptionModal/CancelOptionModal.module.scss */
+
+// --- Variables ---
+$primary-color: #1890ff; // Màu xanh chính
+$secondary-color: #fa8c16; // Màu cam (Hoàn Bank)
+$danger-color: #ff4d4f; // Màu đỏ (Hủy)
+$bg-light: #f7f7f7;
+$border-light: #e0e0e0;
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65); /* Nền tối hơn */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Đảm bảo nằm trên các phần tử khác */
+}
+
+.modalContent {
+    background-color: white;
+    padding: 30px;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 650px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 8px rgba($danger-color, 0.3)); /* Hiệu ứng đổ bóng cho Icon */
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #6c757d;
+    margin-bottom: 25px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.optionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.optionItem {
+    border: 1px solid $border-light;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $bg-light;
+    transition: transform 0.2s, box-shadow 0.2s;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h4 {
+        margin-top: 0;
+        color: $primary-color;
+        font-weight: 700;
+    }
+
+    p {
+        margin: 5px 0 0 0;
+        font-size: 14px;
+        color: #495057;
+        text-align: left;
+    }
+}
+
+.optionDetail {
+    flex-grow: 1;
+    text-align: left;
+    padding-right: 15px;
+}
+
+.btnPrimary, .btnSecondary, .btnClose {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+}
+
+.btnPrimary {
+    background-color: $primary-color;
+    color: white;
+    border-color: $primary-color;
+    &:hover { background-color: darken($primary-color, 10%); }
+}
+
+.btnSecondary {
+    background-color: $secondary-color; 
+    color: white;
+    border-color: $secondary-color;
+    &:hover { background-color: darken($secondary-color, 10%); }
+}
+
+.btnPrimary:disabled,
+.btnSecondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnClose {
+    background: rgb(224, 26, 26);
+    color: #ffffff;
+    border: 1px solid #fe0707;
+    width: 100%;
+    margin-top: 10px;
+
+    &:hover { background-color: rgb(177, 59, 59); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.policyRow {
+    display: flex;
+    justify-content: flex-start;
+    margin: 10px 0 5px;
+}
+
+.policyLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+
+    input {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.policyLink {
+    color: $primary-color;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+        color: darken($primary-color, 10%);
+    }
+}
+
+.policyModalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2100;
+}
+
+.policyModal {
+    background: #fff;
+    padding: 18px 20px 16px;
+    border-radius: 12px;
+    width: 92%;
+    max-width: 560px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+    border: 1px solid #e7eaf1;
+}
+
+.policyHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eef1f5;
+}
+
+.policyTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.policyClose {
+    background: #f5f7fb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: #6b7280;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #e0e7ff;
+        color: #1d4ed8;
+        border-color: #c7d2fe;
+    }
+}
+
+.policyBody {
+    padding: 14px 2px 12px;
+    color: #374151;
+    text-align: left;
+
+    p {
+        margin: 0 0 10px;
+        font-weight: 600;
+    }
+
+    ul {
+        padding-left: 18px;
+        margin: 0 0 10px;
+        color: #4b5563;
+        li { margin-bottom: 6px; }
+    }
+}
+
+.policyNote {
+    margin-top: 6px;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #374151;
+}
+
+.policyFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 10px;
+    border-top: 1px solid #eef1f5;
+}

@@ -1,0 +1,179 @@
+.relatedContainer {
+  margin-top: 60px;
+  border-top: 1px solid #eee;
+  padding-top: 40px;
+}
+
+.heading {
+  text-align: center;
+  text-transform: uppercase;
+  color: #2d5a9e; /* Màu xanh chủ đạo */
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  /* Gạch chân dưới tiêu đề nếu thích */
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #2d5a9e;
+    margin: 10px auto 0;
+  }
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cột đều nhau */
+  gap: 25px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+}
+
+/* --- ẢNH --- */
+.imageWrapper {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  /* Hover vào card thì ảnh zoom nhẹ */
+  .card:hover & img {
+    transform: scale(1.1);
+  }
+
+  .heartIcon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #fff;
+    background: rgba(0,0,0,0.3);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(227, 27, 35, 0.8); /* Đỏ khi hover */
+    }
+  }
+}
+
+/* --- NỘI DUNG --- */
+.cardBody {
+  padding: 15px;
+  background-color: #f9fbfc; /* Màu nền nhẹ giống ảnh mẫu */
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  height: 44px; /* Giới hạn chiều cao 2 dòng */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+
+  .icon {
+    margin-right: 8px;
+    width: 14px;
+  }
+
+  .highlight {
+    color: #007bff;
+    font-weight: 500;
+  }
+}
+
+/* --- FOOTER CỦA CARD (GIÁ + NÚT) --- */
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.priceInfo {
+  display: flex;
+  flex-direction: column;
+
+  .label {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e31b23; /* Màu đỏ giá tiền */
+  }
+}
+
+.btnDetail {
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+
+  .arrowIcon {
+    font-size: 10px;
+  }
+
+  &:hover {
+    color: #007bff;
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,148 @@
+.editorWrapper {
+  margin-bottom: 40px; // Space for editor toolbar
+
+  :global {
+    .quill {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    // Toolbar styling
+    .ql-toolbar {
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      border-radius: 10px 10px 0 0;
+      padding: 10px;
+
+      .ql-stroke {
+        stroke: #374151;
+      }
+
+      .ql-fill {
+        fill: #374151;
+      }
+
+      .ql-picker-label {
+        color: #374151;
+      }
+
+      button:hover,
+      button:focus,
+      button.ql-active {
+        .ql-stroke {
+          stroke: #667eea;
+        }
+
+        .ql-fill {
+          fill: #667eea;
+        }
+      }
+
+      .ql-picker-label:hover,
+      .ql-picker-label.ql-active {
+        color: #667eea;
+      }
+    }
+
+    // Editor container styling
+    .ql-container {
+      border: 2px solid #e5e7eb;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    // Editor content area
+    .ql-editor {
+      min-height: 150px;
+      padding: 16px;
+      line-height: 1.6;
+
+      &.ql-blank::before {
+        color: #9ca3af;
+        font-style: normal;
+      }
+
+      // Styled lists
+      ul, ol {
+        padding-left: 1.5em;
+        margin: 0.5em 0;
+
+        li {
+          margin: 0.3em 0;
+        }
+      }
+
+      // Headings
+      h1, h2, h3 {
+        margin: 0.5em 0;
+        font-weight: 600;
+      }
+
+      h1 { font-size: 1.8em; }
+      h2 { font-size: 1.5em; }
+      h3 { font-size: 1.2em; }
+
+      // Links
+      a {
+        color: #667eea;
+        text-decoration: underline;
+
+        &:hover {
+          color: #764ba2;
+        }
+      }
+
+      // Colored text
+      strong {
+        font-weight: 600;
+      }
+    }
+
+    // Focus state
+    .ql-container.ql-snow {
+      &:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+    }
+  }
+}
+
+// Error state
+.editorWrapper.error {
+  :global {
+    .ql-toolbar,
+    .ql-container {
+      border-color: #ef4444;
+    }
+
+    .ql-container.ql-snow:focus-within {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .editorWrapper {
+    :global {
+      .ql-toolbar {
+        padding: 8px;
+
+        .ql-formats {
+          margin-right: 8px;
+        }
+      }
+
+      .ql-editor {
+        padding: 12px;
+        font-size: 13px;
+      }
+    }
+  }
+}

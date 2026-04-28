@@ -1,0 +1,304 @@
+/* src/components/InformationComponent/FavoriteTours/FavoriteTourItem/FavoriteTourItem.module.scss */
+
+// Kế thừa gần như toàn bộ style từ TourItemComponent.module.scss
+
+.tourItem {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    margin-bottom: 20px;
+    transition: box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
+
+    &:hover {
+        box-shadow: 0 0 10px rgba(25, 137, 250, 0.5); /* Màu xanh nhạt phát sáng */
+        border-color: #40a9ff; /* Viền sáng hơn */
+    }
+}
+
+.imageContainer {
+    flex: 0 0 38%;
+    position: relative;
+    height: 280px; 
+    max-height: 280px;
+    overflow: hidden;
+}
+
+.tourImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.saleBadge {
+    position: absolute;
+    bottom: 15px; 
+    left: 10px;
+    background-color: #ff6e80; 
+    /* ẨN NỘI DUNG NHƯ TRONG FILE GỐC */
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    text-indent: -9999px;
+}
+
+.detailsContainer {
+    flex: 1;
+    padding: 15px 20px;
+    min-width: 0;
+}
+
+.tourName {
+    font-size: 1.35em;
+    font-weight: bold;
+    color: #333; 
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 15px;
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.iconInfo {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    i {
+        margin-right: 5px;
+        color: #8c8c8c;
+        flex-shrink: 0;
+    }
+}
+
+.infoValue {
+    font-weight: bold;
+    white-space: normal;
+    line-height: 1.2;
+    margin-left: 6px;
+}
+
+.highlightValue {
+    color: #1f6aaf;
+}
+
+.dateRow {
+    display: flex;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px dashed #f0f0f0;
+    margin-bottom: 15px;
+}
+
+.dateLabel {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #555;
+    margin-right: 15px;
+    i {
+        margin-right: 5px;
+        color: #8c8c8c;
+    }
+}
+
+.dateBadges {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    flex-wrap: nowrap;
+}
+
+.dateBadge {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    background-color: transparent;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+        background-color: #ff4d4f;
+        color: white;
+    }
+}
+
+.dateNavButton {
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #888;
+    font-weight: bold;
+    font-size: 0.85em;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #f0f0f0;
+    }
+}
+
+.priceActionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 15px;
+}
+
+.priceBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.priceValue {
+    font-size: 1.8em;
+    color: #ff4d4f;
+    font-weight: bold;
+    margin: 0;
+    display: inline-block;
+    line-height: 1;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.detailButton {
+    background-color: #1f6aaf;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 500;
+    height: 40px;
+    
+    &:hover {
+        background-color: #073763;
+    }
+}
+
+.removeButton {
+    background-color: #f5222d; /* Màu đỏ cho Bỏ yêu thích */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 500;
+    height: 40px;
+
+    &:hover {
+        background-color: #a8071a;
+    }
+}
+
+/* --- MODAL STYLES (Được yêu cầu có fade đẹp) --- */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    
+    animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    h3 {
+        color: #f5222d;
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+
+    p {
+        color: #595959;
+        margin-bottom: 30px;
+        strong {
+            color: #f5222d;
+        }
+    }
+}
+
+.modalActions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.cancelButton, .confirmButton {
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #d9d9d9;
+    
+    &:hover {
+        background-color: #e6e6e6;
+    }
+}
+
+.confirmButton {
+    background-color: #f5222d;
+    color: white;
+    border: none;
+    
+    &:hover {
+        background-color: #a8071a;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

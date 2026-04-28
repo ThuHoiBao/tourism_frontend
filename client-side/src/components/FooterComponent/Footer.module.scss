@@ -1,0 +1,214 @@
+/* Màu sắc */
+$footer-bg: #212529; // Màu nền tối
+$text-color: #ffffff; // Màu chữ trắng
+$link-hover: #007bff; // Màu link khi hover (xanh dương)
+$partner-button-bg: #495057; // Nút hợp tác
+
+.footer {
+    background-color: $footer-bg;
+    color: $text-color;
+    padding: 40px 0 20px 0;
+    font-size: 0.9rem;
+}
+
+.footerContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+/* Phần trên: Logo và 3 cột menu */
+.topSection {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+/* ------------------ Cột Logo & Thanh Toán ------------------ */
+.logoColumn {
+    flex-basis: 25%; // Chiếm 1/4
+    padding-right: 20px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.certs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.certImage {
+    width: 60px; // Điều chỉnh kích thước ảnh chứng nhận
+    height: auto;
+}
+
+.partnerButton {
+    background-color: $partner-button-bg;
+    color: $text-color;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: background-color 0.2s;
+    
+    &:hover {
+        background-color: darken($partner-button-bg, 10%);
+    }
+}
+
+.paymentTitle {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.paymentLogos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.paymentLogoPlaceholder {
+    // Đây là placeholder, bạn nên dùng <img> thật
+    width: 60px;
+    height: 30px;
+    background-color: #555;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+}
+
+
+/* ------------------ Cột Menu Liên kết ------------------ */
+.linkColumns {
+    flex-basis: 75%; // Chiếm 3/4 còn lại
+    display: flex;
+    justify-content: space-between;
+}
+
+.linkColumn {
+    flex-basis: 33.33%; // Chia đều 3 cột
+    padding: 0 15px;
+}
+
+.columnTitle {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: $text-color;
+}
+
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menuLink {
+    display: flex;
+    align-items: center;
+    color: $text-color;
+    text-decoration: none;
+    padding: 5px 0;
+    transition: color 0.2s;
+
+    &:hover {
+        color: $link-hover;
+    }
+}
+
+.menuIcon {
+    margin-right: 5px;
+    font-size: 1.1em;
+}
+
+
+/* ------------------ Phần Dưới (Social & App) ------------------ */
+.bottomSection {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.socialApps {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.socialMedia {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 50%;
+}
+
+.socialLink {
+    display: flex;
+    align-items: center;
+    color: $text-color;
+    text-decoration: none;
+    padding: 5px 0;
+    font-weight: normal;
+
+    &:hover {
+        color: $link-hover;
+    }
+}
+
+.socialIcon {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.appDownloads {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.appButtonPlaceholder {
+    // Đây là placeholder cho nút App Store/Google Play
+    background-color: #333;
+    color: $text-color;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 150px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+        background-color: #444;
+    }
+}
+
+
+/* ------------------ Bản Quyền ------------------ */
+.copyright {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    line-height: 1.5;
+}
+
+.companyInfo {
+    margin-bottom: 5px;
+}
+
+.copyrightText {
+    font-weight: bold;
+}

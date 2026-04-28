@@ -1,0 +1,88 @@
+/* src/components/InformationComponent/TransactionList/TransactionListItem/ConfirmCancellationModal/ConfirmCancellationModal.module.scss */
+
+// --- Variables ---
+$primary-color: #1890ff; 
+$danger-color: #ff4d4f; 
+$bg-light: #f7f7f7;
+
+.modalOverlay {
+    // Kế thừa từ CancelOptionModal để đảm bảo lớp chồng (overlay)
+    composes: modalOverlay from "../CancelOptionModal/CancelOptionModal.module.scss";
+    z-index: 2010; /* Cao hơn modal cha */
+}
+
+.modalContent {
+    // Kế thừa từ CancelOptionModal
+    composes: modalContent from "../CancelOptionModal/CancelOptionModal.module.scss";
+    max-width: 450px;
+    padding: 40px 30px;
+}
+
+.image {
+    // Kế thừa từ CancelOptionModal
+    composes: image from "../CancelOptionModal/CancelOptionModal.module.scss";
+    filter: drop-shadow(0 4px 8px rgba($danger-color, 0.4));
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    color: $danger-color;
+    margin-bottom: 10px;
+}
+
+.warning {
+    font-size: 16px;
+    color: #495057;
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px dashed $danger-color;
+    background-color: rgba($danger-color, 0.05);
+    border-radius: 8px;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    
+    button {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+    }
+}
+
+.btnDanger {
+    background-color: $danger-color;
+    color: white;
+    border: 1px solid $danger-color;
+    &:hover { background-color: darken($danger-color, 10%); }
+}
+
+.btnSecondary {
+    background-color: white;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+    &:hover { background-color: $bg-light; }
+}
+
+.successTitle {
+    font-size: 26px;
+    color: $primary-color;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.successMessage {
+    color: #388e3c;
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.btnPrimary {
+    // Kế thừa style button Primary cho nút Đóng
+    composes: btnPrimary from "../CancelOptionModal/CancelOptionModal.module.scss";
+    width: 100%;
+    margin-top: 10px;
+}

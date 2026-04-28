@@ -1,0 +1,168 @@
+/* src/components/ToursPageComponent/FilterAndSearchInput/FilterAndSearchInput.module.scss */
+
+.filterContainer {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+// ✨ ĐÃ XÓA .destinationHeader khỏi đây
+
+/* Thanh Tìm kiếm Tên Tour */
+.searchBar {
+    display: flex;
+    margin-bottom: 20px;
+
+    input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+
+    // button {
+    //     background-color: #1890ff;
+    //     color: white;
+    //     border: none;
+    //     padding: 10px 15px;
+    //     border-radius: 0 4px 4px 0;
+    //     cursor: pointer;
+    //     transition: background-color 0.3s;
+
+    //     &:hover {
+    //         background-color: #40a9ff;
+    //     }
+    // }
+}
+
+.filterBlock {
+    // Kiểu dáng tổng thể cho khối bộ lọc (nếu cần)
+}
+
+.filterSection {
+    margin-bottom: 15px;
+}
+
+.filterTitle {
+    font-size: 1em;
+    margin-bottom: 8px;
+    color: #333;
+}
+.headerWithReset {
+    display: flex;
+    justify-content: space-between; /* Đẩy tiêu đề và nút về hai phía */
+    align-items: center;
+    margin-bottom: 5px; 
+}
+.resetText {
+    // Đây là thẻ <p>, ta làm nó trông giống button/link
+    color: #1f6aaf; /* Màu xanh nổi bật */
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    padding-top: 8px;
+    transition: color 0.2s;
+    text-decoration: none; /* Xóa gạch chân nếu bạn muốn trông giống button/label */
+
+    &:hover {
+        color: #0f80eb;
+        text-decoration: underline; /* Thêm gạch chân khi hover để nhấn mạnh hành động */
+    }
+}
+/* Tùy chọn Ngân sách và Phương tiện (dạng button) */
+.budgetOptions, .transportationOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    button {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.active {
+            background-color: #1f6aaf;
+            color: white;
+            border-color: #1f6aaf;
+        }
+
+        &:hover:not(.active) {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+    }
+}
+
+/* Dropdown cho Điểm Khởi hành / Điểm Đến */
+.dropdown {
+    position: relative;
+    
+    input {
+        width: 100%;
+        padding: 10px 30px 10px 10px; /* Thêm padding cho nút toggle */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .dropdownToggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+    }
+}
+
+.dropdownContent {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin-top: 5px;
+
+    .dropdownItem {
+        padding: 10px;
+        cursor: pointer;
+        
+        &:hover {
+            background-color: #f0f0f0;
+        }
+    }
+    .noResult {
+        padding: 10px;
+        color: #999;
+        text-align: center;
+    }
+}
+
+/* Nút Áp dụng */
+.applyButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #1f6aaf; /* Màu cam nổi bật */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #4a8bc9;
+    }
+}
