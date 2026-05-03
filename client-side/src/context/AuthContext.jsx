@@ -29,6 +29,33 @@ export const AuthProvider = ({ children }) => {
     };
 
    const checkAuth = async () => {
+        // DEV ONLY: hardcode userId for testing without auth
+        const devUserId = parseInt(process.env.REACT_APP_DEV_USER_ID || '0');
+        if (devUserId) {
+            try {
+                const res = await axios.get(`/users/${devUserId}`);
+                const data = res.data;
+                const realUser = {
+                    id: data.userID, userId: data.userID, userID: data.userID,
+                    fullName: data.fullName || data.fullname || '',
+                    email: data.email || '',
+                    phone: data.phone || '',
+                    dateOfBirth: data.dateOfBirth || null,
+                    coinBalance: data.coinBalance || 0,
+                    avatar: data.avatar || null,
+                    status: data.status,
+                    role: data.role || 'CUSTOMER',
+                };
+                setUser(realUser);
+                setIsAuthenticated(true);
+            } catch (e) {
+                console.error('Dev mode: failed to fetch user', e);
+                setUser({ id: devUserId, userId: devUserId, userID: devUserId, fullName: 'Dev User', email: 'dev@test.com', role: 'CUSTOMER' });
+                setIsAuthenticated(true);
+            }
+            setLoading(false);
+            return;
+        }
         try {
             const token = localStorage.getItem('accessToken');
             const userStr = localStorage.getItem('user');
