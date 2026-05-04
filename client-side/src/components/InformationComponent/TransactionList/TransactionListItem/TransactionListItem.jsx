@@ -32,6 +32,22 @@ const TransactionListItem = ({ booking, refetch }) => {
         return departureTime < now;
     }, [booking?.departureDate]);
 
+    // Tính số ngày của tour từ chuỗi duration (vd: "5 Ngày 4 Đêm" → 5)
+    const tourDurationDays = React.useMemo(() => {
+        if (!booking?.duration) return 0;
+        const match = booking.duration.match(/(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+    }, [booking?.duration]);
+
+    // Tour đã kết thúc = đã qua ngày khởi hành + số ngày đi tour
+    // Fallback: nếu duration null/0 thì dùng hasDeparted (đã qua ngày khởi hành)
+    const hasTourEnded = React.useMemo(() => {
+        if (!booking?.departureDate) return false;
+        if (tourDurationDays === 0) return hasDeparted; // fallback
+        const endTime = new Date(booking.departureDate).getTime() + tourDurationDays * 24 * 60 * 60 * 1000;
+        return Date.now() > endTime;
+    }, [booking?.departureDate, tourDurationDays, hasDeparted]);
+
     const handleCancelClick = () => {
         if (hasDeparted) {
             toast.warn('Tour đã khởi hành, không thể hủy.');
@@ -214,19 +230,33 @@ const TransactionListItem = ({ booking, refetch }) => {
                 break;
                 
             case 'PAID': 
+                if (hasTourEnded) {
+                    // Tour đã kết thúc → cho phép đánh giá
+                    primaryButton = (
+                        <button key="review" className={styles.btnPrimary}
+                        onClick={handleOpenReviewModal}>
+                            <LuStar /> Đánh giá
+                        </button>
+                    );
+                } else {
+                    // Tour chưa diễn ra / đang diễn ra → cho phép hủy
+                    primaryButton = (
+                        <button 
+                            key="cancel-paid" 
+                            className={styles.btnDanger}
+                            onClick={handleCancelClick}
+                        >
+                            Hủy tour
+                        </button>
+                    );
+                }
+                break;
+
+            case 'PENDING_REVIEW':
                 primaryButton = (
                     <button key="review" className={styles.btnPrimary}
                     onClick={handleOpenReviewModal}>
                         <LuStar /> Đánh giá
-                    </button>
-                );
-                secondaryButtons.push(
-                    <button 
-                        key="cancel-paid" 
-                        className={styles.btnDanger}
-                        onClick={handleCancelClick}
-                    >
-                        Hủy tour
                     </button>
                 );
                 break;
@@ -237,6 +267,15 @@ const TransactionListItem = ({ booking, refetch }) => {
                     onClick={handleOpenViewReviewModal}>
                         <LuEye /> Xem đánh giá
                     </button>
+                );
+                break;
+
+            case 'OVERDUE_PAYMENT':
+                // Quá hạn thanh toán — không có nút thanh toán, chỉ xem chi tiết
+                statusDisplay = (
+                    <div className={styles.cancelReason}>
+                        Đơn hàng đã quá hạn thanh toán và bị huỷ tự động.
+                    </div>
                 );
                 break;
 

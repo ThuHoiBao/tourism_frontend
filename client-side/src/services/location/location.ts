@@ -36,11 +36,11 @@ export const getFavoriteDestinationsApi = async (region: Region): Promise<Destin
         console.log("khu vuccccccccccccccccc: "+ response)
         // Giả định Backend trả về danh sách các object có cấu trúc tương tự DestinationMockData
         const destinations: DestinationMockData[] = response.data.map((item: any) => ({
-            endPoint: item.name,
+            endPoint: item.endPoint,
             
             // ✨ LOGIC KIỂM TRA VÀ GÁN ẢNH MẶC ĐỊNH
-            listImage: item.imageUrl // Lấy imageUrl
-                ? item.imageUrl.toString() // Nếu tồn tại, chuyển về string
+            listImage: item.listImage // Lấy listImage từ DestinationResponse
+                ? item.listImage.toString() // Nếu tồn tại, chuyển về string
                 : DEFAULT_IMAGE_URL, // Nếu null/undefined, dùng ảnh mặc định
             
             region: item.region,
