@@ -48,7 +48,7 @@ const SpecialTourItem = ({ tour }) => {
                 {/* HIỂN THỊ GIÁ TRỊ GIẢM GIÁ TUYỆT ĐỐI */}
                 {tour.discountPercentage > 0 && (
                      <div className={styles.saleRibbon}>
-                         Tiết kiệm {formatPrice(tour.salePrice)} đ
+                         Tiết kiệm {formatPrice(tour.originalPrice - tour.salePrice)} đ
                      </div>
                 )}
             </div>
@@ -93,7 +93,7 @@ const SpecialTourItem = ({ tour }) => {
                     )}
                     
                     <div className={styles.promotionalPrice}>
-                         {formatPrice(tour.originalPrice-tour.salePrice)} đ
+                         {formatPrice(tour.salePrice)} đ
                     </div>
                     {/* {tour.departureID} */}
                     <button className={styles.bookingButton}  onClick={(e) => handleDepartureClick(e, tour.departureID)}>
