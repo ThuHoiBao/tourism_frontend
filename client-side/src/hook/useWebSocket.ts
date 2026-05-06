@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, use } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
@@ -10,7 +10,12 @@ interface UseWebSocketProps {
 
 const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) => {
     const stompClientRef = useRef<Client | null>(null);
-    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Keep latest onMessage in a ref so subscriptions never go stale
+    // (no need to disconnect/reconnect when the handler changes)
+    const onMessageRef = useRef(onMessage);
+    useEffect(() => {
+        onMessageRef.current = onMessage;
+    }, [onMessage]);
 
     const connect = useCallback(() => {
         if (!enabled) return;
@@ -23,7 +28,7 @@ const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) =
             heartbeatOutgoing: 4000,
             
             onConnect: () => {
-                console.log('WebSocket Connected');
+                console.log('[WS] Connected');
                 
                 const topics = Array.isArray(topic) ? topic : [topic];
                 
@@ -31,27 +36,32 @@ const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) =
                     client.subscribe(t, (message) => {
                         try {
                             const data = JSON.parse(message.body);
-                            console.log(`Received from ${t}:`, data);
-                            onMessage(data);
+                            console.log(`[WS] Received from ${t}:`, data);
+                            // Always call the LATEST onMessage (via ref — no stale closure)
+                            onMessageRef.current(data);
                         } catch (error) {
-                            console.error('Error parsing message:', error);
+                            console.error('[WS] Error parsing message:', error);
                         }
                     });
                 });
             },
             
             onStompError: (frame) => {
-                console.error('STOMP error:', frame);
+                console.error('[WS] STOMP error:', frame);
+            },
+
+            onWebSocketError: (error) => {
+                console.error('[WS] WebSocket error:', error);
             },
             
             onDisconnect: () => {
-                console.log('WebSocket Disconnected');
+                console.log('[WS] Disconnected');
             }
         });
 
         client.activate();
         stompClientRef.current = client;
-    }, [topic, onMessage, enabled]);
+    }, [topic, enabled]); // ← onMessage intentionally NOT here; handled via ref above
 
     useEffect(() => {
         connect();
@@ -59,9 +69,7 @@ const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) =
         return () => {
             if (stompClientRef.current) {
                 stompClientRef.current.deactivate();
-            }
-            if (reconnectTimeoutRef.current) {
-                clearTimeout(reconnectTimeoutRef.current);
+                stompClientRef.current = null;
             }
         };
     }, [connect]);

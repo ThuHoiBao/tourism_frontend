@@ -21,16 +21,25 @@ const TransactionList = ({ user }) => {
     const [activeStatus, setActiveStatus] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     
-    const { bookings, loading, error, refetch } = useBookings(
+    const { bookings, loading, error, refetch, silentRefetch, updateBookingInList } = useBookings(
         user?.id || user?.userID || -1, 
         activeStatus
     );
     
     // WebSocket listener
-    const handleWebSocketMessage = useCallback((updatedBooking) => {
-        console.log('🔔 User received booking update:', updatedBooking);
-        refetch();
-    }, [refetch]);
+    // 1. Patch ngay booking trong list (không loading flash)
+    // 2. Silent-refetch để đồng bộ nền
+    const handleWebSocketMessage = useCallback((event) => {
+        console.log('🔔 [User WS] Booking update received:', event);
+        if (event?.bookingID) {
+            const patch = {};
+            if (event.bookingStatus != null) patch.bookingStatus = event.bookingStatus;
+            if (event.cancelReason  != null) patch.cancelReason  = event.cancelReason;
+            if (event.refundAmount  != null) patch.refundAmount  = event.refundAmount;
+            if (Object.keys(patch).length > 0) updateBookingInList(event.bookingID, patch);
+        }
+        silentRefetch();
+    }, [updateBookingInList, silentRefetch]);
 
     useWebSocket({
         topic: `/topic/user/${user?.id || user?.userID}/bookings`,

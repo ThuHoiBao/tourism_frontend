@@ -129,14 +129,23 @@ const BookingsPage = () => {
         sortDir: 'DESC'
     }), [currentPage]);
 
-    const { bookings, loading, error, totalPages, totalElements, refetch } = useAdminBookings(searchDTO, pageable);
+    const { bookings, loading, error, totalPages, totalElements, refetch, silentRefetch, updateBookingInList } = useAdminBookings(searchDTO, pageable);
 
     // ✨ WEBSOCKET: Lắng nghe cập nhật từ backend
-    const handleWebSocketMessage = useCallback((updatedBooking) => {
-        console.log('🔔 Admin received booking update:', updatedBooking);
-        // Refetch để cập nhật danh sách
-        refetch();
-    }, [refetch]);
+    // 1. Patch ngay booking đó trong list (không loading flash)
+    // 2. Silent-refetch để đồng bộ dữ liệu đầy đủ trong nền mà không hiện spinner
+    const handleWebSocketMessage = useCallback((event) => {
+        console.log('🔔 [Admin WS] Booking update received:', event);
+        if (event?.bookingID) {
+            // Only patch fields that are explicitly non-null
+            const patch = {};
+            if (event.bookingStatus != null) patch.bookingStatus = event.bookingStatus;
+            if (event.cancelReason  != null) patch.cancelReason  = event.cancelReason;
+            if (event.refundAmount  != null) patch.refundAmount  = event.refundAmount;
+            if (Object.keys(patch).length > 0) updateBookingInList(event.bookingID, patch);
+        }
+        silentRefetch();
+    }, [updateBookingInList, silentRefetch]);
 
     useWebSocket({
         topic: '/topic/admin/bookings',
