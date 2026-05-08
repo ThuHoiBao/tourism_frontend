@@ -1,17 +1,21 @@
 // src/hook/useAdminBookings.ts
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { searchBookingsForAdminApi } from '../services/booking/booking.ts';
 import { BookingSearchRequestDTO, PageableRequest } from '../dto/requestDTO/BookingSearchRequestDTO.ts';
 
 interface AdminBookingsHook {
-    bookings: any[]; 
+    bookings: any[];
     loading: boolean;
     error: string | null;
     totalPages: number;
     totalElements: number;
     currentPage: number;
     refetch: () => void;
+    /** Refetch without showing loading spinner — use for background WS-triggered refreshes */
+    silentRefetch: () => void;
+    /** Instantly patch a single booking in the list (from WebSocket event) */
+    updateBookingInList: (bookingID: number, fields: Partial<Record<string, any>>) => void;
 }
 
 /**
@@ -28,26 +32,47 @@ const useAdminBookings = (
     const [totalElements, setTotalElements] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const silentRef = useRef(false);
 
     const refetch = useCallback(() => setRefetchTrigger(prev => prev + 1), []);
 
+    /** Background refresh without loading spinner — for WS-triggered updates */
+    const silentRefetch = useCallback(() => {
+        silentRef.current = true;
+        setRefetchTrigger(prev => prev + 1);
+    }, []);
+
+    /**
+     * Instantly update a single booking in the list without a full refetch.
+     * Called by the WebSocket handler for immediate UI feedback.
+     */
+    const updateBookingInList = useCallback((bookingID: number, fields: Partial<Record<string, any>>) => {
+        setBookings(prev =>
+            prev.map(b => b.bookingID === bookingID ? { ...b, ...fields } : b)
+        );
+    }, []);
+
     useEffect(() => {
         const fetchBookings = async () => {
+            const isSilent = silentRef.current;
+            silentRef.current = false; // reset before any awaits
             try {
-                setLoading(true);
+                if (!isSilent) setLoading(true);
                 setError(null);
-                
+
                 const response = await searchBookingsForAdminApi(searchDTO, pageable);
-                
+
                 setBookings(response.content);
                 setTotalPages(response.totalPages);
                 setTotalElements(response.totalElements);
                 setCurrentPage(response.number);
-                
+
             } catch (err: any) {
                 console.error('❌ useAdminBookings error:', err);
-                setError("Không thể tải danh sách bookings. Vui lòng thử lại.");
-                setBookings([]);
+                if (!isSilent) {
+                    setError("Không thể tải danh sách bookings. Vui lòng thử lại.");
+                    setBookings([]);
+                }
             } finally {
                 setLoading(false);
             }
@@ -56,7 +81,7 @@ const useAdminBookings = (
         fetchBookings();
     }, [searchDTO, pageable.page, pageable.size, pageable.sortBy, pageable.sortDir, refetchTrigger]); 
 
-    return { bookings, loading, error, totalPages, totalElements, currentPage, refetch };
+    return { bookings, loading, error, totalPages, totalElements, currentPage, refetch, silentRefetch, updateBookingInList };
 };
 
 export default useAdminBookings;

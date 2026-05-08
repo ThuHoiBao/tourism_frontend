@@ -153,10 +153,10 @@ const RefundInfoModal = ({ bookingID, booking, onClose, onBack, onRefetch }) => 
         setFormData(prev => ({ ...prev, bank: bankCode }));
     };
 
-    // HÀM XỬ LÝ ĐÓNG VÀ TẢI LẠI TRANG
-    const handleCloseAndReload = () => {
-        onClose(); 
-        window.location.reload(); 
+    // HÀM XỬ LÝ ĐÓNG MODAL (dùng WS để cập nhật, không reload trang)
+    const handleCloseSuccess = () => {
+        if (onRefetch) onRefetch();
+        onClose();
     };
     
     const handleConfirmRefund = async () => {
@@ -204,7 +204,7 @@ const RefundInfoModal = ({ bookingID, booking, onClose, onBack, onRefetch }) => 
                         <div className={styles.successActions}>
                             <button 
                                 className={styles.successButton} 
-                                onClick={handleCloseAndReload}
+                                onClick={handleCloseSuccess}
                             >
                                 Đóng
                             </button>

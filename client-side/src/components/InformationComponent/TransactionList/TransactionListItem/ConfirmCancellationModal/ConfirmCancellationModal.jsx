@@ -10,12 +10,10 @@ const ConfirmCancellationModal = ({ bookingID, onClose, onBack, onRefetch }) => 
     const [isProcessing, setIsProcessing] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
 
-    // ✅ HÀM XỬ LÝ ĐÓNG VÀ TẢI LẠI TRANG
-    const handleCloseAndReload = () => {
-        // Gọi onClose để đóng Modal
-        onClose(); 
-        // Sau đó tải lại trang
-        window.location.reload(); 
+    // HÀM XỬ LÝ ĐÓNG MODAL (dùng WS để cập nhật, không reload trang)
+    const handleCloseSuccess = () => {
+        if (onRefetch) onRefetch();
+        onClose();
     };
 
     const handleConfirmCancel = async () => {
@@ -45,10 +43,9 @@ const ConfirmCancellationModal = ({ bookingID, onClose, onBack, onRefetch }) => 
                 <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                     <h3 className={styles.successTitle}>Thông báo</h3>
                     <p className={styles.successMessage}>{successMessage}</p>
-                    {/* ✅ ĐÍNH KÈM HÀM XỬ LÝ MỚI VÀO NÚT ĐÓNG */}
                     <button 
                         className={styles.btnPrimary} 
-                        onClick={handleCloseAndReload} 
+                        onClick={handleCloseSuccess} 
                     >
                         Đóng
                     </button> 
