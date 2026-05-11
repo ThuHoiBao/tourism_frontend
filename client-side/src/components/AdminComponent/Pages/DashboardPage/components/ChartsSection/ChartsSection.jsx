@@ -7,12 +7,12 @@ import UserGrowthChart from './UserGrowthChart/UserGrowthChart';
 import BookingStatusChart from './BookingStatusChart/BookingStatusChart';
 import TourPerformanceChart from './TourPerformanceChart/TourPerformanceChart';
 
-const ChartsSection = ({ chartsData }) => {
+const ChartsSection = ({ chartsData, hotTours, dateRange }) => {
     return (
         <div className={styles.chartsSection}>
             {/* Revenue Chart - Full Width */}
             <div className={styles.fullWidthChart}>
-                <RevenueChart data={chartsData.revenueChart} />
+                <RevenueChart data={chartsData.revenueChart} dateRange={dateRange} />
             </div>
 
             {/* Two Column Charts */}
@@ -25,9 +25,9 @@ const ChartsSection = ({ chartsData }) => {
                 </div>
             </div>
 
-            {/* Tour Performance - Full Width */}
+            {/* Tour Performance - Full Width - uses hotTours from booking-service */}
             <div className={styles.fullWidthChart}>
-                <TourPerformanceChart data={chartsData.tourPerformanceChart} />
+                <TourPerformanceChart hotTours={hotTours} />
             </div>
         </div>
     );

@@ -1,133 +1,128 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/HotToursSection/HotToursSection.jsx
+﻿// HotToursSection.jsx — clean redesign
 
 import React from 'react';
 import styles from './HotToursSection.module.scss';
-import { FaFire, FaStar, FaUsers, FaChartLine } from 'react-icons/fa';
+import { FaFire, FaStar, FaUsers, FaTrophy, FaArrowRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+
+const RANK_STYLES = [
+    { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c', label: '🥇' },
+    { bg: '#fafafa', border: '#e5e7eb', text: '#374151', label: '🥈' },
+    { bg: '#fefce8', border: '#fde68a', text: '#92400e', label: '🥉' },
+];
+
+const formatCurrency = (amount) => {
+    if (!amount) return '0đ';
+    if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(1)} Tr đ`;
+    if (amount >= 1_000) return `${(amount / 1_000).toFixed(0)}K đ`;
+    return `${amount}đ`;
+};
 
 const HotToursSection = ({ hotTours }) => {
     const navigate = useNavigate();
 
-    // Format tiền tệ
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-            notation: 'compact',
-            maximumFractionDigits: 1
-        }).format(amount);
-    };
+    if (!hotTours || hotTours.length === 0) {
+        return (
+            <div className={styles.hotToursSection}>
+                <div className={styles.header}>
+                    <div className={styles.headerLeft}>
+                        <FaTrophy className={styles.icon} />
+                        <div>
+                            <h3>Top Tours</h3>
+                            <p>Xếp hạng theo booking</p>
+                        </div>
+                    </div>
+                </div>
+                <div className={styles.emptyState}>
+                    <FaFire className={styles.emptyIcon} />
+                    <p>Chưa có dữ liệu hot tours</p>
+                </div>
+            </div>
+        );
+    }
 
-    // Xử lý click vào tour
-    const handleTourClick = (tourId) => {
-        navigate(`/admin/tours/${tourId}`);
-    };
-
-    // Lấy màu theo thứ hạng
-    const getRankColor = (index) => {
-        switch (index) {
-            case 0: return '#ef4444'; // Red - #1
-            case 1: return '#f59e0b'; // Orange - #2
-            case 2: return '#3b82f6'; // Blue - #3
-            default: return '#6b7280'; // Gray
-        }
-    };
+    const maxBookings = hotTours[0]?.bookingCount || 1;
 
     return (
         <div className={styles.hotToursSection}>
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
-                    <div className={styles.iconWrapper}>
-                        <FaFire />
+                    <FaTrophy className={styles.icon} />
+                    <div>
+                        <h3>Top Tours</h3>
+                        <p>Xếp hạng theo lượng booking</p>
                     </div>
-                    <h3>Hot Tours</h3>
                 </div>
                 <span className={styles.badge}>Top {hotTours.length}</span>
             </div>
 
-            <div className={styles.toursList}>
-                {hotTours.length > 0 ? (
-                    hotTours.map((tour, index) => (
-                        <div 
-                            key={tour.tourId} 
-                            className={styles.tourCard}
-                            onClick={() => handleTourClick(tour.tourId)}
+            <div className={styles.list}>
+                {hotTours.map((tour, index) => {
+                    const rankStyle = RANK_STYLES[index] || RANK_STYLES[2];
+                    const barWidth = maxBookings > 0
+                        ? Math.round((tour.bookingCount / maxBookings) * 100)
+                        : 0;
+
+                    return (
+                        <div
+                            key={tour.tourId}
+                            className={styles.row}
+                            onClick={() => navigate(`/admin/tours/${tour.tourId}`)}
                         >
-                            {/* Rank Badge */}
-                            <div 
-                                className={styles.rankBadge}
-                                style={{ background: getRankColor(index) }}
+                            {/* Rank */}
+                            <div
+                                className={styles.rank}
+                                style={{ background: rankStyle.bg, border: `1.5px solid ${rankStyle.border}`, color: rankStyle.text }}
                             >
-                                #{index + 1}
+                                {index < 3 ? rankStyle.label : `#${index + 1}`}
                             </div>
-                            
-                            <div className={styles.tourContent}>
-                                {/* Tour Header */}
-                                <div className={styles.tourHeader}>
-                                    <h4 className={styles.tourName}>{tour.tourName}</h4>
-                                    <span className={styles.tourCode}>{tour.tourCode}</span>
+
+                            {/* Content */}
+                            <div className={styles.content}>
+                                <div className={styles.topLine}>
+                                    <span className={styles.tourName}>{tour.tourName}</span>
+                                    <FaArrowRight className={styles.arrow} />
                                 </div>
+                                <span className={styles.tourCode}>{tour.tourCode}</span>
 
-                                {/* Tour Stats Grid */}
-                                <div className={styles.statsGrid}>
-                                    <div className={styles.statItem}>
-                                        <div className={styles.statIcon}>
-                                            <FaChartLine />
-                                        </div>
-                                        <div className={styles.statInfo}>
-                                            <span className={styles.statLabel}>Doanh thu</span>
-                                            <span className={styles.statValue}>
-                                                {formatCurrency(tour.revenue)}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.statItem}>
-                                        <div className={styles.statIcon}>
-                                            <FaUsers />
-                                        </div>
-                                        <div className={styles.statInfo}>
-                                            <span className={styles.statLabel}>Bookings</span>
-                                            <span className={styles.statValue}>
-                                                {tour.bookingCount}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.statItem}>
-                                        <div className={styles.statIcon}>
-                                            <FaStar />
-                                        </div>
-                                        <div className={styles.statInfo}>
-                                            <span className={styles.statLabel}>Đánh giá</span>
-                                            <span className={styles.statValue}>
+                                {/* Stats inline */}
+                                <div className={styles.stats}>
+                                    <span className={styles.stat}>
+                                        <FaUsers className={styles.statIcon} />
+                                        {tour.bookingCount} bookings
+                                    </span>
+                                    <span className={styles.separator}>·</span>
+                                    <span className={styles.stat}>
+                                        💰 {formatCurrency(tour.revenue)}
+                                    </span>
+                                    {tour.averageRating > 0 && (
+                                        <>
+                                            <span className={styles.separator}>·</span>
+                                            <span className={styles.stat}>
+                                                <FaStar className={styles.starIcon} />
                                                 {tour.averageRating.toFixed(1)}
                                             </span>
-                                        </div>
-                                    </div>
+                                        </>
+                                    )}
                                 </div>
 
-                                {/* Performance Bar */}
-                                <div className={styles.performanceBar}>
-                                    <div 
-                                        className={styles.progressFill}
-                                        style={{ 
-                                            width: `${(tour.bookingCount / hotTours[0].bookingCount) * 100}%`,
-                                            background: getRankColor(index)
+                                {/* Progress bar */}
+                                <div className={styles.bar}>
+                                    <div
+                                        className={styles.fill}
+                                        style={{
+                                            width: `${barWidth}%`,
+                                            background: index === 0 ? '#f97316'
+                                                : index === 1 ? '#eab308'
+                                                : index === 2 ? '#3b82f6'
+                                                : '#9ca3af'
                                         }}
                                     />
                                 </div>
                             </div>
                         </div>
-                    ))
-                ) : (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>
-                            <FaFire />
-                        </div>
-                        <p>Chưa có dữ liệu hot tours</p>
-                    </div>
-                )}
+                    );
+                })}
             </div>
         </div>
     );

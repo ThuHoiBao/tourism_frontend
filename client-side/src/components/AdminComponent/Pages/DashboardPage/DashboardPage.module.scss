@@ -1,41 +1,61 @@
-/* src/components/AdminComponent/Pages/DashboardPage/DashboardPage.module.scss */
-.pageContainer {
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+/* DashboardPage.module.scss — full design system */
+
+/* ─── CSS Variables (light mode) ─── */
+.dashboardPage {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary: #0ea5e9;
+    --accent: #0891b2;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+
+    --bg-page: #f1f5f9;
+    --bg-secondary: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+
+    min-height: 100vh;
+    padding: 24px;
+    background-color: var(--bg-page);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.pageTitle {
-    font-size: 2em;
-    color: #1a202c;
-    border-bottom: 2px solid #edf2f7;
-    padding-bottom: 15px;
-    margin-top: 0;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
+/* ─── Dark mode ─── */
+.dark {
+    --bg-page: #0f172a;
+    --bg-secondary: #1e293b;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
 }
 
-.icon {
-    margin-right: 10px;
-    color: #4299e1; /* Màu xanh thương hiệu */
+.twoColumnGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
 }
 
-.infoText {
-    color: #4a5568;
-    margin-bottom: 20px;
-}
-
-.placeholderBox {
-    background-color: #f7fafc;
-    border: 2px dashed #a0aec0;
-    min-height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #718096;
-    font-style: italic;
-    border-radius: 6px;
-    padding: 20px;
+.noData {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+    font-size: 1rem;
 }
