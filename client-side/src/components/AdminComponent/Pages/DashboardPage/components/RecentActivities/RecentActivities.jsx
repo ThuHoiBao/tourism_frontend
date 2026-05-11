@@ -19,7 +19,8 @@ const RecentActivities = ({ activities }) => {
     const getActivityIcon = (type) => {
         switch (type) {
             case 'BOOKING': return <FaCalendarCheck />;
-            case 'USER': return <FaUser />;
+            case 'USER':
+            case 'NEW_USER': return <FaUser />;
             case 'REVIEW': return <FaStar />;
             case 'REFUND': return <FaUndo />;
             default: return <FaClock />;
@@ -47,11 +48,10 @@ const RecentActivities = ({ activities }) => {
     // Xử lý khi click vào activity
     const handleActivityClick = (activity) => {
         if (activity.type === 'BOOKING' || activity.type === 'REFUND') {
-            // Điều hướng sang trang Bookings và tìm kiếm theo Booking Code
             navigate(`/admin/bookings?search=${activity.relatedCode}`);
-        } else if (activity.type === 'USER') {
-            // Điều hướng sang trang Users và tìm kiếm theo Email
-            navigate(`/admin/users?search=${activity.relatedCode}`);
+        } else if (activity.type === 'USER' || activity.type === 'NEW_USER') {
+            // relatedCode for NEW_USER is the email
+            navigate(`/admin/users?search=${encodeURIComponent(activity.relatedCode)}`);
         }
     };
 

@@ -1,355 +1,206 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/HotToursSection/HotToursSection.module.scss
+﻿// HotToursSection.module.scss — clean redesign
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
 
 .hotToursSection {
-    background: #ffffff;
+    background: var(--card-bg, #fff);
     border-radius: 16px;
-    padding: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color, #e5e7eb);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     height: 100%;
     display: flex;
-    margin-top: 20px;
     flex-direction: column;
+    overflow: hidden;
 
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 24px;
-        border-bottom: 1px solid #f3f4f6;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border-color, #f3f4f6);
 
         .headerLeft {
             display: flex;
             align-items: center;
             gap: 12px;
 
-            .iconWrapper {
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #ef4444;
-                font-size: 1.1rem;
-
-                svg {
-                    animation: pulse 2s ease-in-out infinite;
-                }
+            .icon {
+                font-size: 1.3rem;
+                color: #f59e0b;
             }
 
             h3 {
-                margin: 0;
-                font-size: 1.125rem;
-                color: #111827;
-                font-weight: 600;
-                letter-spacing: -0.01em;
-            }
-        }
-
-        .badge {
-            background: #f3f4f6;
-            color: #6b7280;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            min-width: 28px;
-            text-align: center;
-        }
-    }
-
-    .toursList {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
-        overflow-y: auto;
-        max-height: 600px;
-        flex: 1;
-
-        &::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        &::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: #e5e7eb;
-            border-radius: 2px;
-
-            &:hover {
-                background: #d1d5db;
-            }
-        }
-
-        .tourCard {
-            background: #ffffff;
-            border: 1px solid #f3f4f6;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            display: flex;
-            gap: 14px;
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                border-color: #e5e7eb;
-                background: #fafafa;
-            }
-
-            .rankBadge {
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
+                margin: 0 0 2px;
+                font-size: 1rem;
                 font-weight: 700;
-                font-size: 0.9375rem;
-                flex-shrink: 0;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            .tourContent {
-                flex: 1;
-                min-width: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-
-                .tourHeader {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 6px;
-
-                    .tourName {
-                        margin: 0;
-                        font-size: 1rem;
-                        color: #111827;
-                        font-weight: 600;
-                        line-height: 1.4;
-                        display: -webkit-box;
-                        -webkit-line-clamp: 2;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                    }
-
-                    .tourCode {
-                        display: inline-flex;
-                        align-items: center;
-                        background: #f9fafb;
-                        color: #6b7280;
-                        padding: 2px 8px;
-                        border-radius: 4px;
-                        font-size: 0.75rem;
-                        font-weight: 500;
-                        border: 1px solid #e5e7eb;
-                        width: fit-content;
-                        font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
-                    }
-                }
-
-                .statsGrid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 12px;
-
-                    .statItem {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        padding: 8px;
-                        background: #f9fafb;
-                        border-radius: 8px;
-                        border: 1px solid #f3f4f6;
-
-                        .statIcon {
-                            width: 32px;
-                            height: 32px;
-                            border-radius: 6px;
-                            background: #ffffff;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 0.875rem;
-                            color: #6b7280;
-                            flex-shrink: 0;
-
-                            svg {
-                                transition: transform 0.2s ease;
-                            }
-                        }
-
-                        &:hover .statIcon svg {
-                            transform: scale(1.1);
-                        }
-
-                        .statInfo {
-                            display: flex;
-                            flex-direction: column;
-                            gap: 2px;
-                            min-width: 0;
-
-                            .statLabel {
-                                font-size: 0.6875rem;
-                                color: #9ca3af;
-                                font-weight: 500;
-                                text-transform: uppercase;
-                                letter-spacing: 0.05em;
-                            }
-
-                            .statValue {
-                                font-size: 0.875rem;
-                                color: #111827;
-                                font-weight: 700;
-                                white-space: nowrap;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                            }
-                        }
-                    }
-                }
-
-                .performanceBar {
-                    height: 4px;
-                    background: #f3f4f6;
-                    border-radius: 2px;
-                    overflow: hidden;
-
-                    .progressFill {
-                        height: 100%;
-                        border-radius: 2px;
-                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                    }
-                }
-            }
-        }
-
-        .emptyState {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            color: #9ca3af;
-            flex: 1;
-
-            .emptyIcon {
-                width: 64px;
-                height: 64px;
-                border-radius: 50%;
-                background: #f3f4f6;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-bottom: 16px;
-
-                svg {
-                    font-size: 1.75rem;
-                    color: #d1d5db;
-                }
+                color: var(--text-primary, #111827);
             }
 
             p {
                 margin: 0;
-                font-size: 0.9375rem;
-                font-weight: 500;
-                color: #6b7280;
-            }
-        }
-    }
-
-    // Responsive
-    @media (max-width: 768px) {
-        .header {
-            padding: 16px 20px;
-
-            .headerLeft {
-                gap: 10px;
-
-                .iconWrapper {
-                    width: 32px;
-                    height: 32px;
-                    font-size: 1rem;
-                }
-
-                h3 {
-                    font-size: 1rem;
-                }
+                font-size: 0.78rem;
+                color: var(--text-secondary, #6b7280);
             }
         }
 
-        .toursList {
-            padding: 8px;
-
-            .tourCard {
-                padding: 12px;
-                gap: 10px;
-
-                .rankBadge {
-                    width: 36px;
-                    height: 36px;
-                    font-size: 0.875rem;
-                }
-
-                .tourContent {
-                    .tourHeader {
-                        .tourName {
-                            font-size: 0.9375rem;
-                        }
-                    }
-
-                    .statsGrid {
-                        grid-template-columns: 1fr;
-                        gap: 8px;
-
-                        .statItem {
-                            padding: 6px;
-
-                            .statIcon {
-                                width: 28px;
-                                height: 28px;
-                                font-size: 0.8125rem;
-                            }
-                        }
-                    }
-                }
-            }
+        .badge {
+            background: var(--bg-secondary, #f3f4f6);
+            color: var(--text-secondary, #6b7280);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
     }
-}
 
-// Animation
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 0.9;
-    }
-}
+    .list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        flex: 1;
+        padding: 8px;
 
-@keyframes slideIn {
-    from {
+        &::-webkit-scrollbar { width: 4px; }
+        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+    }
+
+    .row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.18s, transform 0.18s;
+        margin-bottom: 2px;
+
+        &:hover {
+            background: var(--bg-secondary, #f9fafb);
+            transform: translateX(2px);
+
+            .arrow { opacity: 1; transform: translateX(2px); }
+        }
+    }
+
+    .rank {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        font-weight: 700;
+    }
+
+    .content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .topLine {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .tourName {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary, #111827);
+        line-height: 1.4;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        flex: 1;
+    }
+
+    .arrow {
+        font-size: 0.7rem;
+        color: var(--text-muted, #9ca3af);
         opacity: 0;
-        transform: translateY(-10px);
+        transition: all 0.2s;
+        flex-shrink: 0;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-.tourCard {
-    animation: slideIn 0.3s ease-out;
+    .tourCode {
+        font-size: 0.72rem;
+        color: var(--text-muted, #9ca3af);
+        font-family: 'SF Mono', 'Monaco', monospace;
+        background: var(--bg-secondary, #f3f4f6);
+        border: 1px solid var(--border-color, #e5e7eb);
+        padding: 1px 6px;
+        border-radius: 4px;
+        width: fit-content;
+    }
+
+    .stats {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 2px;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.78rem;
+        color: var(--text-secondary, #6b7280);
+        font-weight: 500;
+    }
+
+    .statIcon {
+        font-size: 0.7rem;
+        color: #2563eb;
+    }
+
+    .starIcon {
+        font-size: 0.7rem;
+        color: #f59e0b;
+    }
+
+    .separator {
+        color: var(--text-muted, #d1d5db);
+        font-size: 0.75rem;
+    }
+
+    .bar {
+        height: 4px;
+        background: var(--border-color, #f3f4f6);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 6px;
+
+        .fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+    }
+
+    .emptyState {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px;
+        gap: 12px;
+        flex: 1;
+        color: var(--text-muted, #9ca3af);
+
+        .emptyIcon { font-size: 2rem; }
+        p { margin: 0; font-size: 0.9rem; }
+    }
 }
