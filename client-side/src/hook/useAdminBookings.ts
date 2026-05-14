@@ -17,7 +17,7 @@ interface AdminBookingsHook {
     /** Instantly patch a single booking in the list (from WebSocket event) */
     updateBookingInList: (bookingID: number, fields: Partial<Record<string, any>>) => void;
 }
-
+// Note: The `any` type for bookings can be replaced with a more specific type if available, e.g., `BookingDTO[]`.
 /**
  * Custom Hook để lấy danh sách booking cho Admin có phân trang và tìm kiếm.
  */
