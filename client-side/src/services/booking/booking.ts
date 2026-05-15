@@ -132,3 +132,137 @@ export const updateBookingStatusApi = async (
         throw error;
     }
 };
+
+// ─── DEAD EVENT ADMIN APIs ─────────────────────────────────────────────────
+
+export interface DeadEventCount {
+    coinRefund: number;
+    notification: number;
+    total: number;
+}
+
+export interface DeadEventPage {
+    content: OutboxEventDTO[];
+    totalPages: number;
+    totalElements: number;
+    number: number;
+    size: number;
+    empty: boolean;
+}
+
+export interface OutboxEventDTO {
+    id: number;
+    idempotencyKey: string;
+    exchange: string;
+    routingKey: string;
+    payload: string;
+    status: string;
+    retries: number;
+    maxRetries: number;
+    maxBackoffSecs: number;
+    lockedBy: string | null;
+    lockedAt: string | null;
+    nextRetryAt: string;
+    createdAt: string;
+    sentAt: string | null;
+    errorMessage: string | null;
+}
+
+export interface DeadEventDetailResponse {
+    id: number;
+    taskType: string;
+    status: string;
+    statusLabel: string;
+    routingKey: string;
+    eventType: string | null;
+    idempotencyKey: string;
+    retryText: string;
+    retries: number;
+    maxRetries: number;
+    maxBackoffSecs: number;
+    createdAt: string;
+    nextRetryAt: string;
+    sentAt: string | null;
+    lockedBy: string | null;
+    lockedAt: string | null;
+    latestError: string | null;
+    suggestion: string | null;
+    booking: {
+        bookingID: number | null;
+        bookingCode: string | null;
+        bookingStatus: string | null;
+        userId: number | null;
+        customerName: string | null;
+        contactEmail: string | null;
+        contactPhone: string | null;
+        contactAddress: string | null;
+        cancelReason: string | null;
+        departureId: number | null;
+        tourName: string | null;
+        tourCode: string | null;
+        departureDate: string | null;
+        coinRefundStatus: string | null;
+    } | null;
+    refund: {
+        totalPrice: number | null;
+        paidByCoin: number | null;
+        refundAmount: number | null;
+        coinRefundAmount: number | null;
+        refundBank: string | null;
+        refundAccountNumberMasked: string | null;
+        refundAccountName: string | null;
+    } | null;
+    rawPayload: string | null;
+    payloadJson: Record<string, any>;
+}
+
+/** Lấy danh sách DEAD outbox events (phân trang, mới nhất trước) */
+export const getDeadEventsApi = async (page = 0, size = 20): Promise<DeadEventPage> => {
+    const response = await api.get('/bookings/admin/outbox/dead', { params: { page, size } });
+    return response.data;
+};
+
+/** Lay chi tiet DEAD event da enrich thong tin nghiep vu tu booking DB */
+export const getDeadEventDetailApi = async (id: number): Promise<DeadEventDetailResponse> => {
+    const response = await api.get(`/bookings/admin/outbox/dead/${id}`);
+    return response.data;
+};
+
+/** Đếm DEAD events phân loại theo type */
+export const getDeadEventCountApi = async (): Promise<DeadEventCount> => {
+    const response = await api.get('/bookings/admin/outbox/dead/count');
+    return response.data;
+};
+
+/** Reset 1 DEAD event về NEW để scheduler retry */
+export const retryDeadEventApi = async (id: number): Promise<void> => {
+    await api.post(`/bookings/admin/outbox/retry/${id}`);
+};
+
+/** Reset tất cả DEAD events (hoặc theo routingKey) về NEW */
+export const retryAllDeadEventsApi = async (routingKey?: string): Promise<{ retried: number }> => {
+    const params: any = {};
+    if (routingKey) params.routingKey = routingKey;
+    const response = await api.post('/bookings/admin/outbox/retry-all', null, { params });
+    return response.data;
+};
+
+// ────────────────────────────────────────────────────────────
+// Queue Health
+// ────────────────────────────────────────────────────────────
+
+export interface QueueHealthResponse {
+    queue: string;
+    ready: number;
+    unacked: number;
+    consumers: number;
+    dlqReady: number;
+    status: 'HEALTHY' | 'BACKLOG' | 'CONSUMER_DOWN' | 'DLQ_ATTENTION' | 'BROKER_DOWN';
+    message: string;
+    checkedAt: string;
+}
+
+export const getQueueHealthApi = async (): Promise<QueueHealthResponse> => {
+    const response = await api.get('/bookings/admin/outbox/rabbitmq-health');
+    return response.data;
+};

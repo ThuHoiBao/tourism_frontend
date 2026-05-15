@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import styles from './BookingItem.module.scss';
 import { FaEye, FaStar, FaDollarSign, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { Coins, CheckCircle2, AlertTriangle } from 'lucide-react';
 import TransactionDetailModal from '../../../InformationComponent/TransactionList/TransactionListItem/TransactionDetailModal/TransactionDetailModal';
 import ViewReviewModal from '../../../InformationComponent/TransactionList/ViewReviewModal/ViewReviewModal';
 import { 
@@ -160,6 +161,13 @@ const BookingItem = ({ booking, formatPrice, formatDate, refetch }) => {
                     <div className={`${styles.statusBadge} ${styles[statusInfo.class]}`}>
                         {statusInfo.label}
                     </div>
+                    {booking.coinRefundStatus && (
+                        <div className={`${styles.coinBadge} ${styles[`coin_${booking.coinRefundStatus}`]}`}>
+                            {booking.coinRefundStatus === 'PENDING'   && <><Coins size={11} /> Đang hoàn xu</>}
+                            {booking.coinRefundStatus === 'COMPLETED' && <><CheckCircle2 size={11} /> Đã hoàn xu</>}
+                            {booking.coinRefundStatus === 'FAILED'    && <><AlertTriangle size={11} /> Hoàn xu lỗi</>}
+                        </div>
+                    )}
                 </td>
                 <td>
                     {renderActionButtons()}

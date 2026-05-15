@@ -64,6 +64,23 @@ $hover-color: #f7fafc;
     text-transform: uppercase;
 }
 
+// --- Coin Refund Mini Badge ---
+.coinBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-top: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.coin_PENDING   { background: #fef3c7; color: #92400e; }
+.coin_COMPLETED { background: #d1fae5; color: #065f46; }
+.coin_FAILED    { background: #fee2e2; color: #991b1b; }
+
 .statusPending {
     background-color: #fffbe6;
     color: #faad14;

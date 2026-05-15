@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
     FaTachometerAlt, FaBox, FaChartLine, FaCog, FaSignOutAlt, FaUsers, 
-    FaTicketAlt, FaBell, FaCalendarCheck, FaTags , FaMapMarkerAlt, FaBuilding , FaPlaneDeparture
+    FaTicketAlt, FaBell, FaCalendarCheck, FaTags , FaMapMarkerAlt, FaBuilding , FaPlaneDeparture, FaSkullCrossbones
 } from 'react-icons/fa';
 import styles from './AdminSidebar.module.scss';
 
@@ -14,7 +14,8 @@ const navItems = [
     { name: 'Quản lý Coupons', path: '/admin/coupons', icon: FaTags }, 
     {name: 'Quản lý Locations', path: '/admin/locations', icon: FaMapMarkerAlt } ,
     {name: 'Quản lý Branches Policies', path: '/admin/branches-policies', icon: FaMapMarkerAlt } ,
-    { name: 'Quản lý Users', path: '/admin/users', icon: FaUsers }, 
+    { name: 'Quản lý Users', path: '/admin/users', icon: FaUsers },
+    { name: 'Sự cố xử lý nền', path: '/admin/dead-events', icon: FaSkullCrossbones },
 ];
 
 const AdminSidebar = () => {

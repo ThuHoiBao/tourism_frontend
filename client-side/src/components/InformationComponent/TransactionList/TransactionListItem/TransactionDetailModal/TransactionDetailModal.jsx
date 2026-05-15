@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'; // 👈 BẮT BUỘC: Import createPor
 import styles from './TransactionDetailModal.module.scss';
 import { FaTimes, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaTicketAlt, FaInfoCircle } from 'react-icons/fa';
 import { LuUsers, LuCalendar, LuDollarSign } from 'react-icons/lu';
+import { Coins, Clock3, CheckCircle2, AlertTriangle, DollarSign, Bell } from 'lucide-react';
 
 const TransactionDetailModal = ({ booking, onClose, formatPrice, formatDate }) => {
     // Helper functions (Giữ nguyên)
@@ -16,6 +17,25 @@ const TransactionDetailModal = ({ booking, onClose, formatPrice, formatDate }) =
     };
     const getGenderLabel = (gender) => (gender === 'MALE' ? 'Nam' : gender === 'FEMALE' ? 'Nữ' : 'Khác');
     const getPassengerTypeLabel = (type) => (type === 'ADULT' ? 'Người lớn' : type === 'CHILD' ? 'Trẻ em' : 'Em bé');
+    const normalizedCoinRefundStatus = typeof booking.coinRefundStatus === 'string'
+        ? booking.coinRefundStatus.trim().toUpperCase()
+        : null;
+    const validCoinStatus = ['PENDING', 'COMPLETED', 'FAILED'].includes(normalizedCoinRefundStatus)
+        ? normalizedCoinRefundStatus
+        : null;
+    const refundAmount = Number(booking.refundAmount || 0);
+    const refundBaseAmount = Number(booking.totalPrice || 0) + Number(booking.paidByCoin || 0);
+    const refundDeductionAmount = Math.max(refundBaseAmount - refundAmount, 0);
+    const coinRefundAmount = Math.floor(refundAmount / 1000);
+    const usedCoinValue = Number(booking.paidByCoin || 0);
+    const hasBankRefundInfo = Boolean(
+        booking.refundBank ||
+        booking.refundAccountNumber ||
+        booking.refundAccountName
+    );
+    const showCoinRefund = Boolean(validCoinStatus) && refundAmount > 0;
+    const showBankRefund = refundAmount > 0 && !showCoinRefund && hasBankRefundInfo;
+    const showGenericRefund = refundAmount > 0 && !showCoinRefund && !hasBankRefundInfo;
 
     // Chặn scroll khi modal mở
     useEffect(() => {
@@ -109,6 +129,144 @@ const TransactionDetailModal = ({ booking, onClose, formatPrice, formatDate }) =
                         </div>
                     </div>
                 </div>
+
+                {/* --- Phần 5: Thông tin hoàn sau hủy bằng xu --- */}
+                {showCoinRefund && (
+                    <div className={`${styles.section} ${styles.refundSection}`}>
+                        <div className={styles.refundHeader}>
+                            <h3 className={styles.sectionTitle}><Coins size={16} /> Thông tin hoàn sau hủy</h3>
+                            <span className={
+                                validCoinStatus === 'PENDING' ? styles.statusPending
+                                : validCoinStatus === 'COMPLETED' ? styles.statusDone
+                                : styles.statusFailed
+                            }>
+                                {validCoinStatus === 'PENDING' && <><Clock3 size={13} /> Đang xử lý</>}
+                                {validCoinStatus === 'COMPLETED' && <><CheckCircle2 size={13} /> Đã hoàn xu</>}
+                                {validCoinStatus === 'FAILED' && <><AlertTriangle size={13} /> Cần hỗ trợ</>}
+                            </span>
+                        </div>
+
+                        <div className={styles.refundCard}>
+                            <div className={`${styles.refundRow} ${styles.refundTotalRow}`}>
+                                <span>Số tiền được hoàn</span>
+                                <strong>{formatPrice(refundAmount)}</strong>
+                            </div>
+                            <div className={styles.refundRow}>
+                                <span>Quy đổi xu</span>
+                                <strong className={styles.coinRefundValue}>
+                                    {coinRefundAmount.toLocaleString('vi-VN')} xu
+                                </strong>
+                            </div>
+                            <div className={styles.refundRow}>
+                                <span>Giá trị thanh toán và điểm dùng ban đầu</span>
+                                <strong>{formatPrice(refundBaseAmount)}</strong>
+                            </div>
+                            {usedCoinValue > 0 && (
+                                <div className={styles.refundRow}>
+                                    <span>Giá trị điểm đã dùng được tính vào hoàn</span>
+                                    <strong>{formatPrice(usedCoinValue)}</strong>
+                                </div>
+                            )}
+                            <div className={styles.refundRow}>
+                                <span>Phí/khấu trừ đã áp dụng</span>
+                                <strong className={styles.refundDeduction}>- {formatPrice(refundDeductionAmount)}</strong>
+                            </div>
+                        </div>
+
+                        <p className={styles.refundNote}>
+                            Số tiền được hoàn là số cuối cùng hệ thống ghi nhận trong đơn.
+                            Nếu đơn có sử dụng điểm cá nhân, giá trị điểm đã dùng được tính vào công thức hoàn.
+                            Số tiền hoàn được quy đổi sang xu theo tỉ lệ 1 xu = 1.000đ.
+                            Phần lẻ dưới 1.000đ được làm tròn xuống.
+                        </p>
+                    </div>
+                )}
+
+                {/* --- Thông báo email hủy --- */}
+                {booking.bookingStatus === 'CANCELLED' && (
+                    <div className={styles.notificationHint}>
+                        <Bell size={13} />
+                        <span>Email xác nhận hủy sẽ được gửi đến hòm thư của bạn trong ít phút. Nếu chưa nhận được, hãy kiểm tra thư mục spam.</span>
+                    </div>
+                )}
+
+                {/* --- Phần 6: Thông tin hoàn tiền/hoàn sau hủy (chỉ hiện khi có refund) --- */}
+                {refundAmount > 0 && !showCoinRefund && (
+                    <div className={`${styles.section} ${styles.refundSection}`}>
+                        <div className={styles.refundHeader}>
+                            <h3 className={styles.sectionTitle}>
+                                <DollarSign size={16} />
+                                {showBankRefund ? 'Thông tin hoàn tiền ngân hàng' : 'Thông tin hoàn sau hủy'}
+                            </h3>
+                            <span className={
+                                booking.bookingStatus === 'PENDING_REFUND'
+                                    ? styles.statusPending : styles.statusDone
+                            }>
+                                {booking.bookingStatus === 'PENDING_REFUND'
+                                    ? <><Clock3 size={13} /> Đang xử lý</>
+                                    : <><CheckCircle2 size={13} /> {showGenericRefund ? 'Đã ghi nhận' : 'Đã hoàn'}</>}
+                            </span>
+                        </div>
+
+                        <div className={styles.refundCard}>
+                            <div className={styles.refundRow}>
+                                <span>Phương thức hoàn</span>
+                                <strong>
+                                    {showBankRefund
+                                        ? 'Hoàn về tài khoản ngân hàng'
+                                        : 'Đang cập nhật phương thức hoàn'}
+                                </strong>
+                            </div>
+                            <div className={`${styles.refundRow} ${styles.refundTotalRow}`}>
+                                <span>Số tiền được hoàn</span>
+                                <strong>{formatPrice(refundAmount)}</strong>
+                            </div>
+                            <div className={styles.refundRow}>
+                                <span>Giá trị thanh toán và điểm dùng ban đầu</span>
+                                <strong>{formatPrice(refundBaseAmount)}</strong>
+                            </div>
+                            {usedCoinValue > 0 && (
+                                <div className={styles.refundRow}>
+                                    <span>Giá trị điểm đã dùng được tính vào hoàn</span>
+                                    <strong>{formatPrice(usedCoinValue)}</strong>
+                                </div>
+                            )}
+                            <div className={styles.refundRow}>
+                                <span>Phí/khấu trừ đã áp dụng</span>
+                                <strong className={styles.refundDeduction}>- {formatPrice(refundDeductionAmount)}</strong>
+                            </div>
+                            {booking.refundBank && (
+                                <div className={styles.refundRow}>
+                                    <span>Ngân hàng:</span>
+                                    <span>{booking.refundBank}</span>
+                                </div>
+                            )}
+                            {booking.refundAccountNumber && (
+                                <div className={styles.refundRow}>
+                                    <span>Số tài khoản:</span>
+                                    <span>****{booking.refundAccountNumber.slice(-4)}</span>
+                                </div>
+                            )}
+                            {booking.refundAccountName && (
+                                <div className={styles.refundRow}>
+                                    <span>Chủ tài khoản:</span>
+                                    <span>{booking.refundAccountName}</span>
+                                </div>
+                            )}
+                            {booking.cancelReason && booking.cancelReason.trim() && (
+                                <div className={styles.refundRow}>
+                                    <span>Lý do hủy:</span>
+                                    <span>{booking.cancelReason}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <p className={styles.refundNote}>
+                            Số tiền được hoàn là số cuối cùng hệ thống ghi nhận trong đơn.
+                            Nếu đơn có sử dụng điểm cá nhân, giá trị điểm đã dùng được tính vào công thức hoàn.
+                        </p>
+                    </div>
+                )}
 
             </div>
         </div>
