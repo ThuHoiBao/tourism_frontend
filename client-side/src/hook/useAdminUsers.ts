@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { searchUsersApi } from '../services/user/user.ts';
+import { searchUsersApi } from '../services/user/user';
 
 const useAdminUsers = (searchDTO: any, page: number, size: number) => {
     const [users, setUsers] = useState<any[]>([]);

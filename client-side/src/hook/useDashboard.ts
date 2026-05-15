@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { subDays } from 'date-fns';
-import { getDashboardStatisticsApi } from '../services/dashboard/dashboard.ts';
-import { DashboardStatsDTO } from '../dto/responseDTO/DashboardStatsDTO.ts';
+import { getDashboardStatisticsApi } from '../services/dashboard/dashboard';
+import { DashboardStatsDTO } from '../dto/responseDTO/DashboardStatsDTO';
 
 export interface DateRange {
     from: Date;

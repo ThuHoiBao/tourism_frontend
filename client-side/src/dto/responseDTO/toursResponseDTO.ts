@@ -1,5 +1,5 @@
 // src/dto/responseDTO/TourResponseDTO.ts
-import { TourDepartureDateResponseDTO } from '../responseDTO/TourDepartureDateResponseDTO.ts';
+import { TourDepartureDateResponseDTO } from '../responseDTO/TourDepartureDateResponseDTO';
 
 export class TourResponseDTO {
     private _tourID: number = -1;

@@ -1,6 +1,6 @@
 // src/hooks/useLocations.ts
 import { useState, useEffect } from 'react';
-import { getStartLocationsApi, getEndLocationsApi, Location } from '../services/location/location.ts';
+import { getStartLocationsApi, getEndLocationsApi, Location } from '../services/location/location';
 
 interface UseLocationsResult {
     startLocations: Location[];

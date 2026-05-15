@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 // ✨ Import hàm API mới và Enum Region
-import { getFavoriteDestinationsApi, Region } from '../services/location/location.ts'; 
+import { getFavoriteDestinationsApi, Region } from '../services/location/location'; 
 
 // Định nghĩa kiểu dữ liệu (tương tự DestinationMockData trong tours.ts)
 interface DestinationData {

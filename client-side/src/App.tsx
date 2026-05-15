@@ -20,6 +20,7 @@ import CouponManagement from './components/AdminComponent/Pages/CounponsPage/Cou
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from './utils/ScrollToTop';
+import GoogleCallback from './components/GoogleCallback/GoogleCallback';
 // // Các trang giả định
 // const HotelPage = () => <div>Trang Khách sạn</div>; 
 // const FlightsPage = () => <div>Trang Vé máy bay</div>; 
@@ -37,8 +38,8 @@ function App() {
         
         {/* LAYOUT CHÍNH: Bọc tất cả các trang cần Header và Footer */}
         <Route element={<MainLayout />}>
-                
-             
+        
+
             {/* Trang Chủ (Landing page) */}
             <Route path="/" element={<HomePage />} /> 
             
@@ -73,6 +74,7 @@ function App() {
               element={<BookingPayment />}
           />
           <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/payment-waiting" element={<PaymentWaitingPage />} />

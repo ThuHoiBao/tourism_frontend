@@ -1,8 +1,8 @@
 // src/hook/useUser.ts
 
 import { useState, useEffect } from 'react';
-import { UserRequestDTO } from '../dto/requestDTO/UserRequestDTO.ts';
-import { getUserByIdApi } from '../services/user/user.ts';
+import { UserRequestDTO } from '../dto/requestDTO/UserRequestDTO';
+import { getUserByIdApi } from '../services/user/user';
 
 // Định nghĩa kiểu dữ liệu cho giá trị trả về của Custom Hook
 interface UserHook {

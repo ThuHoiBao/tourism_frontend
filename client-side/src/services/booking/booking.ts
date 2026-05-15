@@ -1,7 +1,7 @@
 // src/services/booking/booking.ts
-import { api } from '../api.ts'; // Giả định api.ts đã được import đúng
-import { BookingResponseDTO } from '../../dto/responseDTO/BookingResponseDTO.ts';
-import { BookingSearchRequestDTO, PageableRequest } from '../../dto/requestDTO/BookingSearchRequestDTO.ts';
+import { api } from '../api'; // Giả định api.ts đã được import đúng
+import { BookingResponseDTO } from '../../dto/responseDTO/BookingResponseDTO';
+import { BookingSearchRequestDTO, PageableRequest } from '../../dto/requestDTO/BookingSearchRequestDTO';
 
 export const getAllBookingsByUserApi = async (
     userID: number,

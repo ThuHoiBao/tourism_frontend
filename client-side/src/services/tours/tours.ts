@@ -1,10 +1,10 @@
 //services/tours/tours.ts
-import  {api}  from '../api.ts'; // Import instance Axios đã cấu hình (từ src/services/tours/api.ts)
-// import { SearchToursRequestDTO } from '../../dto/responseDTO/searchToursRequestDTO.ts' // DTO GỬI ĐI
-import { TourResponseDTO } from '../../dto/responseDTO/toursResponseDTO.ts';
-import { TourRequestDTO } from '../../dto/requestDTO/TourRequestDTO.ts';// DTO NHẬN VỀ
-import { TourSpecialRequestDTO } from '../../dto/requestDTO/TourSpecialRequestDTO.ts';
-import { SearchToursRequestDTO } from '../../dto/requestDTO/SearchToursRequestDTO.ts'; // 👈 IMPORT MỚI
+import  {api}  from '../api'; // Import instance Axios đã cấu hình (từ src/services/tours/api.ts)
+// import { SearchToursRequestDTO } from '../../dto/responseDTO/searchToursRequestDTO' // DTO GỬI ĐI
+import { TourResponseDTO } from '../../dto/responseDTO/toursResponseDTO';
+import { TourRequestDTO } from '../../dto/requestDTO/TourRequestDTO';// DTO NHẬN VỀ
+import { TourSpecialRequestDTO } from '../../dto/requestDTO/TourSpecialRequestDTO';
+import { SearchToursRequestDTO } from '../../dto/requestDTO/SearchToursRequestDTO'; // 👈 IMPORT MỚI
 const mapTourResponseToDto = (tourResponse: any): TourRequestDTO => {
     const tourDto = new TourRequestDTO();
     
@@ -61,7 +61,7 @@ export const searchToursApi = async (searchData: any, userId?: number): Promise<
 
     requestDto.transportation = searchData.transportation || "";
     requestDto.rating = searchData.rating ? parseInt(searchData.rating) : 0; // rating: 1, 2, 3, 4, 5 (0 = All)
-    const payload = requestDto.toPlain(); 
+    const payload: Record<string, any> = requestDto.toPlain();
     if (userId) {
         payload.userId = userId;
     }

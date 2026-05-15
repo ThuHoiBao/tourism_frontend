@@ -1,6 +1,6 @@
 // src/services/dashboard/dashboard.ts
 
-import { api } from '../api.ts';
+import { api } from '../api';
 import { DashboardStatsDTO } from '../../dto/responseDTO/DashboardStatsDTO';
 import { format } from 'date-fns';
 

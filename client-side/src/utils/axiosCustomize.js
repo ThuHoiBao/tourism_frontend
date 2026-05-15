@@ -2,7 +2,7 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:8080/api';
 const instance = axios.create({
     baseURL: BASE_URL,
-    // timeout: 30000, 
+    timeout: 30000, 
 });
 
 instance.interceptors.request.use(
@@ -38,7 +38,7 @@ instance.interceptors.response.use(
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
                 
-                if (!refreshToken) {
+                if (!refreshToken) { // No refresh token, force logout
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');
                     localStorage.removeItem('user');
@@ -46,7 +46,7 @@ instance.interceptors.response.use(
                     return Promise.reject(error);
                 }
 
-                const response = await axios.post(
+                const response = await axios.post( // Has Refresh token, try new token
                     'http://localhost:8080/api/auth/refresh-token',
                     { refreshToken },
                     {
