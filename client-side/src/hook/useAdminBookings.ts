@@ -1,8 +1,8 @@
 // src/hook/useAdminBookings.ts
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { searchBookingsForAdminApi } from '../services/booking/booking.ts';
-import { BookingSearchRequestDTO, PageableRequest } from '../dto/requestDTO/BookingSearchRequestDTO.ts';
+import { searchBookingsForAdminApi } from '../services/booking/booking';
+import { BookingSearchRequestDTO, PageableRequest } from '../dto/requestDTO/BookingSearchRequestDTO';
 
 interface AdminBookingsHook {
     bookings: any[];

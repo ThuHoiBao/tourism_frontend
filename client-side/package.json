@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "@types/react-toastify": "^4.0.2",
+    "@types/sockjs-client": "^1.5.4",
     "sass": "^1.96.0"
   }
 }

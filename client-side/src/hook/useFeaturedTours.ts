@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 // Giả định ToursResponseDTO là kiểu dữ liệu cho một tour
-import { TourRequestDTO } from '../dto/requestDTO/TourRequestDTO.ts';
-import { getFeaturedToursApi } from '../services/tours/tours.ts';
+import { TourRequestDTO } from '../dto/requestDTO/TourRequestDTO';
+import { getFeaturedToursApi } from '../services/tours/tours';
 
 // Định nghĩa kiểu dữ liệu cho giá trị trả về của Custom Hook
 interface FeaturedToursHook {

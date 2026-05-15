@@ -1,5 +1,5 @@
 // src/dto/responseDTO/BookingResponseDTO.ts
-import { BookingPassengerResponseDTO } from './BookingPassengerResponseDTO.ts';
+import { BookingPassengerResponseDTO } from './BookingPassengerResponseDTO';
 
 export class BookingResponseDTO {
     private _bookingID: number = -1;

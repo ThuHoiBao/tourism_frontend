@@ -1,6 +1,6 @@
-import { api } from '../api.ts';
-import { UserRequestDTO } from '../../dto/requestDTO/UserRequestDTO.ts';
-import { UserUpdateRequestDTO } from '../../dto/requestDTO/UserUpdateRequestDTO.ts';
+import { api } from '../api';
+import { UserRequestDTO } from '../../dto/requestDTO/UserRequestDTO';
+import { UserUpdateRequestDTO } from '../../dto/requestDTO/UserUpdateRequestDTO';
 
 type UpdatePayload = UserUpdateRequestDTO | FormData;
 

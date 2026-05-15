@@ -1,7 +1,7 @@
 // src/services/review/review.ts (Tạo file mới)
 
-import { api } from '../api.ts'; 
-import { ReviewResponseDTO } from '../../dto/responseDTO/ReviewResponseDTO.ts'; 
+import { api } from '../api'; 
+import { ReviewResponseDTO } from '../../dto/responseDTO/ReviewResponseDTO'; 
 interface ReviewFormDTO {
     rating: number;
     comment: string;

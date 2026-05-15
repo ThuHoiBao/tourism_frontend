@@ -1,6 +1,6 @@
 // src/hook/useBookings.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getAllBookingsByUserApi } from '../services/booking/booking.ts';
+import { getAllBookingsByUserApi } from '../services/booking/booking';
 
 // Định nghĩa kiểu dữ liệu trả về của Custom Hook
 interface BookingsHook {

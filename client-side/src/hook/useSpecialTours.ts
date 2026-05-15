@@ -1,8 +1,8 @@
 // src/hook/useSpecialTours.ts
 
 import { useState, useEffect } from 'react';
-import { getSpecialToursApi } from '../services/tours/tours.ts';
-import { TourSpecialRequestDTO } from '../dto/requestDTO/TourSpecialRequestDTO.ts';
+import { getSpecialToursApi } from '../services/tours/tours';
+import { TourSpecialRequestDTO } from '../dto/requestDTO/TourSpecialRequestDTO';
 
 
 const useSpecialTours = () => {

@@ -1,7 +1,7 @@
 // src/services/favoriteTour/favoriteTour.ts
 
-import { api } from '../api.ts';
-import { TourResponseDTO } from '../../dto/responseDTO/toursResponseDTO.ts';
+import { api } from '../api';
+import { TourResponseDTO } from '../../dto/responseDTO/toursResponseDTO';
 /**
  * Thêm tour vào danh sách yêu thích của User.
  * @param userId ID của User
