@@ -148,14 +148,14 @@ const TransactionDetailModal = ({ booking, onClose, formatPrice, formatDate }) =
 
                         <div className={styles.refundCard}>
                             <div className={`${styles.refundRow} ${styles.refundTotalRow}`}>
-                                <span>Số tiền được hoàn</span>
-                                <strong>{formatPrice(refundAmount)}</strong>
-                            </div>
-                            <div className={styles.refundRow}>
-                                <span>Quy đổi xu</span>
+                                <span>Số xu được cộng vào tài khoản</span>
                                 <strong className={styles.coinRefundValue}>
                                     {coinRefundAmount.toLocaleString('vi-VN')} xu
                                 </strong>
+                            </div>
+                            <div className={styles.refundRow}>
+                                <span>Giá trị hoàn dùng để quy đổi</span>
+                                <strong>{formatPrice(refundAmount)}</strong>
                             </div>
                             <div className={styles.refundRow}>
                                 <span>Giá trị thanh toán và điểm dùng ban đầu</span>
@@ -174,10 +174,11 @@ const TransactionDetailModal = ({ booking, onClose, formatPrice, formatDate }) =
                         </div>
 
                         <p className={styles.refundNote}>
-                            Số tiền được hoàn là số cuối cùng hệ thống ghi nhận trong đơn.
+                            Khoản hoàn sau hủy được cộng vào tài khoản dưới dạng xu.
                             Nếu đơn có sử dụng điểm cá nhân, giá trị điểm đã dùng được tính vào công thức hoàn.
-                            Số tiền hoàn được quy đổi sang xu theo tỉ lệ 1 xu = 1.000đ.
-                            Phần lẻ dưới 1.000đ được làm tròn xuống.
+                            Giá trị hoàn được quy đổi theo tỉ lệ 1 xu = 1.000đ.
+                            Ví dụ: 4.000đ tương ứng 4 xu; nếu phát sinh phần lẻ như 2.500.500đ,
+                            số xu cuối cùng sẽ theo quy tắc làm tròn đang áp dụng trước khi cộng vào tài khoản.
                         </p>
                     </div>
                 )}
