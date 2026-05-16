@@ -12,20 +12,32 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []); // Chạy một lần khi component được mount (app vua duoc mo tren trinh duyet)
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (userId) => {
         try {
-            const response = await axios.get('/auth/profile');
-
-            if(response){
-                const userData = response.data;
-                setUser(userData);
-                localStorage.setItem('user', JSON.stringify(userData));
-            } 
+            const id = userId || JSON.parse(localStorage.getItem('user') || '{}')?.userId;
+            if (!id) return;
+            const response = await axios.get(`/users/${id}`);
+            if (response) {
+                const data = response.data;
+                const normalized = {
+                    id: data.userID,
+                    userId: data.userID,
+                    userID: data.userID,
+                    fullName: data.fullName || '',
+                    email: data.email || '',
+                    phone: data.phone || '',
+                    dateOfBirth: data.dateOfBirth || null,
+                    coinBalance: data.coinBalance || 0,
+                    avatar: data.avatar || null,
+                    status: data.status,
+                    role: data.role || 'CUSTOMER',
+                };
+                setUser(normalized);
+                localStorage.setItem('user', JSON.stringify(normalized));
+            }
         } catch (error) {
             console.error('Lỗi cập nhật thông tin user:', error);
-            setUser(null);
-            setIsAuthenticated(false);
-        } 
+        }
     };
 
 
@@ -65,7 +77,7 @@ export const AuthProvider = ({ children }) => {
                 const userData = JSON.parse(userStr);
                 setUser(userData);
                 setIsAuthenticated(true);
-                await fetchProfile();
+                await fetchProfile(userData.userId || userData.userID);
             } else {
                 setUser(null);
                 setIsAuthenticated(false);
@@ -81,7 +93,20 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await axios.post('/auth/login', { email, password });
-            const { accessToken, refreshToken, user: userData } = response.data;
+            const { accessToken, refreshToken, user: rawUser } = response.data;
+
+            const userData = {
+                id: rawUser.userId,
+                userId: rawUser.userId,
+                userID: rawUser.userId,
+                fullName: rawUser.fullName || '',
+                email: rawUser.email || '',
+                avatar: rawUser.avatar || null,
+                role: rawUser.role || 'CUSTOMER',
+                provinceName: rawUser.provinceName || '',
+                districtName: rawUser.districtName || '',
+                coinBalance: rawUser.coinBalance || 0,
+            };
 
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
@@ -89,6 +114,8 @@ export const AuthProvider = ({ children }) => {
 
             setUser(userData);
             setIsAuthenticated(true);
+
+            await fetchProfile(rawUser.userId);
 
             return { success: true, user: userData };
         } catch (error) {

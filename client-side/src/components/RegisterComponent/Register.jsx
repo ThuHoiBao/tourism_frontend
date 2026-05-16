@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Register.module.scss';
 import { Mail, Lock, Eye, EyeOff, User, MapPin, CheckCircle } from 'lucide-react';
-import axios from '../../utils/axiosCustomize';
+import { authAPI } from '../../services/auth/auth';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -62,10 +62,6 @@ const Register = () => {
     }
   };
 
-  const register = async(userData) => {
-    const response = await axios.post(`/auth/register`, userData);
-    return response.data;
-  }
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -182,7 +178,10 @@ const Register = () => {
 
       console.log("Sending request:", requestData);
 
-      const response = await register(requestData);
+      await authAPI.register(requestData);
+
+      // Save email to localStorage for resend verification
+      localStorage.setItem('registeredEmail', formData.email);
 
       setRegisteredEmail(formData.email);
       setShowSuccessModal(true);
