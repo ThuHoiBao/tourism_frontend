@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    ArrowRight,
     BadgePercent,
     Banknote,
+    ChevronRight,
     Globe2,
     MapPin,
     Search,
@@ -178,7 +178,6 @@ const Banner = () => {
                 )}
 
                 <aside className={styles.sideInfoBox}>
-             
                     <p className={styles.sideTitle}>{featuredTour?.tourName || 'Khám phá hành trình nổi bật'}</p>
                     <p className={styles.sideDetails}>{featuredTour?.duration || 'Lịch trình linh hoạt'}</p>
                     <p className={styles.priceLabel}>Giá chỉ từ</p>
@@ -193,7 +192,7 @@ const Banner = () => {
                             onClick={handleFeaturedClick}
                             aria-label="Xem chuyến đi nổi bật"
                         >
-                            <ArrowRight size={28} strokeWidth={2.8} />
+                            <ChevronRight size={30} strokeWidth={2.6} />
                         </button>
                     </div>
                 </aside>

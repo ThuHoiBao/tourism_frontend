@@ -361,40 +361,50 @@ $dark-blue: #073763;
     position: absolute;
     top: 100%;
     right: 0;
-    width: 300px;
+    width: 318px;
     z-index: 10000;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: #333;
-    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 22px 54px rgba(15, 23, 42, 0.2);
+    color: #172033;
+    margin-top: 12px;
     overflow: hidden;
+    backdrop-filter: blur(10px);
+    animation: slideDown 0.22s ease;
 }
 
 .modalHeader {
-    background-color: $profile-bg; 
+    background:
+      radial-gradient(circle at 82% 0%, rgba(14, 165, 233, 0.45), transparent 34%),
+      linear-gradient(135deg, #073763 0%, #0f5f91 100%);
     color: white;
-    padding: 20px 15px;
+    padding: 20px 18px 18px;
     line-height: 1.5;
 }
 
 .modalUsername {
     display: block;
-    font-size: 1.1rem;
-    font-weight: bold;
+    font-size: 1.05rem;
+    font-weight: 800;
     margin-bottom: 5px;
+    letter-spacing: 0;
 }
 
 .modalStatus {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.9rem;
-    font-weight: bold;
+    font-weight: 760;
+    color: #fde68a;
 }
 .memberTier {
-    font-size: 0.8rem;
-    font-weight: normal;
+    font-size: 0.82rem;
+    font-weight: 520;
     display: block;
-    margin-top: 5px;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.86);
 }
 
 .coinIcon {
@@ -404,23 +414,35 @@ $dark-blue: #073763;
 
 .modalMenu {
     list-style: none;
-    padding: 10px 0;
+    padding: 10px;
+    margin: 0;
 
     li {
         display: flex;
         align-items: center;
-        padding: 12px 15px;
+        gap: 11px;
+        padding: 12px 12px;
         font-size: 0.95rem;
+        font-weight: 560;
         cursor: pointer;
-        transition: background-color 0.2s;
+        border-radius: 9px;
+        transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 
         &:hover {
-            background-color: #f5f5f5;
+            color: #075985;
+            background-color: #eff6ff;
+            transform: translateX(2px);
         }
 
         svg {
-            margin-right: 10px;
-            color: #777;
+            flex: 0 0 auto;
+            margin-right: 0;
+            color: #64748b;
+            transition: color 0.18s ease;
+        }
+
+        &:hover svg {
+            color: #0284c7;
         }
     }
 }

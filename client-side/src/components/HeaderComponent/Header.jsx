@@ -385,7 +385,7 @@ const Header = () => {
                     <img className={styles.logoImage} src={logoSrc} alt="Future Travel" />
                 </Link>
                 <Link to="/" className={getNavLinkClass('/')}>Trang chủ</Link>
-                <Link to="/tours" className={getNavLinkClass('/tours')}>Tours</Link>
+                <Link to="/tours" className={getNavLinkClass('/tours')}>Chuyến đi</Link>
                 <Link to="/forum" className={getNavLinkClass('/forum')}>Diễn đàn</Link>
 
                 <Link to="/flights" className={getNavLinkClass('/flights')}><IoIosAirplane /> Vé máy bay</Link>
