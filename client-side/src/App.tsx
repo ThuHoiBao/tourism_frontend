@@ -21,6 +21,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from './utils/ScrollToTop';
 import GoogleCallback from './components/GoogleCallback/GoogleCallback';
+import ForumPage from './components/ForumComponent/ForumPage';
+import PostDetailPage from './components/ForumComponent/PostDetail/PostDetailPage';
+import UserPostsManagement from './components/ForumComponent/UserPostsManagement/UserPostsManagement';
 // // Các trang giả định
 // const HotelPage = () => <div>Trang Khách sạn</div>; 
 // const FlightsPage = () => <div>Trang Vé máy bay</div>; 
@@ -79,6 +82,10 @@ function App() {
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
           <Route path="/payment-error" element={<PaymentError />} />
+
+          <Route path="/forum" element={<ForumPage />} />
+          <Route path="/forum/post/:postId" element={<PostDetailPage />} />
+          <Route path="/forum/my-posts" element={<UserPostsManagement />} />
 
           <Route path="/register" element={<Register />} />
            <Route 

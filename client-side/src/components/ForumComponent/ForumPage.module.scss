@@ -1,0 +1,147 @@
+.forumPage {
+  padding-top: 60px;
+  height: 100vh;
+  background-color: #f4f6f8;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.forumContent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stickyHeaderWrapper {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  z-index: 10;
+  background-color: #f4f6f8;
+  padding-bottom: 10px;
+}
+
+.forumHeaderSlider {
+  width: 100%;
+  height: 200px;
+  border-radius: 16px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, #001f3f, #000);
+}
+
+.sliderTrack {
+  display: flex;
+  width: 800%;
+  height: 100%;
+  animation: slideStep 40s steps(8, end) infinite;
+}
+
+.sliderTrack img {
+  width: 12.5%;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+@keyframes slideStep {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.forumHeaderSlider:hover .sliderTrack {
+  animation-play-state: paused;
+}
+
+.forumFilters {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 5px 12px;
+  margin-bottom: 0;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+.filterSelect, .searchInput {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.filterSelect {
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 250px;
+}
+
+.filterInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.filterText {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.activeFilter {
+  color: #667eea;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+// Phần scroll riêng cho posts - chỉ phần này scroll
+.scrollableContent {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 24px;
+  padding-bottom: 50px;
+
+  // Smooth scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 20px;
+
+    &:hover {
+      background-color: #9ca3af;
+    }
+  }
+}

@@ -45,10 +45,10 @@ const DepartureList = () => {
 
   const loadLocations = async () => {
     try {
-      const response = await axios.get('/admin/locations/national', {
+      const response = await axios.get('/locations/national', {
         params: {
           page: 0,
-          size: 1000 
+          size: 1000
         }
       });
       if (response.data.content) {
@@ -69,51 +69,76 @@ const DepartureList = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const formatDateToISO = (date) => {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      return d.toISOString();
+    };
+
+    const formatEndOfDayToISO = (date) => {
+      const d = new Date(date);
+      d.setHours(23, 59, 59, 999);
+      return d.toISOString();
+    };
+
     switch (dateFilter) {
       case 'today':
         return {
-          from: today.toISOString().split('T')[0],
-          to: today.toISOString().split('T')[0]
+          from: formatDateToISO(today),
+          to: formatEndOfDayToISO(today)
         };
-      
+
       case 'thisWeek': {
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - today.getDay());
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
         return {
-          from: startOfWeek.toISOString().split('T')[0],
-          to: endOfWeek.toISOString().split('T')[0]
+          from: formatDateToISO(startOfWeek),
+          to: formatEndOfDayToISO(endOfWeek)
         };
       }
-      
+
       case 'thisMonth': {
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         return {
-          from: startOfMonth.toISOString().split('T')[0],
-          to: endOfMonth.toISOString().split('T')[0]
+          from: formatDateToISO(startOfMonth),
+          to: formatEndOfDayToISO(endOfMonth)
         };
       }
-      
+
       case 'nextMonth': {
         const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
         const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
         return {
-          from: startOfNextMonth.toISOString().split('T')[0],
-          to: endOfNextMonth.toISOString().split('T')[0]
+          from: formatDateToISO(startOfNextMonth),
+          to: formatEndOfDayToISO(endOfNextMonth)
         };
       }
-      
+
       case 'custom':
         if (customDateFrom && customDateTo) {
-          return {
-            from: customDateFrom,
-            to: customDateTo
-          };
+          try {
+            // Handle date format "YYYY-MM-DD" from date input
+            const fromDate = new Date(customDateFrom + 'T00:00:00');
+            const toDate = new Date(customDateTo + 'T23:59:59');
+
+            if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+              return null;
+            }
+
+            return {
+              from: fromDate.toISOString(),
+              to: toDate.toISOString()
+            };
+          } catch (error) {
+            console.error('Error parsing custom dates:', error);
+            return null;
+          }
         }
         return null;
-      
+
       default:
         return null;
     }
@@ -263,12 +288,30 @@ const DepartureList = () => {
   };
 
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(date);
+    if (!dateStr) return '-';
+    try {
+      // Handle both ISO format and DD/MM/YYYY format
+      let dateObj;
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split(' ')[0].split('/');
+        dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+      } else {
+        dateObj = new Date(dateStr);
+      }
+
+      if (isNaN(dateObj.getTime())) {
+        return '-';
+      }
+
+      return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).format(dateObj);
+    } catch (error) {
+      console.error('Error formatting date:', dateStr, error);
+      return '-';
+    }
   };
 
   const filteredDepartures = departures.filter(dep =>

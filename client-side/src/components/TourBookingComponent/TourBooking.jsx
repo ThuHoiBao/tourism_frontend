@@ -396,6 +396,7 @@ const TourBooking = () => {
 
     const requestData = {
       departureId: parseInt(departureId),
+      userId: user?.userId || user?.userID || user?.id || null,
       contactFullName: contactInfo.fullName,
       contactPhone: contactInfo.phone,
       contactEmail: contactInfo.email,

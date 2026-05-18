@@ -1,618 +1,315 @@
-/* ToursPage.module.scss */
-
-// Variables for consistent theming
-$primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-$primary-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
-$bg-color: #f3f4f6;
-$card-bg: #ffffff;
-$text-main: #1f2937;
-$text-secondary: #6b7280;
-$border-color: #e5e7eb;
-$row-hover: #f9fafb;
-$row-stripe: #f8fafc; // Màu cho hàng chẵn
-
 .container {
   padding: 24px;
-  background: $bg-color;
-  min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f8fafc;
+  min-height: 100%;
 }
 
-// Header
 .header {
-  background: $card-bg;
-  border-radius: 16px;
-  padding: 24px 32px;
-  margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  align-items: flex-start;
+  margin-bottom: 24px;
 
   h1 {
-    font-size: 26px;
-    font-weight: 800;
-    color: $text-main;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.5px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 4px;
   }
-
-  p {
-    color: $text-secondary;
-    margin: 0;
-    font-size: 14px;
-  }
-
-  .btnPrimary {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: $primary-gradient;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: $primary-shadow;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-    svg {
-      color: #3b82f6;
-    }
+  p { color: #64748b; margin: 0; font-size: 14px; }
 }
 
-// Toolbar
-.toolbar {
-  background: $card-bg;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
+.btnPrimary {
   display: flex;
-  gap: 16px;
   align-items: center;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  gap: 8px;
+  background: linear-gradient(135deg, #1a73e8, #0d5abf);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
 
-  .searchBox {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border: 1px solid $border-color;
-    border-radius: 12px;
-    background: #f9fafb;
-    transition: all 0.2s;
+  &:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,115,232,0.4); }
+}
 
-    &:focus-within {
-      background: white;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
-    svg {
-      color: #9ca3af;
-      flex-shrink: 0;
-    }
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  flex: 1;
+  min-width: 260px;
+  transition: border-color 0.2s;
 
-    input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 14px;
-      color: $text-main;
+  &:focus-within { border-color: #1a73e8; }
 
-      &::placeholder {
-        color: #9ca3af;
-      }
-    }
+  svg { color: #94a3b8; flex-shrink: 0; }
 
-    button {
-      padding: 8px 16px;
-      background: #e0e7ff;
-      color: #4f46e5;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #c7d2fe;
-      }
-    }
-  }
-
-  .filterGroup {
-    display: flex;
-    gap: 12px;
-  }
-
-  .pageSize {
-    padding: 10px 16px;
-    border: 1px solid $border-color;
-    border-radius: 10px;
-    font-size: 14px;
-    color: $text-main;
-    background-color: white;
-    cursor: pointer;
-    transition: all 0.2s;
+  input {
+    border: none;
     outline: none;
+    font-size: 14px;
+    flex: 1;
+    background: transparent;
+    color: #1e293b;
+  }
 
-    &:hover {
-      border-color: #9ca3af;
-    }
-
-    &:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
+  button {
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
   }
 }
 
-// Stats
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg { color: #64748b; }
+
+  select {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+    outline: none;
+    &:focus { border-color: #1a73e8; }
+  }
+}
+
 .stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
   gap: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #64748b;
 
-  .stat {
-    background: $card-bg;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0,0,0,0.02);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: transform 0.2s;
-
-    &:hover {
-      transform: translateY(-2px);
-    }
-
-    .statLabel {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: $text-secondary;
-      font-weight: 600;
-    }
-
-    .statValue {
-      font-size: 32px;
-      font-weight: 700;
-      color: #111827;
-      background: $primary-gradient;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-  }
+  strong { color: #1e293b; }
 }
 
-// Table Container & Scrollbar
-.tableContainer {
-  background: $card-bg;
-  border-radius: 16px;
-  overflow: hidden; // Quan trọng để bo góc
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  margin-bottom: 24px;
-  border: 1px solid $border-color;
-  overflow-x: auto;
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: #64748b;
+}
 
-  // Custom Scrollbar
-  &::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 4px;
-    &:hover {
-      background: #9ca3af;
-    }
-  }
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: #94a3b8;
+
+  h3 { color: #64748b; margin: 0; }
+}
+
+.tableContainer {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: auto;
 }
 
 .table {
   width: 100%;
-  border-collapse: separate; // Đổi thành separate để border-radius hoạt động tốt hơn
-  border-spacing: 0;
-  min-width: 1000px; // Đảm bảo bảng không bị co quá nhỏ
+  border-collapse: collapse;
+  font-size: 14px;
 
-  thead {
-    background: #f9fafb;
-    
+  thead tr {
+    background: #f1f5f9;
     th {
-      position: sticky; // Cố định header
-      top: 0;
-      z-index: 10;
-      background: #f8fafc; // Màu nền header
-      white-space: nowrap;
-      padding: 18px 24px;
+      padding: 12px 16px;
       text-align: left;
+      font-weight: 600;
+      color: #475569;
       font-size: 12px;
-      font-weight: 700;
-      color: #64748b;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid $border-color;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
   }
 
-  tbody {
-    tr {
-      transition: background-color 0.2s ease;
+  tbody tr {
+    border-top: 1px solid #f1f5f9;
+    transition: background 0.15s;
+    &:hover { background: #f8fafc; }
 
-      // --- CẬP NHẬT: Màu sắc xen kẽ ---
-      &:nth-of-type(even) {
-        background-color: $row-stripe; // Màu nền cho hàng chẵn
-      }
-
-      &:nth-of-type(odd) {
-        background-color: white; // Màu nền cho hàng lẻ
-      }
-
-      &:hover {
-        background-color: #f1f5f9 !important; // Màu khi hover
-        
-        td {
-          color: #111827; // Làm đậm chữ khi hover
-        }
-      }
-
-      td {
-        padding: 16px 24px;
-        font-size: 14px;
-        color: #4b5563;
-        border-bottom: 1px solid $border-color;
-        vertical-align: middle;
-      }
-
-      &:last-child td {
-        border-bottom: none;
-      }
+    td {
+      padding: 12px 16px;
+      color: #374151;
+      vertical-align: middle;
     }
   }
 }
 
-// Table Content Styling
 .tourImage {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
+  width: 64px;
+  height: 48px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #e0e7ff;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex-shrink: 0;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-  }
-  
-  &:hover img {
-    transform: scale(1.1);
-  }
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
 
-  .noImage {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #818cf8;
-  }
+.noImage {
+  width: 100%;
+  height: 100%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  border-radius: 8px;
 }
 
 .tourCode {
-  font-family: 'JetBrains Mono', 'Monaco', monospace;
-  font-weight: 600;
-  color: #4f46e5;
-  background: #eef2ff;
-  padding: 6px 10px;
-  border-radius: 6px;
+  font-family: monospace;
   font-size: 12px;
-  border: 1px solid #c7d2fe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 600;
 }
 
 .tourName {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-width: 250px;
+  gap: 2px;
+  max-width: 280px;
 
-  strong {
-    font-weight: 600;
-    color: #1e293b;
-    font-size: 15px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .tourTransport {
-    font-size: 12px;
-    color: #64748b;
-    display: inline-block;
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 4px;
-    width: fit-content;
-  }
-}
-
-.duration,
-.location {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #475569;
-  font-weight: 500;
-
-  svg {
-    color: #94a3b8;
-  }
+  strong { color: #1e293b; font-size: 14px; line-height: 1.3; }
+  span { color: #94a3b8; font-size: 12px; }
 }
 
 .status {
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 14px;
-  border-radius: 30px;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 700;
-  text-transform: capitalize;
-  
-  // Status color variants
-  &.active {
-    background: #ecfdf5;
-    color: #059669;
-    border: 1px solid #a7f3d0;
-    
-    &::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #059669;
-      margin-right: 6px;
-    }
-  }
+  font-weight: 600;
+  white-space: nowrap;
 
-  &.inactive {
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
-
-    &::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #dc2626;
-      margin-right: 6px;
-    }
-  }
-}
-
-.date {
-  font-size: 13px;
-  color: #64748b;
-  font-variant-numeric: tabular-nums;
+  &.active { background: #dcfce7; color: #16a34a; }
+  &.inactive { background: #fee2e2; color: #dc2626; }
 }
 
 .actions {
   display: flex;
-  gap: 10px;
-  justify-content: flex-start;
+  gap: 6px;
 
   button {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-  }
-
-  .btnEdit {
-    background: #eff6ff;
-    color: #3b82f6;
-    border: 1px solid #dbeafe;
-
-    &:hover {
-      background: #3b82f6;
-      color: white;
-      border-color: #3b82f6;
-    }
-  }
-
-  .btnDelete {
-    background: #fef2f2;
-    color: #ef4444;
-    border: 1px solid #fee2e2;
-
-    &:hover {
-      background: #ef4444;
-      color: white;
-      border-color: #ef4444;
-    }
+    transition: all 0.15s;
   }
 }
 
-// Pagination
+.btnEdit {
+  background: #eff6ff;
+  color: #2563eb;
+  &:hover { background: #2563eb; color: #fff; }
+}
+
+.btnDelete {
+  background: #fef2f2;
+  color: #dc2626;
+  &:hover { background: #dc2626; color: #fff; }
+}
+
 .pagination {
-  background: $card-bg;
-  border-radius: 16px;
-  padding: 16px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid $border-color;
-
-  .pageBtn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border: 1px solid $border-color;
-    border-radius: 10px;
-    background: white;
-    color: $text-main;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 13px;
-
-    &:hover:not(:disabled) {
-      border-color: #6366f1;
-      color: #6366f1;
-      background: #eef2ff;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      background: #f3f4f6;
-    }
-  }
-
-  .pageNumbers {
-    display: flex;
-    gap: 6px;
-
-    .pageNumber {
-      width: 36px;
-      height: 36px;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      background: transparent;
-      color: $text-secondary;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-
-      &:hover {
-        background: #f3f4f6;
-        color: $text-main;
-      }
-
-      &.active {
-        background: $primary-gradient;
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25);
-      }
-    }
-  }
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
 }
 
-// Loading & Empty States
-.loading, .empty {
-  background: $card-bg;
-  border-radius: 16px;
-  padding: 80px 40px;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid $border-color;
-  margin-top: 24px;
+.pageBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) { border-color: #1a73e8; color: #1a73e8; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e5e7eb;
-  border-top-color: #6366f1;
-  border-radius: 50%;
-  animation: spin 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
-  margin: 0 auto 16px;
-}
+.pageNumbers { display: flex; gap: 4px; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+.pageNumber {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
 
-// Responsive
-@media (max-width: 1024px) {
-  .table {
-    thead th, tbody td {
-      padding: 12px 16px;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    padding: 20px;
-
-    .btnPrimary {
-      justify-content: center;
-    }
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    
-    .filterGroup {
-      justify-content: flex-end;
-    }
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: 16px;
-    
-    .pageNumbers {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-  }
+  &:hover:not(.active) { border-color: #1a73e8; color: #1a73e8; }
+  &.active { background: #1a73e8; border-color: #1a73e8; color: #fff; }
 }

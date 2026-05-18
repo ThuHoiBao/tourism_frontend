@@ -67,11 +67,27 @@ const DepartureFormModal = ({ departure, locations, onClose, onSuccess }) => {
   useEffect(() => {
     if (departure) {
       console.log('Filling form with departure data:', departure);
-      
+
+      // Convert DD/MM/YYYY HH:mm format to datetime-local format (YYYY-MM-DDTHH:mm)
+      const convertDateFormat = (dateStr) => {
+        if (!dateStr) return '';
+        // Handle format "15/06/2026 09:00"
+        if (dateStr.includes('/')) {
+          const parts = dateStr.split(' ');
+          const dateParts = parts[0].split('/'); // [15, 06, 2026]
+          const timeParts = parts[1] ? parts[1].split(':') : ['00', '00']; // [09, 00]
+          return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeParts[0]}:${timeParts[1]}`;
+        }
+        return dateStr.slice(0, 16);
+      };
+
+      // Get tour ID from departure object or fetch it
+      const tourId = departure.tourId || (tours.find(t => t.tourID === departure.tourID)?.tourID || '');
+
       // Fill basic info
       setFormData({
-        tourId: departure.tourId || '',
-        departureDate: departure.departureDate ? departure.departureDate.slice(0, 16) : '',
+        tourId: tourId,
+        departureDate: convertDateFormat(departure.departureDate),
         availableSlots: departure.availableSlots || '',
         status: departure.status !== undefined ? departure.status : true,
         tourGuideInfo: departure.tourGuideInfo || '',

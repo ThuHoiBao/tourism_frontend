@@ -33,13 +33,13 @@ export class SearchToursRequestDTO {
     toPlain() {
         // Chỉ gửi các trường có giá trị hợp lệ (-1 cho ID sẽ được backend xử lý)
         return {
-            searchNameTour: this.searchNameTour,
-            startPrice: this.startPrice,
-            endPrice: this.endPrice,
+            searchNameTour: this.searchNameTour || null,
+            startPrice: this.startPrice > 0 ? this.startPrice : null,
+            endPrice: this.endPrice < 99999999999999 ? this.endPrice : null,
             startLocationID: this.startLocationID === -1 ? null : this.startLocationID,
             endLocationID: this.endLocationID === -1 ? null : this.endLocationID,
             transportation: this.transportation || null,
-            rating: this.rating === 0 ? null : this.rating, // Gửi null nếu rỗng
+            rating: this.rating === 0 ? null : this.rating,
         };
     }
 }

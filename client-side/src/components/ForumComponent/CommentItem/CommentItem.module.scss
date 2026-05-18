@@ -1,0 +1,140 @@
+.commentItem {
+  padding: 16px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #ffffff;
+    border-color: #dee2e6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  &.replyComment {
+    background: #fefefe;
+    border: 1px solid #f1f3f4;
+    margin-top: 12px;
+
+    &:hover {
+      background: #ffffff;
+      border-color: #dee2e6;
+    }
+  }
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.commentInfo {
+  flex: 1;
+}
+
+.commentMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.commentAuthor {
+  font-weight: 600;
+  color: #2d3436;
+  font-size: 14px;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.editedBadge {
+  font-size: 11px;
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.commentContent {
+  margin-bottom: 16px;
+}
+
+.commentText {
+  color: #495057;
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.commentActions {
+  display: flex;
+  gap: 16px;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      background: none;
+      color: #6c757d;
+    }
+  }
+
+  &.liked {
+    color: #e74c3c;
+
+    &:hover {
+      color: #c0392b;
+      background: rgba(231, 76, 60, 0.1);
+    }
+  }
+}
+
+.actionIcon {
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionText {
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.repliesContainer {
+  margin-top: 16px;
+  border-left: 2px solid #e9ecef;
+  padding-left: 16px;
+  margin-left: 12px;
+}

@@ -1,0 +1,160 @@
+.trendingContainer {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f4f8;
+}
+
+.title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.titleIcon {
+  color: #f97316;
+}
+
+.trendingList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.trendingItem {
+  position: relative;
+  padding: 18px 18px 18px 60px; /* Để chừa chỗ cho rank ở trên */
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+    transform: translateY(-3px);
+  }
+}
+
+/* Số thứ hạng ở trên đầu bên trái */
+.rankHeader {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+}
+
+.rankTag {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.rank1 {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+}
+
+.rank2 {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+  color: white;
+}
+
+.rank3 {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: white;
+}
+
+/* Nội dung chính bên trái */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.authorName {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14.5px;
+}
+
+.postDate {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.postTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #3b82f6;
+  }
+}
+
+.stats {
+  display: flex;
+  gap: 18px;
+  font-size: 13.5px;
+  color: #64748b;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+
+  svg {
+    color: #94a3b8;
+  }
+}
+
+.categoryBadge {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.noPosts {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+}
+
+.noPostsIcon {
+  margin-bottom: 16px;
+}
+
+.noPosts p {
+  font-size: 15px;
+  margin: 0;
+}

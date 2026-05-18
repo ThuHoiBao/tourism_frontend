@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from '../../utils/axiosCustomize';
 import styles from './VerifyEmail.module.scss';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
+import { authAPI } from '../../services/auth/auth';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,8 @@ const VerifyEmail = () => {
 
   const [status, setStatus] = useState('loading');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
+  const [resending, setResending] = useState(false);
 
   const hasVerified = useRef(false);
 
@@ -39,6 +42,11 @@ const VerifyEmail = () => {
         setStatus('error');
 
         let errorMessage = 'Xác thực email thất bại.';
+        const savedEmail = localStorage.getItem('registeredEmail');
+
+        if (savedEmail) {
+          setEmail(savedEmail);
+        }
 
         if (error.response) {
           switch (error.response.status) {
@@ -64,6 +72,26 @@ const VerifyEmail = () => {
 
     verifyEmail();
   }, [token, navigate]);
+
+  const handleResendEmail = async () => {
+    if (!email) {
+      alert('Email không được lưu. Vui lòng đăng ký lại.');
+      return;
+    }
+
+    setResending(true);
+    try {
+      await authAPI.resendVerification(email);
+      alert('Email xác thực đã được gửi lại. Vui lòng kiểm tra hộp thư của bạn.');
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+        'Gửi lại email thất bại. Vui lòng thử lại sau.'
+      );
+    } finally {
+      setResending(false);
+    }
+  };
 
   return (
     <div className={styles.verifyContainer}>
@@ -113,19 +141,28 @@ const VerifyEmail = () => {
             </div>
 
             <div className={styles.buttonGroup}>
-              <button 
-                className={styles.btnPrimary}
+              {email && (
+                <button
+                  className={styles.btnPrimary}
+                  onClick={handleResendEmail}
+                  disabled={resending}
+                >
+                  {resending ? 'Đang gửi...' : 'Gửi lại email xác thực'}
+                </button>
+              )}
+              <button
+                className={styles.btnSecondary}
                 onClick={() => navigate('/register')}
               >
                 Đăng ký lại
               </button>
-              <button 
+              <button
                 className={styles.btnSecondary}
                 onClick={() => navigate('/login')}
               >
                 Đăng nhập
               </button>
-              <button 
+              <button
                 className={styles.btnSecondary}
                 onClick={() => navigate('/')}
               >
