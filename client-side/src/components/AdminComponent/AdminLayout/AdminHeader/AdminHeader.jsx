@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaBell, FaGlobe, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { FaSearch, FaGlobe, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import styles from './AdminHeader.module.scss';
 import axios from '../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
+import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
 
 const AdminHeader = () => {
     const navigate = useNavigate();
@@ -90,7 +91,7 @@ const AdminHeader = () => {
     return (
         <header className={styles.adminHeader}>
             <div className={styles.leftSection}>
-               <img className={styles.logo} src='https://res.cloudinary.com/dnt8vx1at/image/upload/v1766193584/FT_kpfvjq.png'></img>
+               <img className={styles.logo} src={futureLogoDark} alt="Future Travel" />
             </div>
 
             <div className={styles.centerSection}>

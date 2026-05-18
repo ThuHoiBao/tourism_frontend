@@ -35,7 +35,7 @@ const SpecialTours = () => {
     return (
         <div className={styles.specialToursContainer}>
             <div className={styles.header}>
-                <h2 className={styles.title}>TOUR ƯU ĐÃI ĐẶC BIỆT</h2>
+                <h2 className={styles.title}>CHUYẾN ĐI ƯU ĐÃI ĐẶC BIỆT</h2>
                 <p className={styles.description}>
                     Hãy tận hưởng trải nghiệm du lịch chuyên nghiệp, mang lại cho bạn những khoảnh khắc tuyệt 
                     vời và nâng tầm cuộc sống. Chúng tôi cam kết mang đến những chuyến đi đáng nhớ, giúp bạn 
@@ -62,7 +62,7 @@ const SpecialTours = () => {
             </div>
             
             {loading && (
-                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Đang tải các tour ưu đãi...</p>
+                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Đang tải các chuyến đi ưu đãi...</p>
             )}
             
             {error && (
@@ -87,7 +87,7 @@ const SpecialTours = () => {
             )}
             
             {!loading && !error && specialTours.length === 0 && (
-                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Không tìm thấy tour ưu đãi nào.</p>
+                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Không tìm thấy chuyến đi ưu đãi nào.</p>
             )}
 
             {/* <div style={{textAlign: 'center', marginTop: '5px'}}>

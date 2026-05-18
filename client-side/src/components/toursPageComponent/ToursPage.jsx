@@ -8,7 +8,8 @@ import FilterAndSearchInput from './FilterAndSearchInput/FilterAndSearchInput.js
 import TourComponent from './TourComponent/TourComponent.jsx'; 
 import styles from './ToursPage.module.scss'; 
 import { useAuth } from '../../context/AuthContext.jsx';
-import { FaMapSigns, FaHome } from 'react-icons/fa';
+import { FaHome } from 'react-icons/fa';
+import toursHeroImage from '../../assets/images/digitalarbyter-maJ7hJBE654-unsplash.jpg';
 // Định nghĩa các Tùy chọn Sắp xếp
 const SORT_OPTIONS = [
     { value: 'ALL', label: 'Tất cả' },
@@ -94,6 +95,13 @@ const ToursPage = () => {
     
 // Kiểm tra xem người dùng đã chọn điểm đến cụ thể hay chưa
 const isSpecificDestinationSelected = currentEndPointInfo && currentEndPointInfo.locationID !== -1;
+const destinationName = isSpecificDestinationSelected ? currentEndPointInfo.name : 'Future Travel';
+const heroTitle = isSpecificDestinationSelected
+    ? currentEndPointInfo.name.toUpperCase()
+    : 'DU LỊCH FUTURE TRAVEL';
+const heroDescription = isSpecificDestinationSelected
+    ? (currentEndPointInfo.description || 'Khám phá điểm đến hấp dẫn này cùng Future Travel với các hành trình được chọn lọc kỹ lưỡng.')
+    : 'Khám phá những hành trình trong và ngoài nước được Future Travel tuyển chọn, với lịch khởi hành linh hoạt, mức giá rõ ràng và trải nghiệm được chăm chút từ lúc tìm tour đến khi trở về.';
 // Hàm xử lý khi chọn tùy chọn sắp xếp
     const handleSortSelect = useCallback((option) => {
         setCurrentSort(option);
@@ -101,23 +109,24 @@ const isSpecificDestinationSelected = currentEndPointInfo && currentEndPointInfo
     }, []);
     return (
         <>
-            <div className={styles.pageHero}>
-                <div className={styles.heroIconWrap}>
-                    <FaMapSigns />
-                </div>
-                <div className={styles.heroTextBlock}>
-                    <p className={styles.heroEyebrow}>Tours</p>
-                    <h1 className={styles.heroTitle}>Khám phá tour phù hợp</h1>
-                    <p className={styles.heroSub}>
-                        Sắp xếp, lọc và chọn hành trình yêu thích với thông tin chuyến đi.
-                    </p>
+            <section
+                className={styles.pageHero}
+                style={{ backgroundImage: `url(${toursHeroImage})` }}
+            >
+                <div className={styles.heroInner}>
                     <div className={styles.heroBreadcrumb}>
-                        <span className={styles.crumb} onClick={() => navigate('/')} style={{cursor: 'pointer'}}><FaHome /> Trang chủ</span>
+                        <span className={styles.crumb} onClick={() => navigate('/')} style={{cursor: 'pointer'}}><FaHome /> Du lịch</span>
                         <span className={styles.crumbDivider}>/</span>
-                        <span className={styles.crumbActive}>Danh sách tour</span>
+                        <span className={styles.crumb}>Trong nước</span>
+                        <span className={styles.crumbDivider}>/</span>
+                        <span className={styles.crumbActive}>{destinationName}</span>
+                    </div>
+                    <div className={styles.heroTextBlock}>
+                        <h1 className={styles.heroTitle}>{heroTitle}</h1>
+                        <p className={styles.heroSub}>{heroDescription}</p>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <div className={styles.toursPageLayout}>
                 {/* Cột Trái: Bộ Lọc */}
@@ -127,30 +136,18 @@ const isSpecificDestinationSelected = currentEndPointInfo && currentEndPointInfo
 
                 {/* Cột Phải: Thông tin Điểm đến và Kết Quả */}
                 <div className={styles.resultsColumn}>
-                    
-                    {/* KHỐI THÔNG TIN ĐIỂM ĐẾN (Logic CẬP NHẬT) */}
-                    <div className={styles.destinationHeader}>
-                        {isSpecificDestinationSelected ? (
-                            <>
-                                {/* Hiển thị thông tin điểm đến cụ thể */}
-                                <h2>Du Lịch {currentEndPointInfo.name}</h2>
-                                <p>{currentEndPointInfo.description || 'Khám phá điểm đến hấp dẫn này.'}</p>
-                            </>
-                        ) : (
-                            <>
-                                {/* Hiển thị thông điệp chung khi chọn 'Tất cả' */}
-                                <h2>Du lịch cùng Future Travel</h2>
-                                <p>Hãy tận hưởng trải nghiệm du lịch chuyên nghiệp, mang lại cho bạn những khoảnh khắc tuyệt vời và nâng tầm cuộc sống. Chúng tôi cam kết mang đến những chuyến đi đáng nhớ, giúp bạn khám phá thế giới theo cách hoàn hảo nhất.</p>
-                            </>
-                        )}
-                    </div>
-                    
                     {/* ✨ HEADER KẾT QUẢ VÀ SẮP XẾP MỚI ✨ */}
                     <div className={styles.resultHeader}> 
-                    <h3 className={styles.tourCount}>Tìm thấy <span className={styles.tourCountValue}>{tours.length}</span>chương trình tour cho bạn.</h3>                    
+                        <div className={styles.resultSummary}>
+                            <span className={styles.resultEyebrow}>Kết quả tìm kiếm</span>
+                            <h3 className={styles.tourCount}>
+                                <span className={styles.tourCountValue}>{tours.length}</span>
+                                <span>chương trình tour phù hợp</span>
+                            </h3>
+                        </div>
                         {/* DROP DOWN SẮP XẾP */}
                         <div className={styles.sortContainer}>
-                            <span className={styles.sortLabel}>Sắp xếp theo:</span>
+                            <span className={styles.sortLabel}>Sắp xếp:</span>
                             <div 
                                 className={styles.sortDropdown}
                                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
@@ -175,7 +172,7 @@ const isSpecificDestinationSelected = currentEndPointInfo && currentEndPointInfo
                         </div>
                     </div>
                     
-                    {loading || locationsLoading && <p>Đang tải dữ liệu...</p>}
+                    {(loading || locationsLoading) && <p>Đang tải dữ liệu...</p>}
                     {error && <p className={styles.errorMessage}>Lỗi: {error}</p>}
                     
                     {/* SỬ DỤNG DANH SÁCH TOUR ĐÃ SẮP XẾP */}

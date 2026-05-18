@@ -29,16 +29,9 @@ $active-bg: #e6f0ff; // Nền xanh nhạt cho item active không được chọn
     flex-shrink: 0;
     
     .logo {
-        font-size: 1.5em;
-        font-weight: 700;
-        color: $primary-blue; 
-        margin: 0;
-    }
-    .logo1 {
-        font-size: 1em;
-        font-weight: 700;
-        color:#0d0e0e; 
-        margin: 0;
+        display: block;
+        width: 170px;
+        height: auto;
     }
 }
 

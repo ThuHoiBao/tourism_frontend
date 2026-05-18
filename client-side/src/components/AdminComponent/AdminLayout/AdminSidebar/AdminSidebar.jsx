@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-    FaTachometerAlt, FaBox, FaChartLine, FaCog, FaSignOutAlt, FaUsers, 
-    FaTicketAlt, FaBell, FaCalendarCheck, FaTags , FaMapMarkerAlt, FaBuilding , FaPlaneDeparture, FaSkullCrossbones
+    FaTachometerAlt, FaBox, FaCog, FaSignOutAlt, FaUsers, 
+    FaCalendarCheck, FaTags , FaMapMarkerAlt, FaPlaneDeparture, FaSkullCrossbones
 } from 'react-icons/fa';
 import styles from './AdminSidebar.module.scss';
+import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
 
 const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: FaTachometerAlt },
@@ -27,7 +28,7 @@ const AdminSidebar = () => {
         <div className={styles.adminSidebar}>
             
             <div className={styles.logoSection}>
-                <h2 className={styles.logo}>Future <span className={styles.logo1}>Travel</span></h2>
+                <img className={styles.logo} src={futureLogoDark} alt="Future Travel" />
             </div>
 
             <nav>
