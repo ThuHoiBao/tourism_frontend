@@ -73,7 +73,7 @@ const AdminLogin = () => {
       
       console.log('🔐 Admin login attempt:', formData.email);
       
-      const response = await axios.post('/admin/auth/login', {
+      const response = await axios.post('/auth/login', {
         email: formData.email,
         password: formData.password
       });

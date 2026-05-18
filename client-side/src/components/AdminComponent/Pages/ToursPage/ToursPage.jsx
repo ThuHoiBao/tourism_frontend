@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Plus, Search, Edit, Trash2, Eye, MapPin, Calendar, 
-  Filter, ChevronLeft, ChevronRight, Image as ImageIcon
+import {
+  Plus, Search, Edit, Trash2, MapPin, Calendar,
+  ChevronLeft, ChevronRight, Image as ImageIcon, Filter
 } from 'lucide-react';
 import axios from '../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
 import styles from './ToursPage.module.scss';
 import TourForm from './ToursForm/TourForm';
 
-const TourList = () => {
+const ToursPage = () => {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  
-  // Modal states
   const [showTourForm, setShowTourForm] = useState(false);
   const [editingTourId, setEditingTourId] = useState(null);
 
@@ -29,21 +28,15 @@ const TourList = () => {
     setLoading(true);
     try {
       const response = await axios.get('/admin/tours', {
-        params: {
-          page: currentPage,
-          size: pageSize,
-          sortBy: 'tourID',
-          sortDirection: 'DESC'
-        }
+        params: { page: currentPage, size: pageSize, sortBy: 'tourID', sortDirection: 'DESC' }
       });
-
       if (response.data.success) {
-        setTours(response.data.data);
-        setTotalPages(response.data.totalPages);
-        setTotalItems(response.data.totalItems);
+        const paged = response.data.data;
+        setTours(paged.content || []);
+        setTotalPages(paged.totalPages || 0);
+        setTotalItems(paged.totalItems || 0);
       }
     } catch (error) {
-      console.error('Error fetching tours:', error);
       toast.error('Không thể tải danh sách tour');
     } finally {
       setLoading(false);
@@ -51,29 +44,20 @@ const TourList = () => {
   };
 
   const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-      fetchTours();
-      return;
-    }
-
+    if (!searchTerm.trim()) { fetchTours(); return; }
     setLoading(true);
     try {
       const response = await axios.get('/admin/tours/search', {
-        params: {
-          keyword: searchTerm,
-          page: 0,
-          size: pageSize
-        }
+        params: { keyword: searchTerm, page: 0, size: pageSize }
       });
-
       if (response.data.success) {
-        setTours(response.data.data);
-        setTotalPages(response.data.totalPages);
-        setTotalItems(response.data.totalItems);
+        const paged = response.data.data;
+        setTours(paged.content || []);
+        setTotalPages(paged.totalPages || 0);
+        setTotalItems(paged.totalItems || 0);
         setCurrentPage(0);
       }
-    } catch (error) {
-      console.error('Error searching tours:', error);
+    } catch {
       toast.error('Không thể tìm kiếm tour');
     } finally {
       setLoading(false);
@@ -81,115 +65,76 @@ const TourList = () => {
   };
 
   const handleDelete = async (tourId, tourName) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa tour "${tourName}"?`)) {
-      return;
-    }
-
+    if (!window.confirm(`Xóa tour "${tourName}"?`)) return;
     try {
-      const response = await axios.delete(`/admin/tours/${tourId}`);
-      
-      if (response.data.success) {
-        toast.success('Xóa tour thành công!');
-        fetchTours();
-      }
+      await axios.delete(`/admin/tours/${tourId}`);
+      toast.success('Xóa tour thành công!');
+      fetchTours();
     } catch (error) {
-      console.error('Error deleting tour:', error);
-      const msg = error.response?.data?.message || 'Không thể xóa tour';
-      toast.error(msg);
+      toast.error(error.response?.data?.message || 'Không thể xóa tour');
     }
   };
 
-  const handleEdit = (tourId) => {
-    setEditingTourId(tourId);
-    setShowTourForm(true);
-  };
+  const displayedTours = statusFilter === 'all'
+    ? tours
+    : tours.filter(t => statusFilter === 'active' ? t.status : !t.status);
 
-  const handleCreateNew = () => {
-    setEditingTourId(null);
-    setShowTourForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowTourForm(false);
-    setEditingTourId(null);
-    fetchTours();
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('vi-VN');
-  };
+  const formatDate = (s) => s ? new Date(s).toLocaleDateString('vi-VN') : '-';
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <div>
-          <h1> <MapPin size={32} />Quản lý Tours</h1>
+          <h1><MapPin size={28} /> Quản lý Tours</h1>
           <p>Quản lý tất cả các tour du lịch</p>
         </div>
-        <button className={styles.btnPrimary} onClick={handleCreateNew}>
-          <Plus size={20} />
-          Tạo tour mới
+        <button className={styles.btnPrimary} onClick={() => { setEditingTourId(null); setShowTourForm(true); }}>
+          <Plus size={18} /> Tạo tour mới
         </button>
       </div>
 
-      {/* Toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.searchBox}>
-          <Search size={20} />
+          <Search size={18} />
           <input
             type="text"
-            placeholder="Tìm kiếm theo tên tour, mã tour..."
+            placeholder="Tìm theo tên, mã tour..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={e => setSearchTerm(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
           />
-          <button onClick={handleSearch}>Tìm kiếm</button>
+          <button onClick={handleSearch}>Tìm</button>
         </div>
 
         <div className={styles.filterGroup}>
-          <select 
-            value={pageSize} 
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(0);
-            }}
-            className={styles.pageSize}
-          >
-            <option value={10}>10 / trang</option>
-            <option value={20}>20 / trang</option>
-            <option value={50}>50 / trang</option>
+          <Filter size={16} />
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+            <option value="all">Tất cả</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="inactive">Tạm dừng</option>
+          </select>
+
+          <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(0); }}>
+            <option value={10}>10/trang</option>
+            <option value={20}>20/trang</option>
+            <option value={50}>50/trang</option>
           </select>
         </div>
       </div>
 
-      {/* Stats */}
       <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span className={styles.statLabel}>Tổng số tour</span>
-          <span className={styles.statValue}>{totalItems}</span>
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.statLabel}>Trang hiện tại</span>
-          <span className={styles.statValue}>{currentPage + 1} / {totalPages}</span>
-        </div>
+        <span>Tổng: <strong>{totalItems}</strong> tour</span>
+        <span>Trang: <strong>{currentPage + 1}/{totalPages || 1}</strong></span>
       </div>
 
-      {/* Table */}
       {loading ? (
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Đang tải dữ liệu...</p>
-        </div>
-      ) : tours.length === 0 ? (
+        <div className={styles.loading}><div className={styles.spinner} /><p>Đang tải...</p></div>
+      ) : displayedTours.length === 0 ? (
         <div className={styles.empty}>
-          <ImageIcon size={64} />
+          <ImageIcon size={56} />
           <h3>Chưa có tour nào</h3>
-          <p>Bắt đầu bằng cách tạo tour đầu tiên của bạn</p>
-          <button className={styles.btnPrimary} onClick={handleCreateNew}>
-            <Plus size={20} />
-            Tạo tour đầu tiên
+          <button className={styles.btnPrimary} onClick={() => { setEditingTourId(null); setShowTourForm(true); }}>
+            <Plus size={18} /> Tạo tour đầu tiên
           </button>
         </div>
       ) : (
@@ -203,85 +148,48 @@ const TourList = () => {
                   <th>Tên Tour</th>
                   <th>Thời gian</th>
                   <th>Điểm đến</th>
+                  <th>Khởi hành</th>
                   <th>Trạng thái</th>
                   <th>Ngày tạo</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                {tours.map((tour) => (
+                {displayedTours.map(tour => (
                   <tr key={tour.tourID}>
                     <td>
-                       <div className={styles.tourImage}>
-                          {tour.images && tour.images.length > 0 ? (
-                            (() => {
-                              const mainImg = tour.images.find(img => img.isMainImage);
-                              return mainImg ? (
-                                <img
-                                  src={mainImg.imageURL}
-                                  alt={tour.tourName}
-                                />
-                              ) : (
-                                <div className={styles.noImage}>
-                                  <ImageIcon size={24} />
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            <div className={styles.noImage}>
-                              <ImageIcon size={24} />
-                            </div>
-                          )}
-                        </div>
+                      <div className={styles.tourImage}>
+                        {tour.mainImageUrl
+                          ? <img src={tour.mainImageUrl} alt={tour.tourName} />
+                          : <div className={styles.noImage}><ImageIcon size={22} /></div>
+                        }
+                      </div>
                     </td>
-                    <td>
-                      <span className={styles.tourCode}>{tour.tourCode}</span>
-                    </td>
+                    <td><span className={styles.tourCode}>{tour.tourCode}</span></td>
                     <td>
                       <div className={styles.tourName}>
                         <strong>{tour.tourName}</strong>
-                        <span className={styles.tourTransport}>
-                          {tour.transportation}
-                        </span>
+                        <span>{tour.transportation}</span>
                       </div>
                     </td>
-                    <td>
-                      <div className={styles.duration}>
-                        <Calendar size={14} />
-                        {tour.duration}
-                      </div>
-                    </td>
-                    <td>
-                      <div className={styles.location}>
-                        <MapPin size={14} />
-                        {tour.endLocationName || '-'}
-                      </div>
-                    </td>
+                    <td><Calendar size={13} /> {tour.duration}</td>
+                    <td><MapPin size={13} /> {tour.endLocationName || '-'}</td>
+                    <td>{tour.startLocationName || '-'}</td>
                     <td>
                       <span className={`${styles.status} ${tour.status ? styles.active : styles.inactive}`}>
                         {tour.status ? 'Hoạt động' : 'Tạm dừng'}
                       </span>
                     </td>
-                    <td>
-                      <span className={styles.date}>
-                        {formatDate(tour.createdAt)}
-                      </span>
-                    </td>
+                    <td>{formatDate(tour.createdAt)}</td>
                     <td>
                       <div className={styles.actions}>
-                        <button
-                          className={styles.btnEdit}
-                          onClick={() => handleEdit(tour.tourID)}
-                          title="Chỉnh sửa"
-                        >
-                          <Edit size={18} />
+                        <button className={styles.btnEdit} title="Chỉnh sửa"
+                          onClick={() => { setEditingTourId(tour.tourID); setShowTourForm(true); }}>
+                          <Edit size={16} />
                         </button>
-                        <button
-                          className={styles.btnDelete}
-                          onClick={() => handleDelete(tour.tourID, tour.tourName)}
-                          title="Xóa"
-                        >
-                          <Trash2 size={18} />
+                        <button className={styles.btnDelete} title="Xóa"
+                          onClick={() => handleDelete(tour.tourID, tour.tourName)}>
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -291,52 +199,41 @@ const TourList = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className={styles.pagination}>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                disabled={currentPage === 0}
-                className={styles.pageBtn}
-              >
-                <ChevronLeft size={20} />
-                Trước
+              <button onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                disabled={currentPage === 0} className={styles.pageBtn}>
+                <ChevronLeft size={18} /> Trước
               </button>
-
               <div className={styles.pageNumbers}>
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPage(index)}
-                    className={`${styles.pageNumber} ${currentPage === index ? styles.active : ''}`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+                {[...Array(Math.min(totalPages, 7))].map((_, i) => {
+                  const pageNum = totalPages <= 7 ? i : Math.max(0, currentPage - 3) + i;
+                  if (pageNum >= totalPages) return null;
+                  return (
+                    <button key={pageNum} onClick={() => setCurrentPage(pageNum)}
+                      className={`${styles.pageNumber} ${currentPage === pageNum ? styles.active : ''}`}>
+                      {pageNum + 1}
+                    </button>
+                  );
+                })}
               </div>
-
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
-                disabled={currentPage === totalPages - 1}
-                className={styles.pageBtn}
-              >
-                Sau
-                <ChevronRight size={20} />
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={currentPage === totalPages - 1} className={styles.pageBtn}>
+                Sau <ChevronRight size={18} />
               </button>
             </div>
           )}
         </>
       )}
 
-      {/* Tour Form Modal */}
       {showTourForm && (
         <TourForm
           tourId={editingTourId}
-          onClose={handleCloseForm}
+          onClose={() => { setShowTourForm(false); setEditingTourId(null); fetchTours(); }}
         />
       )}
     </div>
   );
 };
 
-export default TourList;
+export default ToursPage;

@@ -1,0 +1,23 @@
+// src/components/forum/CreatePost/RichTextEditor.module.scss
+.editorContainer {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  :global(.ql-container) {
+    background: white;
+  }
+
+  :global(.ql-editor) {
+    min-height: 320px;
+    padding: 20px;
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  :global(.ql-toolbar) {
+    background: #f8fafc;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+}

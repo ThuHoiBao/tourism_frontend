@@ -377,6 +377,7 @@ const Header = () => {
                 <Link className={styles.logo} to="/"><img className={styles.logos} src='https://res.cloudinary.com/dnt8vx1at/image/upload/v1766193584/FT_kpfvjq.png'/></Link>
                 <Link to="/" className={getNavLinkClass('/')}>Trang chủ</Link>
                 <Link to="/tours" className={getNavLinkClass('/tours')}>Tours</Link>
+                <Link to="/forum" className={getNavLinkClass('/forum')}>Diễn đàn</Link>
                 <Link to="/flights" className={getNavLinkClass('/flights')}><IoIosAirplane /> Vé máy bay</Link>
                 <Link to="/entertainment" className={getNavLinkClass('/entertainment')}>Vui chơi giải trí</Link>
                 <Link to="/trains" className={getNavLinkClass('/trains')}><GiShipBow /> Vé tàu</Link>
