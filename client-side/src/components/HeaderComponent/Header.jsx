@@ -160,7 +160,7 @@ const Header = () => {
         console.log('🔔 Fetching unread count for user:', userId);
         
         try {
-            const response = await axios.get('/notifications/unread-count');
+            const response = await axios.get('/notifications/unread-count', { params: { userId } });
             console.log('✅ Unread Count Response:', response);
 
             let count = 0;
@@ -192,7 +192,7 @@ const Header = () => {
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
 
         try {
-            await axios.put('/notifications/read-all');
+            await axios.put('/notifications/read-all', null, { params: { userId } });
             console.log('✅ Marked all as read');
         } catch (error) {
             console.error('❌ Error marking all as read:', error);
@@ -207,7 +207,7 @@ const Header = () => {
         
         try {
             const response = await axios.get('/notifications', {
-                params: { page: 0, size: 10 }
+                params: { userId, page: 0, size: 10 }
             });
             console.log('✅ Notifications Response:', response);
             setNotifications(response.data.content || []);
