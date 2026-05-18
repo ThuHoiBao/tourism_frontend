@@ -1,8 +1,8 @@
 // src/ChatbotWidget/ChatbotWidget.module.scss
 
 // --- Variables (Blue Theme - Messenger Style) ---
-$primary-color: #0084ff;
-$primary-gradient: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
+$primary-color: #0ea5e9;
+$primary-gradient: linear-gradient(135deg, #073763 0%, #0d558c 100%);
 $secondary-bg: #f0f2f5; 
 $text-color: #050505;
 $user-bubble-bg: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
@@ -69,6 +69,13 @@ $radius-bubble: 18px;
   }
 }
 
+.launcherLogo {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
 @keyframes pulse-animation {
   0% { transform: scale(1); opacity: 0.6; }
   100% { transform: scale(1.5); opacity: 0; }
@@ -127,8 +134,8 @@ $radius-bubble: 18px;
     .avatarWrapper {
       width: 36px;
       height: 36px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -217,14 +224,20 @@ $radius-bubble: 18px;
 .botAvatar {
   width: 28px;
   height: 28px;
-  background: $primary-gradient;
-  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   flex-shrink: 0;
-  font-size: 14px;
+  overflow: hidden;
+}
+
+.brandAvatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .messageContent {

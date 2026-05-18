@@ -248,6 +248,87 @@ $border-light: #e0e0e0;
     }
 }
 
+.refundSection {
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.refundHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .sectionTitle {
+        margin-bottom: 0;
+    }
+}
+
+.refundCard {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.refundRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+    color: #4b5563;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    span {
+        font-weight: 500;
+    }
+
+    strong {
+        color: #111827;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+    }
+}
+
+.refundDeduction {
+    color: #dc2626 !important;
+}
+
+.refundTotalRow {
+    background: #ecfdf5;
+
+    span {
+        color: #065f46;
+        font-weight: 700;
+    }
+
+    strong {
+        color: #047857;
+        font-size: 16px;
+    }
+}
+
+.coinRefundValue {
+    color: #1d4ed8 !important;
+}
+
+.refundNote {
+    margin: 10px 2px 0;
+    color: #64748b;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
 @media (max-width: 600px) {
     .modalContent {
         padding: 20px;
@@ -256,5 +337,72 @@ $border-light: #e0e0e0;
         .infoItem {
             flex: 1 1 100%;
         }
+    }
+    .refundHeader,
+    .refundRow {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .refundRow strong {
+        text-align: left;
+        white-space: normal;
+    }
+}
+
+// --- Coin Refund & Bank Refund status inline badges ---
+.statusPending {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #92400e;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.statusDone {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #065f46;
+    background: #d1fae5;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.statusFailed {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #991b1b;
+    background: #fee2e2;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+// --- Notification hint (email cancellation) ---
+.notificationHint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    color: #1d4ed8;
+    line-height: 1.5;
+
+    svg {
+        flex-shrink: 0;
+        margin-top: 2px;
     }
 }

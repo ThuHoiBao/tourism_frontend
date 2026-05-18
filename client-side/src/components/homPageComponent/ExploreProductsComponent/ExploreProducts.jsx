@@ -63,7 +63,7 @@ const ExploreProducts = () => {
             </div>
             
             {loading && (
-                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Đang tải các tour nổi bật...</p>
+                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Đang tải các chuyến đi nổi bật...</p>
             )}
             
             {error && (
@@ -89,7 +89,7 @@ const ExploreProducts = () => {
             )}
             
             {!loading && !error && displayTours.length === 0 && (
-                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Không tìm thấy tour nổi bật nào.</p>
+                <p style={{textAlign: 'center', padding: '40px', fontSize: '18px'}}>Không tìm thấy chuyến đi nổi bật nào.</p>
             )}
 
             {/* <div style={{textAlign: 'center', marginTop: '5px'}}>

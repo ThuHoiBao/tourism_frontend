@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-    FaTachometerAlt, FaBox, FaChartLine, FaCog, FaSignOutAlt, FaUsers, 
-    FaTicketAlt, FaBell, FaCalendarCheck, FaTags , FaMapMarkerAlt, FaBuilding , FaPlaneDeparture
+    FaTachometerAlt, FaBox, FaCog, FaSignOutAlt, FaUsers, 
+    FaCalendarCheck, FaTags , FaMapMarkerAlt, FaPlaneDeparture, FaSkullCrossbones
 } from 'react-icons/fa';
 import styles from './AdminSidebar.module.scss';
+import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
 
 const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: FaTachometerAlt },
@@ -14,7 +15,8 @@ const navItems = [
     { name: 'Quản lý Coupons', path: '/admin/coupons', icon: FaTags }, 
     {name: 'Quản lý Locations', path: '/admin/locations', icon: FaMapMarkerAlt } ,
     {name: 'Quản lý Branches Policies', path: '/admin/branches-policies', icon: FaMapMarkerAlt } ,
-    { name: 'Quản lý Users', path: '/admin/users', icon: FaUsers }, 
+    { name: 'Quản lý Users', path: '/admin/users', icon: FaUsers },
+    { name: 'Sự cố xử lý nền', path: '/admin/dead-events', icon: FaSkullCrossbones },
 ];
 
 const AdminSidebar = () => {
@@ -26,7 +28,7 @@ const AdminSidebar = () => {
         <div className={styles.adminSidebar}>
             
             <div className={styles.logoSection}>
-                <h2 className={styles.logo}>Future <span className={styles.logo1}>Travel</span></h2>
+                <img className={styles.logo} src={futureLogoDark} alt="Future Travel" />
             </div>
 
             <nav>

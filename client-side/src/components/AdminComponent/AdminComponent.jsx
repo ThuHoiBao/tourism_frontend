@@ -13,6 +13,7 @@ import DepartureList from './Pages/DepartureManagement/DepartureList';
 import AdminLogin from './Pages/Login/AdminLogin';
 import AdminProfile from './AdminProfile.jsx/AdminProfile';
 import AdminProtectedRoute from './AdminProtectedRoute';
+import DeadEventsPage from './Pages/DeadEventsPage/DeadEventsPage';
 
 const AdminComponent = () => {
     return (
@@ -33,6 +34,7 @@ const AdminComponent = () => {
                     <Route path="locations" element={<LocationManager />} />
                     <Route path="branches-policies" element={<BranchPolicyManagement />} />
                     <Route path="notifications" element={<NotificationsPage />} />
+                    <Route path="dead-events" element={<DeadEventsPage />} />
                 </Route>
             </Route>
 
