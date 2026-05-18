@@ -8,7 +8,7 @@ import {
     type DeadEventCount,
     type DeadEventPage,
     type OutboxEventDTO,
-} from '../services/booking/booking.ts';
+} from '../services/booking/booking';
 
 interface UseDeadEventsReturn {
     events: OutboxEventDTO[];

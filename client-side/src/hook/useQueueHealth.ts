@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getQueueHealthApi } from '../services/booking/booking.ts';
-import type { QueueHealthResponse } from '../services/booking/booking.ts';
+import { getQueueHealthApi } from '../services/booking/booking';
+import type { QueueHealthResponse } from '../services/booking/booking';
 
 const useQueueHealth = () => {
     const [health, setHealth]   = useState<QueueHealthResponse | null>(null);
