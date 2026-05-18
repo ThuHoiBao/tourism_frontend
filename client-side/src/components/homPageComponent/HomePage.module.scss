@@ -1,16 +1,31 @@
-/* src/HomePage.module.scss */
-
 .homePageWrapper {
-    position: relative; /* Quan trọng: Để Header (absolute) neo vào đây */
+    position: relative;
     width: 100%;
+    background: #ffffff;
+    scroll-behavior: smooth;
 }
 
 .mainContent {
     max-width: 1200px;
-    /* Đẩy nội dung chính xuống dưới dải thông tin (bottomInfoStrip) */
-    margin: 80px auto 20px; 
+    margin: 80px auto 20px;
     padding: 0 20px;
     text-align: left;
+
+    > * {
+        animation: sectionReveal 0.58s ease both;
+    }
+
+    > *:nth-child(2) {
+        animation-delay: 0.06s;
+    }
+
+    > *:nth-child(3) {
+        animation-delay: 0.1s;
+    }
+
+    > *:nth-child(4) {
+        animation-delay: 0.14s;
+    }
 }
 
 .recentToursTitle {
@@ -20,4 +35,21 @@
     padding-bottom: 5px;
     border-bottom: 1px solid #ccc;
     margin-bottom: 20px;
+}
+
+@keyframes sectionReveal {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mainContent > * {
+        animation: none;
+    }
 }

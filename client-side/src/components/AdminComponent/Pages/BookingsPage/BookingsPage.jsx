@@ -142,6 +142,7 @@ const BookingsPage = () => {
             if (event.bookingStatus != null) patch.bookingStatus = event.bookingStatus;
             if (event.cancelReason  != null) patch.cancelReason  = event.cancelReason;
             if (event.refundAmount  != null) patch.refundAmount  = event.refundAmount;
+            if (event.coinRefundStatus != null) patch.coinRefundStatus = event.coinRefundStatus;
             if (Object.keys(patch).length > 0) updateBookingInList(event.bookingID, patch);
         }
         silentRefetch();

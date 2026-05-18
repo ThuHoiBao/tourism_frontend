@@ -1,147 +1,164 @@
 $primary-color: #0a4685;
-$accent-color: #4c84bf;
-$text-color: #333;
-$border-color: #e0e0e0;
-$light-bg: #f5f5f5;
+$accent-color: #2f78d6;
+$text-color: #172033;
+$border-color: #e2e8f0;
 
 .bannerContainer {
-    background-image: url('../../../assets/images/nuidoi.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 650px;
-    color: white;
+    position: relative;
+    width: 100%;
+    min-height: 670px;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 0;
-    position: relative;
-    width: 100%;
+    background-image: url('../../../assets/images/ryan-le-8-hEg1OuFn8-unsplash.jpg');
+    background-size: cover;
+    background-position: center 48%;
+    overflow: visible;
+    isolation: isolate;
 }
 
 .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.1);
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(180deg, rgba(4, 22, 38, 0.22) 0%, rgba(4, 22, 38, 0.08) 28%, rgba(4, 22, 38, 0.46) 100%),
+        linear-gradient(90deg, rgba(4, 22, 38, 0.44) 0%, rgba(4, 22, 38, 0.14) 50%, rgba(4, 22, 38, 0.3) 100%);
+    pointer-events: none;
+    backdrop-filter: blur(0.7px);
 }
 
 .content {
     position: relative;
     z-index: 10;
-    max-width: 1200px;
+    width: min(90%, 1280px);
     margin: 0 auto;
-    width: 90%;
     display: grid;
     grid-template-areas:
-        "title info"
-        "subtitle info"
-        "search info" 
-        "error info"; 
-    grid-template-columns: 2fr 1fr; 
-    gap: 15px;
-    padding-top: 100px;
+        "copy info"
+        "search info"
+        "error info";
+    grid-template-columns: minmax(0, 1.85fr) minmax(320px, 0.78fr);
+    column-gap: clamp(42px, 7vw, 112px);
+    row-gap: 22px;
+    padding-top: 138px;
+}
+
+.heroCopy {
+    grid-area: copy;
+    max-width: 830px;
+    animation: heroReveal 0.62s ease both;
 }
 
 .headline {
-    grid-area: title;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 5px;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(2.1rem, 3.7vw, 3.45rem);
+    line-height: 1.08;
+    font-weight: 820;
+    letter-spacing: 0;
+    text-shadow: 0 12px 34px rgba(0, 0, 0, 0.32);
 }
 
 .subHeadline {
-    grid-area: subtitle;
-    font-size: 1rem;
-    font-weight: 400;
-    margin-top: 0px;
-    margin-bottom: 30px;
+    margin: 18px 0 0;
+    color: rgba(255, 255, 255, 0.93);
+    font-size: 1.02rem;
+    font-weight: 580;
+    line-height: 1.5;
+    text-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
 }
 
-/* ------------------------------------------- */
-/* SEARCH BOX STYLES */
-/* ------------------------------------------- */
 .searchBox {
     grid-area: search;
-    display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr) auto;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    min-height: 72px;
-    width: 100%;
-    max-width: 1100px;
-    overflow: visible;
     position: relative;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.9fr) 104px;
+    min-height: 70px;
+    width: 100%;
+    max-width: 930px;
+    overflow: visible;
+    background: rgba(10, 27, 48, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 8px;
+    box-shadow: 0 20px 48px rgba(6, 17, 33, 0.22);
+    backdrop-filter: blur(6px);
+    animation: heroReveal 0.72s ease 0.08s both;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.36);
+        box-shadow: 0 26px 58px rgba(6, 17, 33, 0.28);
+    }
 }
 
 .inputGroup {
+    position: relative;
     display: flex;
     align-items: center;
-    padding: 0 22px;
-    flex-grow: 1;
-    border-right: none;
-    transition: background-color 0.2s;
-    position: relative;
+    min-width: 0;
+    padding: 0 24px;
+    transition: background-color 0.18s ease;
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.08);
     }
 
     &:not(:last-of-type) {
-        border-right: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    &:last-of-type {
-        border-right: none;
-    }
-
-    &.destinationGroup {
-        flex-grow: 2;
-    }
-    &.budgetGroup {
-        flex-grow: 1.2;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
     }
 }
 
-.inputLabels {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 5px 0;
-
-    label {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.95);
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
+.destinationGroup,
+.budgetGroup {
+    min-width: 0;
 }
 
 .icon {
-    color: rgba(255, 255, 255, 0.9);
-    margin-right: 18px;
-    font-size: 1.5rem;
     flex-shrink: 0;
+    margin-right: 16px;
+    color: rgba(255, 255, 255, 0.94);
 }
 
-.inputField, .selectDisplay {
+.inputLabels {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    label {
+        color: #ffffff;
+        font-size: 0.88rem;
+        font-weight: 760;
+        line-height: 1.2;
+    }
+}
+
+.inputField,
+.selectDisplay {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
     border: none;
     outline: none;
-    font-size: 1rem;
-    width: 100%;
-    color: rgba(255, 255, 255, 0.95); 
-    padding: 0;
-    font-weight: 500;
-    background-color: transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 0.98rem;
+    font-weight: 520;
+    line-height: 1.35;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     &::placeholder {
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 400;
+        color: rgba(255, 255, 255, 0.62);
+        font-weight: 460;
     }
 }
 
@@ -149,209 +166,403 @@ $light-bg: #f5f5f5;
     cursor: text;
 }
 
-/* STYLES CHO CUSTOM SELECT (Ngân sách) */
-.selectDisplay {
-    &.placeholder {
-        color: #a0a0a0;
-        font-weight: 400;
-    }
+.selectDisplay.placeholder {
+    color: rgba(255, 255, 255, 0.62);
+    font-weight: 460;
 }
 
 .customSelectMenu {
     position: absolute;
-    top: calc(100% + 12px); 
-    left: 0; 
-    background-color: white;
-    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
-    border-radius: 14px;
-    padding: 12px;
+    top: calc(100% + 12px);
+    left: 0;
     z-index: 50;
-    width: 260px;
+    width: min(280px, 100%);
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
 }
 
 .menuItem {
-    padding: 12px 15px;
+    padding: 11px 12px;
+    margin-bottom: 5px;
     cursor: pointer;
     color: $text-color;
-    font-weight: 500;
-    transition: background-color 0.15s;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    border: 1px solid $border-color;
-    
+    font-weight: 650;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
     &:last-child {
         margin-bottom: 0;
     }
 
     &:hover {
-        background-color: $light-bg;
-        border-color: $accent-color;
+        color: $primary-color;
+        background-color: #eff6ff;
+        border-color: #bfdbfe;
     }
 }
 
 .searchButton {
-    background: linear-gradient(135deg, #3275ce, #1f4c99);
-    color: white;
-    border: none;
-    padding: 0 48px;
-    border-radius: 0 15px 15px 0;
-    cursor: pointer;
+    width: 104px;
     height: 100%;
-    width: 100%;
+    align-self: stretch;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    align-self: stretch;
-    transition: background-color 0.2s;
+    color: #ffffff;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    box-shadow: inset 1px 0 rgba(255, 255, 255, 0.12);
+    transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
 
     &:hover {
-        background: linear-gradient(135deg, darken(#3275ce, 5%), darken(#1f4c99, 5%));
-        transform: translateY(0px);
+        filter: brightness(1.08);
+        box-shadow: inset 1px 0 rgba(255, 255, 255, 0.14), 0 12px 28px rgba(37, 99, 235, 0.2);
+    }
+
+    &:active {
+        transform: scale(0.985);
     }
 }
 
 .searchIcon {
-    font-size: 2rem;
+    flex-shrink: 0;
 }
 
-/* Validation Message */
 .validationMessage {
     grid-area: error;
-    color: #faf8f8;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px 20px;
+    width: fit-content;
+    max-width: 360px;
+    margin: 0;
+    padding: 10px 14px;
+    color: #ffffff;
+    background: rgba(220, 38, 38, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 8px;
-    text-align: left;
-    margin-top: 15px;
-    width: 100%;
-    max-width: 270px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
-/* ------------------- SIDE INFO BOX (Giữ nguyên) */
 .sideInfoBox {
     grid-area: info;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 20px;
+    align-self: center;
+    justify-self: end;
+    width: min(100%, 360px);
+    padding: 24px;
+    color: #ffffff;
+    background: rgba(8, 22, 40, 0.26);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 8px;
-    position: relative;
-    right: 0;
-    top: 0;
-    width: 100%; 
-    z-index: 15;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 22px 52px rgba(4, 17, 32, 0.2);
+    backdrop-filter: blur(4px);
+    text-shadow: 0 3px 16px rgba(0, 0, 0, 0.26);
+    animation: heroReveal 0.72s ease 0.14s both;
+    transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 255, 255, 0.34);
+        background: rgba(8, 22, 40, 0.34);
+    }
+}
+
+.featuredBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 16px;
+    color: #f7f7f5;
+    font-size: 1rem;
+    font-weight: 820;
+    letter-spacing: 0;
 }
 
 .sideTitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-/* ... (các styles khác của sideInfoBox, priceValue giữ nguyên) */
-/* ------------------------------------------- */
-/* SIDE INFO BOX (Thông tin Tour bên phải) */
-/* ------------------------------------------- */
-.sideInfoBox {
-    grid-area: info;
-    background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
-    padding: 15px;
-    border-radius: 4px;
-    position: absolute; 
-    right: 5%;
-    top: 50px; 
-    width: 300px;
-    z-index: 15;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.sideTitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 5px;
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 1.18rem;
+    line-height: 1.35;
+    font-weight: 800;
 }
 
 .sideDetails {
-    font-size: 0.9rem;
-    margin: 3px 0;
-    font-weight: 300;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.92rem;
+    font-weight: 560;
 }
 
 .priceLabel {
-    font-size: 0.8rem;
-    margin-top: 15px;
-    margin-bottom: 0px;
-    color: #ccc;
+    margin: 24px 0 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.83rem;
+    font-weight: 620;
+}
+
+.priceRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .priceValue {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #ffc107; 
-    margin-top: 5px;
+    margin: 0;
+    color: #fbbf24;
+    font-size: clamp(1.6rem, 2.3vw, 2.05rem);
+    line-height: 1.05;
+    font-weight: 860;
+    letter-spacing: 0;
+
     small {
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: white;
+        display: block;
+        margin-top: 8px;
+        color: #ffffff;
+        font-size: 0.76rem;
+        font-weight: 560;
+        white-space: nowrap;
     }
 }
 
 .arrowIcon {
-    position: absolute;
-    top: 50%;
-    right: -25px;
-    transform: translateY(-50%);
-    background: $accent-color;
-    padding: 10px 15px;
-    border-radius: 10%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    line-height: 1;
+    flex: 0 0 54px;
+    width: 54px;
+    height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+    transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+
+    &:hover {
+        filter: brightness(1.08);
+        transform: translateX(2px);
+        box-shadow: 0 18px 34px rgba(37, 99, 235, 0.3);
+    }
 }
 
-/* ------------------------------------------- */
-/* BOTTOM INFO STRIP (Giữ nguyên) */
-/* ------------------------------------------- */
 .bottomInfoStrip {
     position: absolute;
-    bottom: -70px;
     left: 50%;
+    bottom: -52px;
+    z-index: 12;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 1000px;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    width: min(90%, 1040px);
     display: flex;
     justify-content: space-around;
-    padding: 20px 0;
-    
+    padding: 18px 0;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 20px 44px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(10px);
+    animation: floatUp 0.66s ease 0.2s both;
 }
 
 .infoItem {
+    flex: 1;
+    min-width: 0;
+    padding: 0 18px;
     text-align: center;
     color: $text-color;
-    flex: 1;
-    padding: 0 10px;
-    border-right: 1px solid #eee;
+    border-right: 1px solid #e5eaf0;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
 
     &:last-child {
         border-right: none;
     }
 
-    img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 10px;
-    }
-
     p {
         margin: 2px 0;
-        font-size: 0.9rem;
+        color: #1f2937;
+        font-size: 0.88rem;
+        line-height: 1.35;
     }
+
     strong {
         color: $primary-color;
+        font-weight: 820;
+    }
+}
+
+.infoIcon {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.infoIconPrimary {
+    color: #0284c7;
+    background: #e0f2fe;
+}
+
+.infoIconReview {
+    color: #d97706;
+    background: #fef3c7;
+}
+
+.infoIconDeal {
+    color: #0f766e;
+    background: #ccfbf1;
+}
+
+.statusMessage,
+.statusMessageError {
+    position: absolute;
+    left: 5%;
+    bottom: 24px;
+    z-index: 12;
+    margin: 0;
+}
+
+.statusMessage {
+    color: #ffffff;
+}
+
+.statusMessageError {
+    color: #fecaca;
+}
+
+@keyframes heroReveal {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 14px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .heroCopy,
+    .searchBox,
+    .sideInfoBox,
+    .bottomInfoStrip {
+        animation: none;
+    }
+
+    .searchBox,
+    .sideInfoBox,
+    .infoItem,
+    .arrowIcon {
+        transition: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .bannerContainer {
+        min-height: 710px;
+    }
+
+    .content {
+        grid-template-areas:
+            "copy"
+            "search"
+            "info"
+            "error";
+        grid-template-columns: 1fr;
+        padding-top: 116px;
+    }
+
+    .sideInfoBox {
+        justify-self: start;
+        align-self: start;
+        width: min(100%, 520px);
+    }
+
+    .bottomInfoStrip {
+        bottom: -62px;
+        width: calc(100% - 36px);
+    }
+}
+
+@media (max-width: 760px) {
+    .bannerContainer {
+        min-height: 790px;
+        background-position: center top;
+    }
+
+    .content {
+        width: calc(100% - 28px);
+        padding-top: 96px;
+        row-gap: 18px;
+    }
+
+    .headline {
+        font-size: clamp(2rem, 10vw, 2.65rem);
+    }
+
+    .searchBox {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+
+    .inputGroup {
+        min-height: 70px;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .searchButton {
+        width: 100%;
+        min-height: 62px;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .priceRow {
+        align-items: flex-start;
+    }
+
+    .bottomInfoStrip {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        transform: none;
+        width: calc(100% - 28px);
+        margin: 28px auto -36px;
+        flex-direction: column;
+        gap: 14px;
+        padding: 18px;
+        animation: none;
+    }
+
+    .infoItem {
+        border-right: none;
+        border-bottom: 1px solid #e5eaf0;
+        padding: 0 0 14px;
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
     }
 }

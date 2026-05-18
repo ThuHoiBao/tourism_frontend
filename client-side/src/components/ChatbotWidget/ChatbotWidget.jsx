@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Sparkles, Calendar } from 'lucide-react';
+import { X, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import styles from './ChatbotWidget.module.scss';
+import futureMark from '../../assets/brand/future-mark.svg';
 
 // Danh sách câu thông báo chờ đợi thân thiện
 const LOADING_MESSAGES = [
@@ -113,7 +114,7 @@ const ChatbotWidget = () => {
         className={`${styles.launcher} ${isOpen ? styles.hideLauncher : ''}`}
         onClick={() => setIsOpen(true)}
       >
-        <MessageCircle size={28} />
+        <img src={futureMark} alt="Future Travel assistant" className={styles.launcherLogo} />
         <span className={styles.pulse}></span>
       </button>
 
@@ -124,7 +125,7 @@ const ChatbotWidget = () => {
         <div className={styles.header}>
           <div className={styles.headerTitle}>
             <div className={styles.avatarWrapper}>
-              <Sparkles size={18} />
+              <img src={futureMark} alt="" className={styles.brandAvatar} />
             </div>
             <div>
               <h3>Trợ lý du lịch</h3>
@@ -141,7 +142,11 @@ const ChatbotWidget = () => {
           {messages.map((message) => (
             <div key={message.id} className={`${styles.messageRow} ${message.sender === 'user' ? styles.userRow : styles.botRow}`}>
               
-              {message.sender === 'bot' && <div className={styles.botAvatar}><MessageCircle size={16}/></div>}
+              {message.sender === 'bot' && (
+                <div className={styles.botAvatar}>
+                  <img src={futureMark} alt="" className={styles.brandAvatar} />
+                </div>
+              )}
               
               <div className={styles.messageContent}>
                 <div className={styles.bubble}>
@@ -210,7 +215,9 @@ const ChatbotWidget = () => {
           {/* Hiệu ứng Loading đẹp & Thân thiện */}
           {isLoading && (
             <div className={`${styles.messageRow} ${styles.botRow}`}>
-              <div className={styles.botAvatar}><MessageCircle size={16}/></div>
+              <div className={styles.botAvatar}>
+                <img src={futureMark} alt="" className={styles.brandAvatar} />
+              </div>
               <div className={styles.loadingContainer}>
                 <div className={styles.typingIndicator}>
                   <span></span><span></span><span></span>

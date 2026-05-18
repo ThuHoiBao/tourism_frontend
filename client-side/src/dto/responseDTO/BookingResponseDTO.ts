@@ -41,6 +41,7 @@ export class BookingResponseDTO {
     private _refundAccountNumber: string = "";
     private _refundAccountName: string = "";
     private _refundAmount: number = 0;
+    private _coinRefundStatus: string | null = null;  // null | PENDING | COMPLETED | FAILED
 
     // Getters
     get bookingID() { return this._bookingID; }
@@ -82,6 +83,7 @@ export class BookingResponseDTO {
     get refundAccountNumber() { return this._refundAccountNumber; }
     get refundAccountName() { return this._refundAccountName; }
     get refundAmount() { return this._refundAmount; }
+    get coinRefundStatus(): string | null { return this._coinRefundStatus; }
     /**
      * Phương thức ánh xạ từ API Response
      * @param data Dữ liệu raw từ API
@@ -127,6 +129,13 @@ export class BookingResponseDTO {
         dto._refundAccountNumber = data.refundAccountNumber || "";
         dto._refundAccountName = data.refundAccountName || "";
         dto._refundAmount = data.refundAmount || 0;
+
+        const rawCoinRefundStatus = typeof data.coinRefundStatus === 'string'
+            ? data.coinRefundStatus.trim().toUpperCase()
+            : null;
+        dto._coinRefundStatus = ['PENDING', 'COMPLETED', 'FAILED'].includes(rawCoinRefundStatus || '')
+            ? rawCoinRefundStatus
+            : null;
         // Map danh sách hành khách
         dto._passengers = (data.passengers || []).map((p: any) => BookingPassengerResponseDTO.fromApiResponse(p));
         return dto;
@@ -169,6 +178,7 @@ export class BookingResponseDTO {
             refundAccountNumber: this.refundAccountNumber,
             refundAccountName: this.refundAccountName,
             refundAmount: this.refundAmount,
+            coinRefundStatus: this.coinRefundStatus,
             passengers: this.passengers.map(p => p.toPlain())
         };
     }

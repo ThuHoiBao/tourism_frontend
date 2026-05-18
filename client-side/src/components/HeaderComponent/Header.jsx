@@ -7,6 +7,8 @@ import { GiShipBow } from "react-icons/gi";
 import { useAuth } from '../../context/AuthContext';
 import axios from '../../utils/axiosCustomize';
 import websocketService from '../../services/websocket';
+import futureLogoLight from '../../assets/brand/future-logo-light.svg';
+import futureLogoDark from '../../assets/brand/future-logo-dark.svg';
 
 const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, onViewAll }) => {
     const dropdownRef = useRef(null);
@@ -122,7 +124,7 @@ const ProfileModal = ({ styles, onClose, user, onLogout }) => {
             <ul className={styles.modalMenu}>
                 <li onClick={() => handleMenuClick('profile')}><FaEdit /> Hồ sơ cá nhân</li>
                 <li onClick={() => handleMenuClick('transaction')}><FaListAlt /> Danh sách giao dịch</li>
-                <li onClick={() => handleMenuClick('favorites')}><FaInfoCircle /> Tour yêu thích</li>
+                <li onClick={() => handleMenuClick('favorites')}><FaInfoCircle /> Chuyến đi yêu thích</li>
                 <li onClick={handleLogoutClick}><FaSignOutAlt /> Đăng xuất</li>
             </ul>
         </div>
@@ -144,6 +146,7 @@ const Header = () => {
     const currentPath = location.pathname;
     const isHomePage = currentPath === '/';
     const isInformationPage = currentPath.startsWith('/information');
+    const isToursPage = currentPath.startsWith('/tours');
 
     const userId = user?.id || user?.userID;
 
@@ -277,7 +280,7 @@ const Header = () => {
                 if ('Notification' in window && Notification.permission === 'granted') {
                     new Notification(notification.title, {
                         body: notification.message,
-                        icon: '/favicon.ico'
+                        icon: '/favicon.svg'
                     });
                 }
             });
@@ -303,8 +306,8 @@ const Header = () => {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        // Transparent on top for Home and Information pages, turn blue on scroll
-        const isTransparentRoute = isHomePage || isInformationPage;
+        // Pages with a hero image start transparent, then turn white on scroll.
+        const isTransparentRoute = isHomePage || isInformationPage || isToursPage;
 
         const handleScroll = () => {
             if (isTransparentRoute) {
@@ -320,7 +323,7 @@ const Header = () => {
         }
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [isHomePage, isInformationPage]);
+    }, [isHomePage, isInformationPage, isToursPage]);
 
     const getNavLinkClass = (path) => {
         if (path === '/') return currentPath === '/' ? styles.navLinkActive : styles.navLink;
@@ -356,13 +359,17 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isModalOpen]);
 
-    const headerClasses = `${styles.header} ${scrolled ? styles.headerScrolled : ''}`;
+    const isHeroHeader = (isHomePage || isInformationPage || isToursPage) && !scrolled;
+    const logoSrc = isHeroHeader ? futureLogoLight : futureLogoDark;
+    const headerClasses = `${styles.header} ${scrolled ? styles.headerScrolled : styles.headerHero}`;
 
     if (loading) {
         return (
             <div className={headerClasses}>
                 <div className={styles.headerLeft}>
-                    <span className={styles.logo}>Future</span>
+                    <Link className={styles.logo} to="/">
+                        <img className={styles.logoImage} src={logoSrc} alt="Future Travel" />
+                    </Link>
                 </div>
                 <div className={styles.headerRight}>
                     <span className={styles.loading}>Đang tải...</span>
@@ -374,9 +381,11 @@ const Header = () => {
     return (
         <div className={headerClasses}>
             <div className={styles.headerLeft}>
-                <Link className={styles.logo} to="/"><img className={styles.logos} src='https://res.cloudinary.com/dnt8vx1at/image/upload/v1766193584/FT_kpfvjq.png'/></Link>
+                <Link className={styles.logo} to="/">
+                    <img className={styles.logoImage} src={logoSrc} alt="Future Travel" />
+                </Link>
                 <Link to="/" className={getNavLinkClass('/')}>Trang chủ</Link>
-                <Link to="/tours" className={getNavLinkClass('/tours')}>Tours</Link>
+                <Link to="/tours" className={getNavLinkClass('/tours')}>Chuyến đi</Link>
                 <Link to="/flights" className={getNavLinkClass('/flights')}><IoIosAirplane /> Vé máy bay</Link>
                 <Link to="/entertainment" className={getNavLinkClass('/entertainment')}>Vui chơi giải trí</Link>
                 <Link to="/trains" className={getNavLinkClass('/trains')}><GiShipBow /> Vé tàu</Link>
