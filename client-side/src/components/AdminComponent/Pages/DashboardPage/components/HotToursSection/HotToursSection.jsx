@@ -6,7 +6,7 @@ import { Flame, Star, Users, Trophy, ArrowRight, DollarSign } from 'lucide-react
 import { useNavigate } from 'react-router-dom';
 
 const RANK_STYLES = [
-    { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c' },
+    { bg: '#e0f2fe', border: '#bae6fd', text: '#075985' },
     { bg: '#f9fafb', border: '#e5e7eb', text: '#374151' },
     { bg: '#fefce8', border: '#fde68a', text: '#92400e' },
 ];
@@ -113,9 +113,9 @@ const HotToursSection = ({ hotTours }) => {
                                         className={styles.fill}
                                         style={{
                                             width: `${barWidth}%`,
-                                            background: index === 0 ? '#f97316'
-                                                : index === 1 ? '#eab308'
-                                                : index === 2 ? '#3b82f6'
+                                            background: index === 0 ? '#1f6fb2'
+                                                : index === 1 ? '#0ea5e9'
+                                                : index === 2 ? '#10b981'
                                                 : '#9ca3af'
                                         }}
                                     />

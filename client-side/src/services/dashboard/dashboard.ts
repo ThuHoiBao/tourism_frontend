@@ -22,7 +22,7 @@ export const getDashboardAIAnalysisApi = async (from?: Date, to?: Date, mode: st
         const params: Record<string, string> = { mode };
         if (from) params.from = format(from, 'yyyy-MM-dd');
         if (to) params.to = format(to, 'yyyy-MM-dd');
-        const response = await api.get('/admin/dashboard/analysis', { params });
+        const response = await api.get('/admin/dashboard/analysis', { params, timeout: 120000 });
         return response.data;
     } catch (error) {
         console.error('Error fetching AI analysis:', error);

@@ -1,196 +1,237 @@
-/* DashboardHeader.module.scss — Premium Redesign */
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 16px;
-    padding: 18px 24px;
-    background: var(--bg-card);
-    border-radius: 8px;
-    border: 1px solid var(--border);
+    gap: 18px;
+    padding: 20px 24px;
     margin-bottom: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     box-shadow: var(--shadow-xs);
     position: relative;
 }
 
 .headerLeft {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    min-width: 0;
 }
 
-.titleBlock {}
+.titleBlock {
+    min-width: 0;
+}
 
 .title {
-    font-size: 1.625rem;
-    font-weight: 800;
+    margin: 0;
     color: var(--text-h);
-    margin: 0 0 3px;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
 }
 
 .titleAccent {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
 }
 
 .subtitle {
-    font-size: 0.8125rem;
+    margin: 7px 0 0;
     color: var(--text-sub);
-    margin: 0;
-    font-weight: 500;
+    font-size: 0.92rem;
+    font-weight: 550;
+    line-height: 1.45;
 }
 
 .headerRight {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
-/* Date button */
 .datePickerWrapper {
     position: relative;
 }
 
+.dateBtn,
+.iconBtn,
+.presetBtn,
+.cancelBtn,
+.applyBtn {
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+    }
+}
+
 .dateBtn {
-    display: flex;
+    min-height: 40px;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 12px;
-    background: var(--bg-subtle);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
+    gap: 9px;
+    padding: 0 14px;
     color: var(--text-body);
-    font-size: 0.8125rem;
-    font-weight: 500;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 650;
     cursor: pointer;
-    transition: all 0.15s;
     white-space: nowrap;
-    font-family: 'Inter', sans-serif;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 
     &:hover {
-        border-color: #2563eb;
-        background: rgba(37, 99, 235, 0.05);
-        color: #2563eb;
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
     }
 }
 
 .btnIcon {
-    color: #2563eb;
+    color: var(--accent);
     flex-shrink: 0;
 }
 
-/* Picker dropdown */
 .pickerDropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 10px);
     right: 0;
+    z-index: 1000;
+    min-width: min(620px, calc(100vw - 48px));
+    padding: 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    padding: 14px;
-    min-width: 560px;
-    animation: fadeIn 0.15s ease;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    animation: pickerIn 0.16s ease-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes pickerIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .presets {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 16px;
+    gap: 8px;
     padding-bottom: 14px;
+    margin-bottom: 14px;
     border-bottom: 1px solid var(--border-light);
 }
 
 .presetBtn {
-    padding: 5px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--bg-subtle);
+    min-height: 32px;
+    padding: 0 12px;
     color: var(--text-sub);
-    font-size: 0.775rem;
-    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'Inter', sans-serif;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 
     &:hover {
-        background: #2563eb;
-        border-color: #2563eb;
-        color: #fff;
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
     }
 }
 
 .customPicker {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .pickerRow {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
 .pickerCol {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    min-width: 0;
 
     label {
-        font-size: 0.72rem;
-        font-weight: 700;
         color: var(--text-sub);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
     }
 
     :global(.react-datepicker) {
-        border: 1.5px solid var(--border);
-        border-radius: 12px;
-        font-size: 0.82rem;
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-body);
         background: var(--bg-card);
-        font-family: 'Inter', sans-serif;
+        font-family: inherit;
+        overflow: hidden;
+    }
+
+    :global(.react-datepicker__month-container) {
+        width: 100%;
     }
 
     :global(.react-datepicker__header) {
         background: var(--bg-subtle);
-        border-color: var(--border-light);
-        border-radius: 10px 10px 0 0;
+        border-bottom: 1px solid var(--border-light);
     }
 
+    :global(.react-datepicker__current-month),
+    :global(.react-datepicker-time__header),
+    :global(.react-datepicker-year-header) {
+        color: var(--text-h);
+        font-weight: 800;
+    }
+
+    :global(.react-datepicker__day-name),
+    :global(.react-datepicker__day) {
+        width: 2rem;
+        line-height: 2rem;
+        margin: 0.08rem;
+        color: var(--text-body);
+    }
+
+    :global(.react-datepicker__day--keyboard-selected),
     :global(.react-datepicker__day--selected),
     :global(.react-datepicker__day--range-start),
     :global(.react-datepicker__day--range-end) {
-        background: #2563eb !important;
-        color: #fff !important;
-        border-radius: 8px;
+        color: #ffffff !important;
+        background: var(--primary) !important;
+        border-radius: 6px !important;
     }
 
-    :global(.react-datepicker__day--in-range) {
-        background: rgba(37, 99, 235, 0.12) !important;
-        border-radius: 0;
-    }
-
+    :global(.react-datepicker__day--in-range),
     :global(.react-datepicker__day--in-selecting-range) {
-        background: rgba(37, 99, 235, 0.18) !important;
+        color: var(--primary-strong) !important;
+        background: var(--primary-soft) !important;
+        border-radius: 4px !important;
     }
 
     :global(.react-datepicker__day:hover) {
-        background: rgba(37, 99, 235, 0.1);
-        border-radius: 8px;
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-radius: 6px;
     }
 }
 
@@ -198,70 +239,103 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    padding-top: 4px;
+}
+
+.cancelBtn,
+.applyBtn {
+    min-height: 36px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    font-weight: 720;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
 .cancelBtn {
-    padding: 7px 16px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
     color: var(--text-sub);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
-
-    &:hover { background: var(--bg-subtle); }
-}
-
-.applyBtn {
-    padding: 7px 16px;
-    border-radius: 6px;
-    border: none;
-    background: #2563eb;
-    color: #fff;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    font-family: 'Inter', sans-serif;
-
-    &:hover { opacity: 0.88; }
-}
-
-/* Icon buttons */
-.iconBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
+    background: #ffffff;
     border: 1px solid var(--border);
-    background: var(--bg-subtle);
-    color: var(--text-sub);
-    cursor: pointer;
-    transition: all 0.15s;
 
     &:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: rgba(37, 99, 235, 0.05);
+        color: var(--text-h);
+        background: var(--bg-subtle);
     }
 }
 
-.spinning {
+.applyBtn {
+    color: #ffffff;
+    background: var(--primary);
+    border: 1px solid var(--primary);
+
+    &:hover {
+        background: var(--primary-strong);
+        border-color: var(--primary-strong);
+    }
+}
+
+.iconBtn {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sub);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+
+    &:hover {
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
+    }
+}
+
+.spinning svg {
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .pickerOverlay {
     position: fixed;
     inset: 0;
     z-index: 999;
+}
+
+@media (max-width: 720px) {
+    .header {
+        padding: 16px;
+    }
+
+    .headerRight,
+    .datePickerWrapper,
+    .dateBtn {
+        width: 100%;
+    }
+
+    .headerRight {
+        justify-content: flex-start;
+    }
+
+    .dateBtn {
+        justify-content: center;
+    }
+
+    .pickerDropdown {
+        left: 0;
+        right: auto;
+        min-width: min(100%, calc(100vw - 32px));
+    }
+
+    .pickerRow {
+        grid-template-columns: 1fr;
+    }
 }

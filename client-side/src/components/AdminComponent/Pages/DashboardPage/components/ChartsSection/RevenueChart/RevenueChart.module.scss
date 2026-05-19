@@ -1,111 +1,145 @@
-// RevenueChart.module.scss — Premium Redesign
-
 .revenueChart {
-    background: var(--bg-card, white);
-    border-radius: 8px;
-    border: 1px solid var(--border, #e2e8f0);
-    box-shadow: var(--shadow-xs, 0 1px 4px rgba(0,0,0,0.06));
-    padding: 20px 22px;
+    padding: 22px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
 
     .chartHeader {
         display: flex;
-        justify-content: space-between;
         align-items: flex-start;
+        justify-content: space-between;
         flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 20px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        gap: 16px;
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--border-light);
 
         .headerLeft {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
 
             .icon {
-                color: #6366f1;
+                color: var(--primary);
                 flex-shrink: 0;
             }
 
             h3 {
-                margin: 0 0 3px 0;
-                font-size: 0.9375rem;
-                color: var(--text-h, #0f172a);
-                font-weight: 700;
-                letter-spacing: -0.02em;
+                margin: 0 0 5px;
+                color: var(--text-h);
+                font-size: 1rem;
+                font-weight: 800;
+                letter-spacing: 0;
             }
 
             p {
                 margin: 0;
-                color: var(--text-sub, #64748b);
-                font-size: 0.8rem;
-                font-weight: 500;
+                color: var(--text-sub);
+                font-size: 0.84rem;
+                font-weight: 600;
             }
         }
 
         .headerRight {
             display: flex;
-            flex-direction: column;
             align-items: flex-end;
-            gap: 8px;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .chartTypeToggle {
-            display: flex;
-            gap: 2px;
-            background: var(--bg-subtle, #f8fafc);
+            display: inline-flex;
+            gap: 4px;
             padding: 3px;
-            border-radius: 6px;
-            border: 1px solid var(--border, #e2e8f0);
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 7px;
         }
 
         .toggleBtn {
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: none;
+            min-height: 30px;
+            padding: 0 11px;
+            color: var(--text-sub);
             background: transparent;
-            color: var(--text-sub, #64748b);
-            font-size: 0.75rem;
-            font-weight: 600;
+            border: 0;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 760;
             cursor: pointer;
-            transition: all 0.15s;
-            font-family: 'Inter', sans-serif;
+            transition: background 0.16s ease, color 0.16s ease;
 
-            &:hover { background: rgba(37,99,235,0.08); color: #2563eb; }
+            &:hover {
+                color: var(--primary-strong);
+                background: var(--primary-hover);
+            }
+
+            &:focus-visible {
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+            }
         }
 
         .activeToggle {
-            background: #2563eb !important;
-            color: #fff !important;
+            color: #ffffff !important;
+            background: var(--primary) !important;
         }
 
         .headerStats {
             display: flex;
-            gap: 28px;
+            gap: 12px;
+            flex-wrap: wrap;
 
             .stat {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
+                min-width: 132px;
+                padding: 8px 11px;
+                background: var(--bg-subtle);
+                border: 1px solid var(--border-light);
+                border-radius: 7px;
+
+                .label,
+                .value {
+                    display: block;
+                }
 
                 .label {
-                    font-size: 0.72rem;
-                    color: var(--text-sub, #64748b);
                     margin-bottom: 3px;
-                    font-weight: 500;
+                    color: var(--text-sub);
+                    font-size: 0.72rem;
+                    font-weight: 700;
                 }
 
                 .value {
-                    font-size: 1.0625rem;
-                    color: var(--text-h, #0f172a);
-                    font-weight: 800;
-                    letter-spacing: -0.02em;
+                    color: var(--text-h);
+                    font-size: 1rem;
+                    font-weight: 820;
+                    letter-spacing: 0;
                 }
             }
         }
     }
 
     .chartContainer {
-        padding: 8px 0;
+        min-height: 350px;
+        padding: 4px 0 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .revenueChart {
+        padding: 18px 16px;
+
+        .chartHeader {
+            .headerRight,
+            .chartTypeToggle,
+            .headerStats {
+                width: 100%;
+            }
+
+            .headerStats .stat {
+                flex: 1 1 140px;
+            }
+        }
     }
 }

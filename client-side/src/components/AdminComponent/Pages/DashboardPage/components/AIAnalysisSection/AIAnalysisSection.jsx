@@ -7,14 +7,14 @@ import {
     Brain, Lightbulb, Wand2, TrendingUp,
     CheckCircle2, AlertTriangle, Loader2,
     RefreshCw, Globe, DollarSign, Users, Map,
-    CalendarDays, Bot
+    CalendarDays, Bot, Star
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
 // ─── Mode config ──────────────────────────────────────────────────────────────
 const MODES = [
-    { key: 'OVERVIEW', label: 'Tổng quan', Icon: Globe, color: '#6366f1' },
+    { key: 'OVERVIEW', label: 'Tổng quan', Icon: Globe, color: '#1f6fb2' },
     { key: 'REVENUE', label: 'Doanh thu', Icon: DollarSign, color: '#10b981' },
     { key: 'USERS', label: 'Người dùng', Icon: Users, color: '#06b6d4' },
     { key: 'TOURS', label: 'Tours', Icon: Map, color: '#f59e0b' },
@@ -62,7 +62,6 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
         return (
             <div className={styles.aiSection}>
                 <div className={styles.loadingState}>
-                    <div className={styles.loadingOrb} />
                     <Loader2 className={styles.spinner} size={40} />
                     <h3>AI đang phân tích dữ liệu…</h3>
                     <p>Đang xử lý hàng nghìn điểm dữ liệu, vui lòng đợi.</p>
@@ -76,10 +75,8 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
         return (
             <div className={styles.aiSection}>
                 <div className={styles.emptyState}>
-                    <div className={styles.blobBg} />
-
                     <div className={styles.emptyTop}>
-                        <div className={styles.brainOrb}>
+                        <div className={styles.brainTile}>
                             <Brain className={styles.brainIcon} size={32} />
                         </div>
                         <div className={styles.emptyText}>
@@ -91,7 +88,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                     {dateRange?.from && (
                         <div className={styles.dateBadge}>
                             <CalendarDays size={13} />
-                            <span>{fmtDate(dateRange.from)} → {fmtDate(dateRange.to)}</span>
+                            <span>{fmtDate(dateRange.from)} - {fmtDate(dateRange.to)}</span>
                         </div>
                     )}
 
@@ -127,7 +124,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
             {/* Header */}
             <div className={styles.sectionHeader}>
                 <div className={styles.headerLeft}>
-                    <div className={styles.brainOrbSmall}><Brain size={20} /></div>
+                    <div className={styles.brainTileSmall}><Brain size={20} /></div>
                     <div>
                         <h2 className={styles.sectionTitle}>Phân tích AI Thông minh</h2>
                         <p className={styles.sectionSub}>Powered by Gemini AI · {modeInfo.label}</p>
@@ -224,7 +221,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                             <div key={i} className={styles.recCard}>
                                 <div className={styles.impactRow}>
                                     {Array.from({ length: item.impact || 1 }).map((_, j) => (
-                                        <span key={j} className={styles.star}>★</span>
+                                        <Star key={j} className={styles.star} size={14} fill="currentColor" />
                                     ))}
                                 </div>
                                 <h4>{item.title}</h4>

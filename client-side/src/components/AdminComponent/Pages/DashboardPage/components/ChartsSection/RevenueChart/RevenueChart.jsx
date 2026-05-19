@@ -68,7 +68,7 @@ const formatCurrency = (value) => {
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 16px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+            <div style={{ background: '#fff', border: '1px solid #dbe4ef', borderRadius: 8, padding: '12px 14px', boxShadow: '0 12px 28px rgba(15,23,42,0.12)' }}>
                 <p style={{ margin: '0 0 8px', fontWeight: 700, color: '#1a202c' }}>{label}</p>
                 {payload.map((p, i) => (
                     <p key={i} style={{ margin: '0 0 4px', color: p.color, fontSize: 13 }}>
@@ -131,41 +131,41 @@ const RevenueChart = ({ data, dateRange }) => {
                         <AreaChart data={chartData}>
                             <defs>
                                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.5}/>
-                                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                                    <stop offset="5%" stopColor="#1f6fb2" stopOpacity={0.4}/>
+                                    <stop offset="95%" stopColor="#1f6fb2" stopOpacity={0}/>
                                 </linearGradient>
                                 <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.24}/>
+                                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#edf2f7" vertical={false} />
                             <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                             <YAxis tickFormatter={formatCurrency} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '16px' }} iconType="circle" formatter={(v) => v === 'revenue' ? 'Doanh thu' : 'Bookings'} />
-                            <Area type="monotone" dataKey="revenue" stroke="#2563eb" fill="url(#colorRevenue)" strokeWidth={2} dot={false} activeDot={{ r: 5 }} />
-                            <Area type="monotone" dataKey="bookings" stroke="#06b6d4" fill="url(#colorBookings)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                            <Area type="monotone" dataKey="revenue" stroke="#1f6fb2" fill="url(#colorRevenue)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+                            <Area type="monotone" dataKey="bookings" stroke="#0ea5e9" fill="url(#colorBookings)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
                         </AreaChart>
                     ) : chartType === 'line' ? (
                         <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#edf2f7" vertical={false} />
                             <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                             <YAxis tickFormatter={formatCurrency} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend iconType="circle" formatter={(v) => v === 'revenue' ? 'Doanh thu' : 'Bookings'} />
-                            <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                            <Line type="monotone" dataKey="bookings" stroke="#06b6d4" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                            <Line type="monotone" dataKey="revenue" stroke="#1f6fb2" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+                            <Line type="monotone" dataKey="bookings" stroke="#0ea5e9" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
                         </LineChart>
                     ) : (
                         <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#edf2f7" vertical={false} />
                             <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                             <YAxis tickFormatter={formatCurrency} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend iconType="circle" formatter={(v) => v === 'revenue' ? 'Doanh thu' : 'Bookings'} />
-                            <Bar dataKey="revenue" fill="#2563eb" radius={[4,4,0,0]} maxBarSize={32} />
-                            <Bar dataKey="bookings" fill="#06b6d4" radius={[4,4,0,0]} maxBarSize={32} />
+                            <Bar dataKey="revenue" fill="#1f6fb2" radius={[4,4,0,0]} maxBarSize={32} />
+                            <Bar dataKey="bookings" fill="#0ea5e9" radius={[4,4,0,0]} maxBarSize={32} />
                         </BarChart>
                     )}
                 </ResponsiveContainer>

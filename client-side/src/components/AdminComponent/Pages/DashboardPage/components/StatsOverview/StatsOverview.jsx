@@ -29,9 +29,9 @@ const StatsOverview = ({ stats }) => {
             subtitle: `${stats.userStats.activeUsers} đang hoạt động`,
             growth: stats.userStats.userGrowthRate,
             icon: Users,
-            color: '#2563eb',
-            bgColor: 'rgba(37, 99, 235, 0.08)',
-            borderColor: '#2563eb',
+            color: '#1f6fb2',
+            bgColor: '#e0f2fe',
+            borderColor: '#1f6fb2',
             details: null
         },
         {
@@ -40,8 +40,8 @@ const StatsOverview = ({ stats }) => {
             subtitle: `Tháng này: ${formatCurrency(stats.revenueStats.thisMonthRevenue)}`,
             growth: stats.revenueStats.revenueGrowthRate,
             icon: DollarSign,
-            color: '#10b981',
-            bgColor: 'rgba(16, 185, 129, 0.08)',
+            color: '#0f9f7a',
+            bgColor: '#dcfce7',
             borderColor: '#10b981',
             details: [
                 { label: 'Đã thanh toán (PAID)', value: formatCurrency(stats.revenueStats.totalRevenue) },
@@ -57,7 +57,7 @@ const StatsOverview = ({ stats }) => {
             growth: stats.bookingStats.conversionRate,
             icon: ShoppingBag,
             color: '#f59e0b',
-            bgColor: 'rgba(245, 158, 11, 0.08)',
+            bgColor: '#fff7ed',
             borderColor: '#f59e0b',
             details: [
                 { label: 'Đã thanh toán', value: stats.bookingStats.paidBookings },
@@ -72,9 +72,9 @@ const StatsOverview = ({ stats }) => {
             subtitle: `${stats.tourStats.upcomingDepartures} chuyến sắp khởi hành`,
             growth: stats.tourStats.averageRating * 20,
             icon: Map,
-            color: '#7c3aed',
-            bgColor: 'rgba(124, 58, 237, 0.08)',
-            borderColor: '#7c3aed',
+            color: '#0891b2',
+            bgColor: '#cffafe',
+            borderColor: '#06b6d4',
             details: null
         }
     ];

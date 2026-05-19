@@ -1,80 +1,104 @@
-// TourPerformanceChart.module.scss
-
 .tourPerformanceChart {
-    background: var(--bg-card, white);
-    border-radius: 8px;
-    border: 1px solid var(--border, #e2e8f0);
-    box-shadow: var(--shadow-xs, 0 1px 4px rgba(0,0,0,0.06));
-    padding: 20px 22px;
+    padding: 22px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
 
     .chartHeader {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 12px;
+        gap: 16px;
+        padding-bottom: 16px;
         margin-bottom: 18px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        border-bottom: 1px solid var(--border-light);
     }
 
     .titleRow {
+        min-width: 0;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
 
         .icon {
-            color: #2563eb;
+            color: var(--primary);
             flex-shrink: 0;
         }
 
         h3 {
-            margin: 0 0 3px 0;
-            font-size: 0.9375rem;
-            color: var(--text-h, #0f172a);
-            font-weight: 700;
+            margin: 0 0 4px;
+            color: var(--text-h);
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0;
         }
 
         p {
             margin: 0;
-            color: var(--text-sub, #64748b);
-            font-size: 0.8rem;
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            font-weight: 600;
         }
     }
 
     .totalBadge {
-        background: #2563eb;
-        color: #fff;
-        font-size: 0.8rem;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 4px;
+        padding: 6px 12px;
+        color: var(--primary-strong);
+        background: var(--primary-soft);
+        border: 1px solid #bae6fd;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 820;
         white-space: nowrap;
-        align-self: flex-start;
     }
 
     .chartContainer {
         overflow-x: auto;
-        padding: 4px 0;
+        padding-top: 2px;
+
+        &::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
     }
 
     .emptyState {
+        min-height: 260px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 48px 24px;
         gap: 8px;
-        color: var(--text-muted, #94a3b8);
+        padding: 40px 20px;
+        color: var(--text-muted);
+        text-align: center;
 
         p {
             margin: 0;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-sub, #64748b);
+            color: var(--text-sub);
+            font-size: 0.94rem;
+            font-weight: 750;
         }
 
         .emptyHint {
-            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .tourPerformanceChart {
+        padding: 18px 16px;
+
+        .chartHeader {
+            flex-direction: column;
         }
     }
 }

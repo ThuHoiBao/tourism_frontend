@@ -8,13 +8,13 @@ import { CalendarCheck2 } from 'lucide-react';
 const BookingStatusChart = ({ data }) => {
     // Màu sắc cho từng trạng thái
     const STATUS_COLORS = {
-        'PAID': '#48bb78',
-        'PENDING_CONFIRMATION': '#ed8936',
-        'PENDING_PAYMENT': '#4299e1',
-        'PENDING_REFUND': '#f56565',
-        'CANCELLED': '#a0aec0',
-        'REVIEWED': '#9f7aea',
-        'OVERDUE_PAYMENT': '#f00505ff'
+        'PAID': '#10b981',
+        'PENDING_CONFIRMATION': '#f59e0b',
+        'PENDING_PAYMENT': '#1f6fb2',
+        'PENDING_REFUND': '#f43f5e',
+        'CANCELLED': '#94a3b8',
+        'REVIEWED': '#06b6d4',
+        'OVERDUE_PAYMENT': '#dc2626'
     };
 
     // Nhãn tiếng Việt cho trạng thái
@@ -56,10 +56,10 @@ const BookingStatusChart = ({ data }) => {
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, percent }) => 
-                                `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                            outerRadius={80}
+                            label={false}
+                            innerRadius={48}
+                            outerRadius={84}
+                            paddingAngle={2}
                             fill="#8884d8"
                             dataKey="value"
                         >

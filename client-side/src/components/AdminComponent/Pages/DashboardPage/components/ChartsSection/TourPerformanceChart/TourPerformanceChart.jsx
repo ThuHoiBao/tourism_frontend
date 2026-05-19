@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import { BarChart3 } from 'lucide-react';
 
-const COLORS = ['#2563eb', '#0891b2', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0f766e', '#c2410c', '#4338ca'];
+const COLORS = ['#1f6fb2', '#0ea5e9', '#10b981', '#f59e0b', '#f43f5e', '#64748b', '#0891b2', '#0f766e', '#b45309', '#334155'];
 
 const formatRevenue = (value) => {
     if (!value && value !== 0) return '0đ';
@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         const d = payload[0]?.payload;
         return (
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 16px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', maxWidth: 240 }}>
+            <div style={{ background: '#fff', border: '1px solid #dbe4ef', borderRadius: 8, padding: '12px 14px', boxShadow: '0 12px 28px rgba(15,23,42,0.12)', maxWidth: 260 }}>
                 <p style={{ margin: '0 0 8px', fontWeight: 700, color: '#1a202c', fontSize: 13, lineHeight: 1.4 }}>{d?.fullName || label}</p>
                 <p style={{ margin: '0 0 4px', color: '#16a34a', fontSize: 13 }}>
                     Doanh thu: <strong>{formatRevenueFull(d?.revenue ?? 0)}</strong>
@@ -88,7 +88,7 @@ const TourPerformanceChart = ({ hotTours }) => {
                             layout="vertical"
                             margin={{ top: 4, right: 100, left: 8, bottom: 4 }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" horizontal={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#edf2f7" horizontal={false} />
                             <XAxis
                                 type="number"
                                 tick={{ fill: '#94a3b8', fontSize: 11 }}

@@ -55,9 +55,9 @@ const formatDateShort = (dateStr) => {
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 14px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <div style={{ background: '#fff', border: '1px solid #dbe4ef', borderRadius: 8, padding: '10px 14px', boxShadow: '0 12px 26px rgba(15,23,42,0.12)' }}>
                 <p style={{ margin: 0, fontWeight: 600, color: '#1a202c', marginBottom: 4 }}>{label}</p>
-                <p style={{ margin: 0, color: '#2563eb', fontSize: 13 }}>
+                <p style={{ margin: 0, color: '#1f6fb2', fontSize: 13 }}>
                     User mới: <strong>{payload[0].value}</strong>
                 </p>
             </div>
@@ -85,7 +85,7 @@ const UserGrowthChart = ({ data }) => {
             <div className={styles.chartContainer}>
                 <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#edf2f7" vertical={false} />
                         <XAxis
                             dataKey="label"
                             tick={{ fill: '#94a3b8', fontSize: 11 }}
@@ -104,7 +104,7 @@ const UserGrowthChart = ({ data }) => {
                             {chartData.map((entry, index) => (
                                 <Cell
                                     key={index}
-                                    fill={entry.newUsers === maxVal ? '#2563eb' : '#bfdbfe'}
+                                    fill={entry.newUsers === maxVal ? '#1f6fb2' : '#bae6fd'}
                                 />
                             ))}
                         </Bar>
