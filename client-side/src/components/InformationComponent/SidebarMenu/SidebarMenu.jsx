@@ -20,7 +20,7 @@ const SidebarMenu = ({ activeTab, onMenuClick, onAvatarClick }) => {
     const menuItems = [
         { id: 'profile', label: 'Hồ sơ cá nhân', icon: FaEdit },
         { id: 'transaction', label: 'Danh sách giao dịch', icon: FaListAlt },
-        { id: 'favorites', label: 'Tour yêu thích', icon: FaInfoCircle },
+        { id: 'favorites', label: 'Chuyến đi yêu thích', icon: FaInfoCircle },
     ];
 
     const handleLogout = async () => {

@@ -1,88 +1,111 @@
-/* src/components/InformationComponent/TransactionList/TransactionListItem/ConfirmCancellationModal/ConfirmCancellationModal.module.scss */
-
-// --- Variables ---
-$primary-color: #1890ff; 
-$danger-color: #ff4d4f; 
-$bg-light: #f7f7f7;
+$primary: #2274b8;
+$danger: #ef4444;
+$text: #172033;
+$muted: #64748b;
+$border: #dbe5f0;
 
 .modalOverlay {
-    // Kế thừa từ CancelOptionModal để đảm bảo lớp chồng (overlay)
-    composes: modalOverlay from "../CancelOptionModal/CancelOptionModal.module.scss";
-    z-index: 2010; /* Cao hơn modal cha */
+  composes: modalOverlay from "../CancelOptionModal/CancelOptionModal.module.scss";
+  z-index: 2010;
 }
 
 .modalContent {
-    // Kế thừa từ CancelOptionModal
-    composes: modalContent from "../CancelOptionModal/CancelOptionModal.module.scss";
-    max-width: 450px;
-    padding: 40px 30px;
+  composes: modalContent from "../CancelOptionModal/CancelOptionModal.module.scss";
+  width: min(480px, calc(100vw - 42px));
+  max-width: 480px;
+  padding: 30px 28px 26px;
+  text-align: center;
 }
 
 .image {
-    // Kế thừa từ CancelOptionModal
-    composes: image from "../CancelOptionModal/CancelOptionModal.module.scss";
-    filter: drop-shadow(0 4px 8px rgba($danger-color, 0.4));
+  composes: image from "../CancelOptionModal/CancelOptionModal.module.scss";
+  float: none;
+  display: block;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
 }
 
 .title {
-    font-size: 22px;
-    font-weight: 700;
-    color: $danger-color;
-    margin-bottom: 10px;
+  margin: 0 0 12px;
+  color: $danger;
+  font-size: 1.35rem;
+  font-weight: 720;
 }
 
 .warning {
-    font-size: 16px;
-    color: #495057;
-    margin-bottom: 30px;
-    padding: 15px;
-    border: 1px dashed $danger-color;
-    background-color: rgba($danger-color, 0.05);
-    border-radius: 8px;
+  margin: 0 0 22px;
+  padding: 14px 15px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .buttonGroup {
-    display: flex;
-    gap: 15px;
-    width: 100%;
-    
-    button {
-        flex: 1;
-        padding: 12px;
-        font-size: 16px;
-    }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  button {
+    min-height: 42px;
+    border-radius: 7px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
 }
 
 .btnDanger {
-    background-color: $danger-color;
-    color: white;
-    border: 1px solid $danger-color;
-    &:hover { background-color: darken($danger-color, 10%); }
+  border: 1px solid $danger;
+  background: $danger;
+  color: #ffffff;
+
+  &:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
 }
 
 .btnSecondary {
-    background-color: white;
-    color: #6c757d;
-    border: 1px solid #ced4da;
-    &:hover { background-color: $bg-light; }
+  border: 1px solid $border;
+  background: #ffffff;
+  color: #334155;
+
+  &:hover {
+    background: #f1f5f9;
+  }
 }
 
 .successTitle {
-    font-size: 26px;
-    color: $primary-color;
-    margin-bottom: 10px;
-    font-weight: 800;
+  margin: 0 0 10px;
+  color: $primary;
+  font-size: 1.35rem;
+  font-weight: 720;
 }
 
 .successMessage {
-    color: #388e3c;
-    font-size: 17px;
-    margin-bottom: 20px;
+  margin: 0 0 20px;
+  color: $muted;
+  font-size: 0.98rem;
+  line-height: 1.6;
 }
 
 .btnPrimary {
-    // Kế thừa style button Primary cho nút Đóng
-    composes: btnPrimary from "../CancelOptionModal/CancelOptionModal.module.scss";
-    width: 100%;
-    margin-top: 10px;
+  composes: btnPrimary from "../CancelOptionModal/CancelOptionModal.module.scss";
+  width: 100%;
+  margin-top: 6px;
+}
+
+@media (max-width: 520px) {
+  .modalContent {
+    width: calc(100vw - 24px);
+  }
+
+  .buttonGroup {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,12 +1,9 @@
-// src/components/InformationComponent/FavoriteTours/FavoriteTourItem/FavoriteTourItem.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import styles from './FavoriteTourItem.module.scss';
 
-// Chức năng format tiền tệ (VND)
 const formatCurrency = (amount) => {
-    
     if (amount === undefined || amount === null) return 'Liên hệ';
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', 'đ');
 };
@@ -19,112 +16,108 @@ const FavoriteTourItem = ({ tour, onRemove }) => {
 
     const allDepartureDates = tour.departureDates || [];
 
-    // Mở modal xác nhận
-    const handleRemoveClick = () => {
-        setShowModal(true);
-    };
-
-    // Xác nhận và gọi hàm xóa từ component cha
     const handleConfirmRemove = () => {
         onRemove(tour.tourID);
         setShowModal(false);
     };
 
-    const handleDateClick = (e, departureID) => {
-        e.stopPropagation(); 
-        console.log(`Clicked Departure ID: ${departureID}`);
+    const handleDateClick = (event, departureID) => {
+        event.stopPropagation();
         navigate(`/tour/${tour.tourCode}?departureId=${departureID}`);
     };
 
-     const handleViewDetail = (e) => {
-        e.stopPropagation();
-        if(allDepartureDates && allDepartureDates.length > 0){
-            const firstDepature = allDepartureDates[0];
-             navigate(`/tour/${tour.tourCode}?departureId=${firstDepature.departureID}`);
+    const handleViewDetail = (event) => {
+        event.stopPropagation();
+        if (allDepartureDates.length > 0) {
+            const firstDeparture = allDepartureDates[0];
+            navigate(`/tour/${tour.tourCode}?departureId=${firstDeparture.departureID}`);
         } else {
             navigate(`/tour/${tour.tourCode}`);
         }
-    }
+    };
 
     return (
         <>
-            <div className={styles.tourItem}>
+            <article className={styles.tourItem}>
                 <div className={styles.imageContainer}>
-                    {/* KHÔNG CÓ ICON TRÁI TIM */}
                     <img src={tour.image} alt={tour.tourName} className={styles.tourImage} />
-                    <div className={styles.saleBadge}>
-                        <p>Tiết kiệm</p>
-                    </div>
                 </div>
-                
+
                 <div className={styles.detailsContainer}>
                     <h3 className={styles.tourName}>{tour.tourName}</h3>
-                    
-                    {/* KHỐI THÔNG TIN DẠNG GRID (2 cột) */}
+
                     <div className={styles.infoGrid}>
-                        <div className={styles.iconInfo}>
-                            <i className="fas fa-qrcode"></i> Mã tour: <span className={styles.infoValue}>{tour.tourCode}</span>
+                        <div className={styles.infoLine}>
+                            <span>Mã chuyến:</span>
+                            <strong>{tour.tourCode}</strong>
                         </div>
-                        <div className={styles.iconInfo}>
-                            <i className="fas fa-plane-departure"></i> Khởi hành: <span className={`${styles.infoValue} ${styles.highlightValue}`}>{tour.startPointName}</span>
+                        <div className={styles.infoLine}>
+                            <span>Khởi hành:</span>
+                            <strong className={styles.highlightValue}>{tour.startPointName}</strong>
                         </div>
-                        <div className={styles.iconInfo}>
-                            <i className="fas fa-clock"></i> Thời gian: <span className={styles.infoValue}>{tour.duration}</span>
+                        <div className={styles.infoLine}>
+                            <span>Thời gian:</span>
+                            <strong>{tour.duration}</strong>
                         </div>
-                        <div className={styles.iconInfo}>
-                            <i className="fas fa-bus"></i> Phương tiện: <span className={styles.infoValue}>{tour.transportation}</span>
+                        <div className={styles.infoLine}>
+                            <span>Phương tiện:</span>
+                            <strong>{tour.transportation}</strong>
                         </div>
                     </div>
 
-                    {/* Ngày Khởi hành */}
                     <div className={styles.dateRow}>
-                        <span className={styles.dateLabel}>
-                            <i className="fas fa-calendar-alt"></i> Ngày khởi hành:
-                        </span>
+                        <span className={styles.dateLabel}>Ngày khởi hành:</span>
                         <div className={styles.dateBadges}>
-                            {/* Nút Lùi/Tiến (có thể bỏ nếu không có logic cuộn) */}
-                            <div className={styles.dateNavButton}>&larr;</div>
-                            {allDepartureDates.slice(0, 3).map((date, index) => ( // Chỉ hiện 3 ngày gần nhất
-                                <span 
-                                    key={index} 
+                            <button className={styles.dateNavButton} type="button" disabled>
+                                ←
+                            </button>
+                            {allDepartureDates.slice(0, 3).map((date, index) => (
+                                <button
+                                    key={`${date.departureID}-${index}`}
                                     className={styles.dateBadge}
                                     title={`Ngày: ${date.fullDate}`}
-                                    onClick={(e) => handleDateClick(e, date.departureID)}
+                                    onClick={(event) => handleDateClick(event, date.departureID)}
+                                    type="button"
                                 >
                                     {date.departureDate}
-                                </span>
+                                </button>
                             ))}
-                            <div className={styles.dateNavButton}>&rarr;</div>
+                            <button className={styles.dateNavButton} type="button" disabled>
+                                →
+                            </button>
                         </div>
                     </div>
 
-                    {/* Giá và Hành động */}
-                    <div className={styles.priceActionRow}>
+                    <div className={styles.footerRow}>
                         <div className={styles.priceBlock}>
-                            Giá từ:
-                            <p className={styles.priceValue}>{formatCurrency(tour.money)}</p>
+                            <span>Giá từ:</span>
+                            <strong>{formatCurrency(tour.money)}</strong>
                         </div>
                         <div className={styles.buttonGroup}>
-                            <button className={styles.detailButton} onClick={handleViewDetail}>Xem chi tiết</button>
-                            <button className={styles.removeButton} onClick={handleRemoveClick}>
+                            <button className={styles.detailButton} onClick={handleViewDetail} type="button">
+                                Xem chi tiết
+                            </button>
+                            <button className={styles.removeButton} onClick={() => setShowModal(true)} type="button">
                                 Bỏ yêu thích
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </article>
 
-            {/* ✨ MODAL XÁC NHẬN ✨ */}
             {showModal && (
                 <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        <h3>Xác nhận</h3>
-                        <p>Bạn có chắc chắn muốn bỏ yêu thích tour "{tour.tourName}" này không?</p>
+                    <div className={styles.modalContent} onClick={(event) => event.stopPropagation()}>
+                        <button className={styles.modalClose} onClick={() => setShowModal(false)} type="button">
+                            <X size={18} />
+                        </button>
+                        <h3>Bỏ yêu thích chuyến đi?</h3>
+                        <p>Bạn có chắc chắn muốn bỏ yêu thích “{tour.tourName}” không?</p>
                         <div className={styles.modalActions}>
-                            <button className={styles.cancelButton} onClick={() => setShowModal(false)}>
+                            <button className={styles.cancelButton} onClick={() => setShowModal(false)} type="button">
                                 Hủy
                             </button>
-                            <button className={styles.confirmButton} onClick={handleConfirmRemove}>
+                            <button className={styles.confirmButton} onClick={handleConfirmRemove} type="button">
                                 Xác nhận
                             </button>
                         </div>

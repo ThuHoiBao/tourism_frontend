@@ -2,10 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './ViewReviewModal.module.scss';
-import { 
-    FaTimes, FaStar, FaChevronLeft, FaChevronRight,
-    FaGrinStars, FaSmile, FaMeh, FaFrown, FaGrimace 
-} from 'react-icons/fa';
+import { FaTimes, FaStar, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getReviewByBookingIdApi } from '../../../../services/review/review.ts';
 
 // --- HÀM CHUYỂN ĐỔI RATING SANG ICON CẢM XÚC MESSENGER STYLE ---
@@ -105,12 +102,14 @@ const ViewReviewModal = ({ booking, onClose, formatPrice, formatDate }) => {
     
     const emotion = reviewData ? getEmotionIcon(reviewData.rating, styles) : { icon: null, label: "N/A" };
 
+    const closeLightbox = () => setLightboxImage(null);
+
     const lightboxJSX = lightboxImage && reviewData.imageUrls.length > 0 && (
-        <div className={styles.lightboxOverlay} onClick={onClose}>
+        <div className={styles.lightboxOverlay} onClick={closeLightbox}>
             <div className={styles.lightboxContent} onClick={e => e.stopPropagation()}>
                 
                 {/* 💡 Nút Đóng TOP (X) */}
-                <button className={styles.closeLightboxTop} onClick={onClose}>
+                <button className={styles.closeLightboxTop} onClick={closeLightbox} type="button">
                      <FaTimes />
                 </button> 
                 
@@ -119,17 +118,17 @@ const ViewReviewModal = ({ booking, onClose, formatPrice, formatDate }) => {
                 {/* Controls (Nút chuyển ảnh) */}
                 {reviewData.imageUrls.length > 1 && (
                     <div className={styles.lightboxControls}>
-                        <button className={styles.navButton} onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}>
+                        <button className={styles.navButton} onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} type="button">
                             <FaChevronLeft />
                         </button>
-                        <button className={styles.navButton} onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}>
+                        <button className={styles.navButton} onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} type="button">
                             <FaChevronRight />
                         </button>
                     </div>
                 )}
                 
                 {/* 💡 Nút Đóng BOTTOM (Đóng modal) */}
-                <button className={styles.closeLightboxBottom} onClick={onClose}>
+                <button className={styles.closeLightboxBottom} onClick={closeLightbox} type="button">
                     <FaTimes /> Đóng
                 </button>
                 
@@ -144,18 +143,18 @@ const ViewReviewModal = ({ booking, onClose, formatPrice, formatDate }) => {
                 {/* FIXED HEADER */}
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>Xem Đánh Giá</h2>
-                    <button className={styles.closeButton} onClick={onClose}><FaTimes /></button>
+                    <button className={styles.closeButton} onClick={onClose} type="button"><FaTimes /></button>
                 </div>
 
                 {/* SCROLLABLE BODY */}
                 <div className={styles.modalBody}>
-                    {/* 1. Tour Info */}
+                    {/* 1. Thông tin chuyến đi */}
                     <div className={styles.tourSummary}>
                         <img src={booking.image || 'placeholder.png'} alt={booking.tourName} className={styles.tourImage} />
                         <div className={styles.tourDetails}>
                             <h4>{booking.tourName}</h4>
                             <p>Mã Booking: {booking.bookingCode}</p>
-                            <p>Mã Tour: {booking.tourCode}</p>
+                            <p>Mã chuyến: {booking.tourCode}</p>
                         </div>
                     </div>
                     

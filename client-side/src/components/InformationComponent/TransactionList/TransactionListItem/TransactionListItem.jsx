@@ -1,22 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import styles from './TransactionListItem.module.scss';
-import { FaTicketAlt, FaCalendarAlt, FaMoneyBillWave } from 'react-icons/fa'; 
-import TransactionDetailModal from './TransactionDetailModal/TransactionDetailModal';
-import { LuClock3, LuZap, LuEye, LuStar, LuClipboardList } from "react-icons/lu"; 
-import CancelOptionModal from './CancelOptionModal/CancelOptionModal';
-import ReviewComponent from '../ReviewComponent/ReviewComponent'; 
-import ViewReviewModal from '../ViewReviewModal/ViewReviewModal'; 
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    CalendarDays,
+    Clock3,
+    CreditCard,
+    Eye,
+    FileText,
+    Star,
+    Ticket,
+    XCircle,
+    Zap,
+} from 'lucide-react';
 import { toast } from 'react-toastify';
-import axios from '../../../../utils/axiosCustomize';
+import TransactionDetailModal from './TransactionDetailModal/TransactionDetailModal';
+import CancelOptionModal from './CancelOptionModal/CancelOptionModal';
+import ReviewComponent from '../ReviewComponent/ReviewComponent';
+import ViewReviewModal from '../ViewReviewModal/ViewReviewModal';
+import styles from './TransactionListItem.module.scss';
+
 const TransactionListItem = ({ booking, refetch }) => {
     const [timeLeft, setTimeLeft] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isViewReviewModalOpen, setIsViewReviewModalOpen] = useState(false);
-    const handleOpenReviewModal = () => setIsReviewModalOpen(true);
-    const handleCloseReviewModal = () => setIsReviewModalOpen(false);
-    const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+    const [isPaymentLoading] = useState(false);
+
+    const hasDeparted = useMemo(() => {
+        if (!booking?.departureDate) return false;
+        const departureTime = new Date(booking.departureDate).getTime();
+        return departureTime < Date.now();
+    }, [booking?.departureDate]);
+
+    const tourDurationDays = useMemo(() => {
+        if (!booking?.duration) return 0;
+        const match = booking.duration.match(/(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+    }, [booking?.duration]);
+
+    const hasTourEnded = useMemo(() => {
+        if (!booking?.departureDate) return false;
+        if (tourDurationDays === 0) return hasDeparted;
+        const endTime = new Date(booking.departureDate).getTime() + tourDurationDays * 24 * 60 * 60 * 1000;
+        return Date.now() > endTime;
+    }, [booking?.departureDate, tourDurationDays, hasDeparted]);
+
     const handlePaymentClick = () => {
         if (!booking || !booking.bookingCode) {
             toast.error('Không tìm thấy thông tin booking!');
@@ -25,45 +52,14 @@ const TransactionListItem = ({ booking, refetch }) => {
 
         window.location.href = `/payment-booking?bookingCode=${booking.bookingCode}`;
     };
-    const hasDeparted = React.useMemo(() => {
-        if (!booking?.departureDate) return false;
-        const departureTime = new Date(booking.departureDate).getTime();
-        const now = Date.now();
-        return departureTime < now;
-    }, [booking?.departureDate]);
-
-    // Tính số ngày của tour từ chuỗi duration (vd: "5 Ngày 4 Đêm" → 5)
-    const tourDurationDays = React.useMemo(() => {
-        if (!booking?.duration) return 0;
-        const match = booking.duration.match(/(\d+)/);
-        return match ? parseInt(match[1], 10) : 0;
-    }, [booking?.duration]);
-
-    // Tour đã kết thúc = đã qua ngày khởi hành + số ngày đi tour
-    // Fallback: nếu duration null/0 thì dùng hasDeparted (đã qua ngày khởi hành)
-    const hasTourEnded = React.useMemo(() => {
-        if (!booking?.departureDate) return false;
-        if (tourDurationDays === 0) return hasDeparted; // fallback
-        const endTime = new Date(booking.departureDate).getTime() + tourDurationDays * 24 * 60 * 60 * 1000;
-        return Date.now() > endTime;
-    }, [booking?.departureDate, tourDurationDays, hasDeparted]);
 
     const handleCancelClick = () => {
         if (hasDeparted) {
-            toast.warn('Tour đã khởi hành, không thể hủy.');
+            toast.warn('Chuyến đi đã khởi hành, không thể hủy.');
             return;
         }
         setIsCancelModalOpen(true);
     };
-
-    const handleCloseCancelModal = () => {
-        setIsCancelModalOpen(false);
-    };
-    const handleDetailClick = () => {
-        setIsModalOpen(true);
-    };
-    const handleOpenViewReviewModal = () => setIsViewReviewModalOpen(true);
-    const handleCloseViewReviewModal = () => setIsViewReviewModalOpen(false);
 
     const getStatusLabel = (status) => {
         switch (status) {
@@ -79,58 +75,26 @@ const TransactionListItem = ({ booking, refetch }) => {
         }
     };
 
-    const getStatusStyle = (status) => {
+    const getStatusClass = (status) => {
         switch (status) {
-            case 'PENDING_PAYMENT': 
-                return { 
-                    backgroundColor: '#fff4e6',
-                    color: '#d46b08',
-                    border: '1px solid #ffd591'
-                };
-            case 'PENDING_CONFIRMATION': 
-                return { 
-                    backgroundColor: '#e6f7ff',
-                    color: '#096dd9',
-                    border: '1px solid #91d5ff'
-                };
-            case 'PAID': 
-                return { 
-                    backgroundColor: '#d4f4dd',
-                    color: '#237804',
-                    border: '1px solid #95de64'
-                };
-            case 'CANCELLED': 
-            case 'OVERDUE_PAYMENT': 
-                return { 
-                    backgroundColor: '#fff1f0',
-                    color: '#cf1322',
-                    border: '1px solid #ffa39e'
-                };
-            case 'REVIEWED': 
-                return { 
-                    backgroundColor: '#e6fffb',
-                    color: '#08979c',
-                    border: '1px solid #87e8de'
-                };
-            case 'PENDING_REFUND': 
-                return { 
-                    backgroundColor: '#fff7e6',
-                    color: '#d46b08',
-                    border: '1px solid #ffc069'
-                };
-            default: 
-                return { 
-                    backgroundColor: '#f5f5f5',
-                    color: '#595959',
-                    border: '1px solid #d9d9d9'
-                };
+            case 'PENDING_PAYMENT': return styles.statusPendingPayment;
+            case 'PENDING_CONFIRMATION': return styles.statusPendingConfirmation;
+            case 'PAID': return styles.statusPaid;
+            case 'CANCELLED': return styles.statusCancelled;
+            case 'OVERDUE_PAYMENT': return styles.statusOverdue;
+            case 'PENDING_REVIEW': return styles.statusPendingReview;
+            case 'REVIEWED': return styles.statusReviewed;
+            case 'PENDING_REFUND': return styles.statusPendingRefund;
+            default: return styles.statusDefault;
         }
     };
 
     const formatDate = (dateStr) => {
         if (!dateStr) return '';
         return new Date(dateStr).toLocaleDateString('vi-VN', {
-            year: 'numeric', month: '2-digit', day: '2-digit'
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
         });
     };
 
@@ -138,18 +102,17 @@ const TransactionListItem = ({ booking, refetch }) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     };
 
-
     useEffect(() => {
         if (booking.bookingStatus !== 'PENDING_PAYMENT' || !booking.timeLimit) {
             setTimeLeft('');
-            return () => {};
+            return undefined;
         }
 
-        let interval; 
+        let interval;
 
         const updateCountdown = () => {
             const now = new Date();
-            const limit = new Date(booking.timeLimit); 
+            const limit = new Date(booking.timeLimit);
             const diff = limit.getTime() - now.getTime();
 
             if (diff <= 0) {
@@ -162,91 +125,94 @@ const TransactionListItem = ({ booking, refetch }) => {
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
             const seconds = totalSeconds % 60;
-            
+
             setTimeLeft(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`);
         };
 
-        updateCountdown(); 
-        interval = setInterval(updateCountdown, 1000); 
+        updateCountdown();
+        interval = setInterval(updateCountdown, 1000);
 
-        return () => clearInterval(interval); 
+        return () => clearInterval(interval);
     }, [booking.timeLimit, booking.bookingStatus]);
 
-
     const renderActionArea = () => {
-        
-        let primaryButton = null; 
-        const secondaryButtons = [];
+        let primaryButton = null;
         let statusDisplay = null;
         let timeLimitDisplay = null;
+
         const detailButton = (
             <button
                 key="detail"
                 className={styles.btnDetail}
-                onClick={handleDetailClick}
-             >
-                <LuClipboardList /> Xem chi tiết
+                onClick={() => setIsModalOpen(true)}
+                type="button"
+            >
+                <FileText size={16} /> Xem chi tiết
             </button>
         );
 
         switch (booking.bookingStatus) {
             case 'PENDING_PAYMENT':
-              primaryButton = (
-                    <button 
-                        key="pay" 
-                        className={styles.btnPrimary}
+                primaryButton = (
+                    <button
+                        key="pay"
+                        className={`${styles.btnPrimary} ${styles.btnPay}`}
                         onClick={handlePaymentClick}
                         disabled={isPaymentLoading}
-                        style={{ opacity: isPaymentLoading ? 0.6 : 1 }}
+                        type="button"
                     >
                         {isPaymentLoading ? (
                             <>
-                                <LuClock3 /> Đang chuyển...
+                                <Clock3 size={16} /> Đang chuyển...
                             </>
                         ) : (
                             <>
-                                <LuZap /> Thanh toán
+                                <Zap size={16} /> Thanh toán
                             </>
                         )}
                     </button>
                 );
                 timeLimitDisplay = timeLeft && (
                     <div className={styles.timeLimit}>
-                        <LuClock3 /> Thời hạn: {timeLeft}
+                        <Clock3 size={15} /> Thời hạn: {timeLeft}
                     </div>
                 );
                 break;
 
             case 'PENDING_CONFIRMATION':
                 primaryButton = (
-                    <button 
-                        key="cancel" 
+                    <button
+                        key="cancel"
                         className={styles.btnDanger}
-                        onClick={handleCancelClick} 
+                        onClick={handleCancelClick}
+                        type="button"
                     >
-                        Hủy tour
+                        <XCircle size={16} /> Hủy chuyến
                     </button>
                 );
                 break;
-                
-            case 'PAID': 
+
+            case 'PAID':
                 if (hasTourEnded) {
-                    // Tour đã kết thúc → cho phép đánh giá
                     primaryButton = (
-                        <button key="review" className={styles.btnPrimary}
-                        onClick={handleOpenReviewModal}>
-                            <LuStar /> Đánh giá
+                        <button
+                            key="review"
+                            className={`${styles.btnPrimary} ${styles.btnReview}`}
+                            onClick={() => setIsReviewModalOpen(true)}
+                            type="button"
+                        >
+                            <Star size={16} /> Đánh giá
                         </button>
                     );
                 } else {
-                    // Tour chưa diễn ra / đang diễn ra → cho phép hủy
                     primaryButton = (
-                        <button 
-                            key="cancel-paid" 
+                        <button
+                            key="cancel-paid"
                             className={styles.btnDanger}
                             onClick={handleCancelClick}
+                            type="button"
                         >
-                            Hủy tour
+                            <XCircle size={16} /> Hủy chuyến
                         </button>
                     );
                 }
@@ -254,127 +220,149 @@ const TransactionListItem = ({ booking, refetch }) => {
 
             case 'PENDING_REVIEW':
                 primaryButton = (
-                    <button key="review" className={styles.btnPrimary}
-                    onClick={handleOpenReviewModal}>
-                        <LuStar /> Đánh giá
+                    <button
+                        key="review"
+                        className={`${styles.btnPrimary} ${styles.btnReview}`}
+                        onClick={() => setIsReviewModalOpen(true)}
+                        type="button"
+                    >
+                        <Star size={16} /> Đánh giá
                     </button>
                 );
                 break;
-                
+
             case 'REVIEWED':
                 primaryButton = (
-                    <button key="view-review" className={styles.btnSecondary}
-                    onClick={handleOpenViewReviewModal}>
-                        <LuEye /> Xem đánh giá
+                    <button
+                        key="view-review"
+                        className={`${styles.btnSecondary} ${styles.btnViewReview}`}
+                        onClick={() => setIsViewReviewModalOpen(true)}
+                        type="button"
+                    >
+                        <Eye size={16} /> Xem đánh giá
                     </button>
                 );
                 break;
 
             case 'OVERDUE_PAYMENT':
-                // Quá hạn thanh toán — không có nút thanh toán, chỉ xem chi tiết
                 statusDisplay = (
-                    <div className={styles.cancelReason}>
-                        Đơn hàng đã quá hạn thanh toán và bị huỷ tự động.
+                    <div className={styles.noticeDanger}>
+                        Đơn đã quá hạn thanh toán và được hệ thống hủy tự động.
                     </div>
                 );
                 break;
 
-            case 'CANCELLED': {
+            case 'CANCELLED':
                 statusDisplay = booking.cancelReason && booking.cancelReason.trim() ? (
-                    <div className={styles.cancelReason}>
+                    <div className={styles.noticeMuted}>
                         <strong>Lý do hủy:</strong> {booking.cancelReason}
                     </div>
                 ) : null;
                 break;
-            }
 
             default:
                 break;
         }
 
-        const actionButtons = [primaryButton, ...secondaryButtons].filter(Boolean);
+        const actionButtons = [primaryButton, detailButton].filter(Boolean);
+
         return (
             <div className={styles.actions}>
-                <div className={styles.statusBadge} style={getStatusStyle(booking.bookingStatus)}>
+                <span className={`${styles.statusBadge} ${getStatusClass(booking.bookingStatus)}`}>
                     {getStatusLabel(booking.bookingStatus)}
-                </div>
-                
+                </span>
+
                 <div className={styles.price}>
-                     {formatPrice(booking.totalPrice)}
+                    {formatPrice(booking.totalPrice)}
                 </div>
-                
+
                 <div className={styles.buttonGroup}>
                     {actionButtons}
-                    {detailButton}
                 </div>
-                
+
                 {timeLimitDisplay}
-                
                 {statusDisplay}
-                
             </div>
         );
     };
 
-
     return (
-        <div className={styles.transactionItem}>
+        <article className={styles.transactionItem}>
             <div className={styles.header}>
-                Booking: {booking.bookingCode} | Ngày tạo: {formatDate(booking.bookingDate)}
+                <span>Booking: <strong>{booking.bookingCode}</strong></span>
+                <span>Ngày tạo: {formatDate(booking.bookingDate)}</span>
             </div>
-            
+
             <div className={styles.content}>
-                <img 
-                    src={booking.image || 'https://via.placeholder.com/200x180?text=Tour+Image'} 
-                    alt={booking.tourName}
-                    className={styles.image}
-                />
-                
+                <div className={styles.imageWrap}>
+                    <img
+                        src={booking.image || 'https://via.placeholder.com/200x180?text=Chuyen+di'}
+                        alt={booking.tourName}
+                        className={styles.image}
+                    />
+                </div>
+
                 <div className={styles.info}>
                     <h3 className={styles.tourName}>{booking.tourName}</h3>
-                    
-                    <p className={styles.detail}>
-                        <FaCalendarAlt /> Ngày khởi hành: {formatDate(booking.departureDate)}
-                    </p>
-                    <p className={styles.detail}>
-                        <FaTicketAlt /> Mã tour: {booking.tourCode}
-                    </p>
+
+                    <div className={styles.metaGrid}>
+                        <p className={styles.detail}>
+                            <CalendarDays size={16} /> Khởi hành: {formatDate(booking.departureDate)}
+                        </p>
+                        <p className={styles.detail}>
+                            <Ticket size={16} /> Mã chuyến: {booking.tourCode}
+                        </p>
+                        {booking.duration && (
+                            <p className={styles.detail}>
+                                <Clock3 size={16} /> Thời gian: {booking.duration}
+                            </p>
+                        )}
+                        {booking.bookingStatus === 'PENDING_PAYMENT' && (
+                            <p className={styles.detail}>
+                                <CreditCard size={16} /> Thanh toán trực tuyến
+                            </p>
+                        )}
+                    </div>
                 </div>
-                
+
                 {renderActionArea()}
             </div>
+
             {isModalOpen && (
-                <TransactionDetailModal 
-                    booking={booking} 
-                    onClose={() => setIsModalOpen(false)} 
+                <TransactionDetailModal
+                    booking={booking}
+                    onClose={() => setIsModalOpen(false)}
                     formatPrice={formatPrice}
                     formatDate={formatDate}
                 />
             )}
+
             {isCancelModalOpen && (
                 <CancelOptionModal
                     booking={booking}
                     bookingID={booking.bookingID}
-                    onClose={handleCloseCancelModal}
-                    onRefetch={refetch} 
-                />
-            )}
-            {isReviewModalOpen && (
-                <ReviewComponent
-                    booking={booking}
-                    onClose={handleCloseReviewModal}
+                    onClose={() => setIsCancelModalOpen(false)}
                     onRefetch={refetch}
                 />
             )}
+
+            {isReviewModalOpen && (
+                <ReviewComponent
+                    booking={booking}
+                    onClose={() => setIsReviewModalOpen(false)}
+                    onRefetch={refetch}
+                />
+            )}
+
             {isViewReviewModalOpen && (
                 <ViewReviewModal
                     booking={booking}
-                    onClose={handleCloseViewReviewModal}
+                    onClose={() => setIsViewReviewModalOpen(false)}
                     formatPrice={formatPrice}
                     formatDate={formatDate}
                 />
             )}
-        </div>
+        </article>
     );
 };
 

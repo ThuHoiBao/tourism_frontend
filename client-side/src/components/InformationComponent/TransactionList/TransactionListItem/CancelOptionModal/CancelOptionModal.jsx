@@ -33,7 +33,7 @@ const CancelOptionModal = ({ booking, bookingID, onClose, onRefetch }) => {
         else if (daysUntil > 5)  { feePercent = 0.50; feeLabel = '50%';  feeNote = '6–15 ngày trước khởi hành'; }
         else if (daysUntil > 2)  { feePercent = 0.70; feeLabel = '70%';  feeNote = '3–5 ngày trước khởi hành'; }
         else if (daysUntil >= 0) { feePercent = 0.90; feeLabel = '90%';  feeNote = '0–2 ngày trước khởi hành'; }
-        else                     { feePercent = 1.00; feeLabel = '100%'; feeNote = 'tour đã khởi hành'; }
+        else                     { feePercent = 1.00; feeLabel = '100%'; feeNote = 'chuyến đi đã khởi hành'; }
 
         const feeAmount  = Math.floor(base * feePercent);
         const refundable = base - feeAmount;
@@ -77,8 +77,8 @@ const CancelOptionModal = ({ booking, bookingID, onClose, onRefetch }) => {
         <div className={styles.modalOverlay} onClick={onClose}>
             {/* 2. Lớp Nội dung Modal (chặn sự kiện lan truyền) */}
             <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                <img src={CancelImage} alt="Hủy tour" className={styles.image} />
-                <h3 className={styles.title}>Xác Nhận Hủy Tour</h3>
+                <img src={CancelImage} alt="Hủy chuyến đi" className={styles.image} />
+                <h3 className={styles.title}>Xác Nhận Hủy Chuyến Đi</h3>
                 <p className={styles.description}>Vui lòng chọn phương thức hoàn tiền bên dưới :</p>
 
                 {/* ── Tóm tắt ước tính hoàn tiền ── */}
@@ -110,7 +110,7 @@ const CancelOptionModal = ({ booking, bookingID, onClose, onRefetch }) => {
                     <div className={styles.optionItem}>
                         <div className={styles.optionDetail}>
                             <h4>Hoàn tiền thành điểm cá nhân</h4>
-                            <p>Khi hủy Tour này, số tiền thanh toán của bạn sẽ được chuyển thành điểm cá nhân (1.000 VNĐ = 1 điểm) để tiếp tục sử dụng cho các giao dịch khác.</p>
+                            <p>Khi hủy chuyến đi này, số tiền thanh toán của bạn sẽ được chuyển thành điểm cá nhân (1.000 VNĐ = 1 điểm) để tiếp tục sử dụng cho các giao dịch khác.</p>
                             <div className={styles.optionAmount}>
                                 Nhận được: <strong>{refundPreview.coins.toLocaleString('vi-VN')} điểm</strong>
                                 <span className={styles.optionAmountSub}>≈ {formatVND(refundPreview.coins * 1000)}</span>
@@ -152,7 +152,7 @@ const CancelOptionModal = ({ booking, bookingID, onClose, onRefetch }) => {
                             onChange={(e) => setAgreedPolicy(e.target.checked)}
                         />
                         <span>
-                            Đồng ý với các <span className={styles.policyLink} onClick={() => setShowPolicyModal(true)}>chính sách hủy tour</span>
+                            Đồng ý với các <span className={styles.policyLink} onClick={() => setShowPolicyModal(true)}>chính sách hủy chuyến đi</span>
                         </span>
                     </label>
                 </div>
@@ -166,7 +166,7 @@ const CancelOptionModal = ({ booking, bookingID, onClose, onRefetch }) => {
         <div className={styles.policyModalOverlay} onClick={() => setShowPolicyModal(false)}>
             <div className={styles.policyModal} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.policyHeader}>
-                    <div className={styles.policyTitle}>Chính sách hủy tour</div>
+                    <div className={styles.policyTitle}>Chính sách hủy chuyến đi</div>
                     <button
                         type="button"
                         className={styles.policyClose}
