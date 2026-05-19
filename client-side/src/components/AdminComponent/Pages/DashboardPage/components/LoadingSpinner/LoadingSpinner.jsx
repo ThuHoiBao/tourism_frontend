@@ -1,14 +1,14 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/LoadingSpinner/LoadingSpinner.jsx
+// LoadingSpinner.jsx — Lucide React
 
 import React from 'react';
 import styles from './LoadingSpinner.module.scss';
-import { FaSpinner } from 'react-icons/fa';
+import { Loader2 } from 'lucide-react';
 
 const LoadingSpinner = () => {
     return (
         <div className={styles.loadingSpinner}>
             <div className={styles.spinnerContainer}>
-                <FaSpinner className={styles.spinner} />
+                <Loader2 className={styles.spinner} size={36} />
                 <p>Đang tải dữ liệu thống kê...</p>
             </div>
         </div>

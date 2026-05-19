@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaGlobe, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { Search, Globe, ChevronDown, LogOut, User } from 'lucide-react';
 import styles from './AdminHeader.module.scss';
 import axios from '../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
@@ -40,11 +40,8 @@ const AdminHeader = () => {
     const handleLogout = async () => {
         try {
             const refreshToken = localStorage.getItem('adminRefreshToken');
-            
             if (refreshToken) {
-                await axios.post('/admin/auth/logout', {
-                    refreshToken: refreshToken
-                });
+                await axios.post('/admin/auth/logout', { refreshToken });
             }
 
             localStorage.removeItem('adminAccessToken');
@@ -56,12 +53,11 @@ const AdminHeader = () => {
 
         } catch (error) {
             console.error('Logout error:', error);
-            
-            // Still clear localStorage even if API fails
+
             localStorage.removeItem('adminAccessToken');
             localStorage.removeItem('adminRefreshToken');
             localStorage.removeItem('adminUser');
-            
+
             navigate('/admin/login', { replace: true });
         }
     };
@@ -91,25 +87,25 @@ const AdminHeader = () => {
     return (
         <header className={styles.adminHeader}>
             <div className={styles.leftSection}>
-               <img className={styles.logo} src={futureLogoDark} alt="Future Travel" />
+                <img className={styles.logo} src={futureLogoDark} alt="Future Travel" />
             </div>
 
             <div className={styles.centerSection}>
                 <div className={styles.searchBar}>
-                    <FaSearch className={styles.searchIcon} />
+                    <Search className={styles.searchIcon} size={15} />
                     <input type="text" placeholder="Tìm kiếm..." />
                 </div>
             </div>
 
             <div className={styles.rightSection}>
                 <div className={styles.languageSelect}>
-                    <FaGlobe className={styles.languageIcon} /> 
+                    <Globe className={styles.languageIcon} size={15} />
                     <span>Tiếng Việt</span>
-                    <FaCaretDown className={styles.dropdownIcon} />
+                    <ChevronDown className={styles.dropdownIcon} size={13} />
                 </div>
-                
+
                 <div className={styles.profileWrapper} ref={profileMenuRef}>
-                    <div 
+                    <div
                         className={styles.profile}
                         onClick={() => setShowProfileMenu(!showProfileMenu)}
                     >
@@ -130,10 +126,9 @@ const AdminHeader = () => {
                                 {getRoleDisplay(adminUser?.role)}
                             </span>
                         </div>
-                        <FaCaretDown className={styles.dropdownIcon} />
+                        <ChevronDown className={styles.dropdownIcon} size={13} />
                     </div>
 
-                    {/* Dropdown Menu */}
                     {showProfileMenu && (
                         <div className={styles.profileMenu}>
                             <div className={styles.menuHeader}>
@@ -158,21 +153,18 @@ const AdminHeader = () => {
 
                             <div className={styles.menuDivider}></div>
 
-                            <button 
-                                className={styles.menuItem}
-                                onClick={handleProfile}
-                            >
-                                <FaUser className={styles.menuIcon} />
+                            <button className={styles.menuItem} onClick={handleProfile}>
+                                <User className={styles.menuIcon} size={15} />
                                 <span>Thông tin cá nhân</span>
                             </button>
 
                             <div className={styles.menuDivider}></div>
 
-                            <button 
+                            <button
                                 className={`${styles.menuItem} ${styles.logout}`}
                                 onClick={handleLogout}
                             >
-                                <FaSignOutAlt className={styles.menuIcon} />
+                                <LogOut className={styles.menuIcon} size={15} />
                                 <span>Đăng xuất</span>
                             </button>
                         </div>

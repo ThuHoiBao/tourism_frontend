@@ -3,7 +3,7 @@
 import React from 'react';
 import styles from './BookingStatusChart.module.scss';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { FaCalendarCheck } from 'react-icons/fa';
+import { CalendarCheck2 } from 'lucide-react';
 
 const BookingStatusChart = ({ data }) => {
     // Màu sắc cho từng trạng thái
@@ -41,7 +41,7 @@ const BookingStatusChart = ({ data }) => {
     return (
         <div className={styles.bookingStatusChart}>
             <div className={styles.chartHeader}>
-                <FaCalendarCheck className={styles.icon} />
+                <CalendarCheck2 className={styles.icon} size={22} />
                 <div>
                     <h3>Trạng thái booking</h3>
                     <p>{totalBookings} tổng bookings</p>

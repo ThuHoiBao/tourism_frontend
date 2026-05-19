@@ -1,4 +1,4 @@
-﻿// TourPerformanceChart — shows REVENUE per tour (different from HotTours booking rank)
+// TourPerformanceChart — shows REVENUE per tour (different from HotTours booking rank)
 
 import React from 'react';
 import styles from './TourPerformanceChart.module.scss';
@@ -6,7 +6,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer, Cell, LabelList
 } from 'recharts';
-import { FaChartBar } from 'react-icons/fa';
+import { BarChart3 } from 'lucide-react';
 
 const COLORS = ['#2563eb', '#0891b2', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#db2777', '#0f766e', '#c2410c', '#4338ca'];
 
@@ -31,13 +31,13 @@ const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         const d = payload[0]?.payload;
         return (
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 16px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', maxWidth: 240 }}>
+            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 16px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', maxWidth: 240 }}>
                 <p style={{ margin: '0 0 8px', fontWeight: 700, color: '#1a202c', fontSize: 13, lineHeight: 1.4 }}>{d?.fullName || label}</p>
                 <p style={{ margin: '0 0 4px', color: '#16a34a', fontSize: 13 }}>
-                    💰 Doanh thu: <strong>{formatRevenueFull(d?.revenue ?? 0)}</strong>
+                    Doanh thu: <strong>{formatRevenueFull(d?.revenue ?? 0)}</strong>
                 </p>
                 <p style={{ margin: 0, color: '#2563eb', fontSize: 13 }}>
-                    📦 Bookings: <strong>{d?.bookingCount ?? 0}</strong>
+                    Bookings: <strong>{d?.bookingCount ?? 0}</strong>
                 </p>
             </div>
         );
@@ -65,7 +65,7 @@ const TourPerformanceChart = ({ hotTours }) => {
         <div className={styles.tourPerformanceChart}>
             <div className={styles.chartHeader}>
                 <div className={styles.titleRow}>
-                    <FaChartBar className={styles.icon} />
+                    <BarChart3 className={styles.icon} size={22} />
                     <div>
                         <h3>Doanh thu theo tour</h3>
                         <p>Top {data.length} tour theo doanh thu kỳ này</p>
@@ -76,7 +76,7 @@ const TourPerformanceChart = ({ hotTours }) => {
 
             {isEmpty ? (
                 <div className={styles.emptyState}>
-                    <span className={styles.emptyIcon}>📊</span>
+                    <BarChart3 size={40} color="#94a3b8" />
                     <p>Không có dữ liệu doanh thu trong kỳ này</p>
                     <span className={styles.emptyHint}>Thử chọn khoảng thời gian rộng hơn</span>
                 </div>

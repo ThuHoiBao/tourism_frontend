@@ -1,27 +1,42 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/StatsOverview/StatsOverview.module.scss
+// StatsOverview.module.scss — Premium Redesign
 
 .statsOverview {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
 
     .statCard {
-        background: var(--card-bg, white);
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0,0,0,0.1));
-        border-top: 4px solid;
-        transition: all 0.3s ease;
+        background: var(--bg-card, white);
+        border-radius: 8px;
+        padding: 20px 22px;
+        box-shadow: var(--shadow-xs, 0 1px 4px rgba(0,0,0,0.06));
+        border: 1px solid var(--border, #e2e8f0);
+        border-left: 3px solid;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
         position: relative;
-        overflow: hidden; /* Quan trọng: để ẩn phần hover details bên dưới */
+        overflow: hidden;
         cursor: default;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
 
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        &::after {
+            content: '';
+            position: absolute;
+            top: -24px;
+            right: -24px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.04;
+            pointer-events: none;
+        }
 
-            // Khi hover vào card -> Hiển thị phần chi tiết
+        &:hover, &:focus-within {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm, 0 4px 14px rgba(0,0,0,0.09));
+
             .hoverDetails {
                 opacity: 1;
                 transform: translateY(0);
@@ -34,55 +49,63 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
 
             .iconWrapper {
-                width: 50px;
-                height: 50px;
-                border-radius: 12px;
+                width: 42px;
+                height: 42px;
+                border-radius: 8px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 1.5rem;
+                font-size: 1.125rem;
+                flex-shrink: 0;
             }
 
             .growthBadge {
                 display: flex;
                 align-items: center;
-                gap: 4px;
-                padding: 4px 8px;
-                border-radius: 8px;
-                background: #f7fafc;
-                font-size: 0.85em;
+                gap: 3px;
+                padding: 3px 8px;
+                border-radius: 4px;
+                background: #f0fdf4;
+                font-size: 0.75rem;
                 font-weight: 600;
 
-                .positive { color: #48bb78; }
-                .negative { color: #f56565; }
+                &.negBadge {
+                    background: #fff1f2;
+                }
+
+                .positive { color: #10b981; }
+                .negative { color: #f43f5e; }
             }
         }
 
         /* --- Body Card --- */
         .cardBody {
             .cardTitle {
-                margin: 0 0 8px 0;
-                color: var(--text-secondary, #718096);
-                font-size: 0.9em;
+                margin: 0 0 5px 0;
+                color: var(--text-sub, #64748b);
+                font-size: 0.73rem;
                 font-weight: 600;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.06em;
             }
 
             .cardValue {
                 margin: 0 0 4px 0;
-                font-size: 1.8em;
+                font-size: 1.625rem;
                 font-weight: 700;
-                color: var(--text-primary, #1a202c);
+                color: var(--text-h, #0f172a);
+                letter-spacing: -0.02em;
+                line-height: 1.15;
             }
 
             .cardSubtitle {
                 margin: 0;
-                color: #a0aec0;
-                font-size: 0.85em;
+                color: var(--text-muted, #94a3b8);
+                font-size: 0.78rem;
+                font-weight: 500;
             }
         }
 
@@ -93,50 +116,50 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--card-bg, rgba(255,255,255,0.98));
-            padding: 20px;
+            background: var(--bg-card, #ffffff);
+            padding: 18px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            opacity: 0; // Mặc định ẩn
-            transform: translateY(10px); // Đẩy xuống một chút để tạo hiệu ứng trượt lên
-            transition: all 0.3s ease;
+            gap: 2px;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
             pointer-events: none;
-            border-radius: 16px;
+            border-radius: 8px;
+            border-left: 3px solid;
 
             .detailRow {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 8px 0;
-                margin-right: 20px;
-                border-bottom: 1px solid #edf2f7;
+                padding: 7px 0;
+                border-bottom: 1px solid var(--border-light, #f1f5f9);
 
                 &:last-child {
                     border-bottom: none;
                 }
 
                 .detailLabel {
-                    font-size: 0.9rem;
-                    color: #718096;
+                    font-size: 0.8125rem;
+                    color: var(--text-sub, #64748b);
                     font-weight: 500;
                 }
 
                 .detailValue {
-                    font-size: 0.95rem;
-                    color: #2d3748;
+                    font-size: 0.875rem;
+                    color: var(--text-h, #0f172a);
                     font-weight: 700;
+                    letter-spacing: -0.01em;
                 }
 
-                /* Màu sắc cảnh báo (Pending Refund) */
                 .warningText {
-                    color: #e53e3e; /* Đỏ */
+                    color: #f43f5e;
                 }
 
-                /* Màu sắc đã hủy (Cancelled) */
                 .grayText {
-                    color: #a0aec0; /* Xám */
-                    text-decoration: line-through; /* Gạch ngang */
+                    color: var(--text-muted, #94a3b8);
+                    text-decoration: line-through;
                 }
             }
         }

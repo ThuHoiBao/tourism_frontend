@@ -1,46 +1,45 @@
 // src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/BookingStatusChart/BookingStatusChart.module.scss
 
 .bookingStatusChart {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: var(--bg-card, white);
+    border-radius: 8px;
+    padding: 20px 22px;
 
     .chartHeader {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid #f7fafc;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-light, #f1f5f9);
 
         .icon {
             font-size: 1.8em;
-            color: #ed8936;
+            color: #f59e0b;
         }
 
         h3 {
-            margin: 0 0 4px 0;
-            font-size: 1.2em;
-            color: #1a202c;
+            margin: 0 0 3px 0;
+            font-size: 0.9375rem;
+            color: var(--text-h, #0f172a);
             font-weight: 700;
         }
 
         p {
             margin: 0;
-            color: #718096;
-            font-size: 0.85em;
+            color: var(--text-sub, #64748b);
+            font-size: 0.8rem;
         }
     }
 
     .chartContainer {
-        padding: 10px 0;
+        padding: 8px 0;
 
         .legendCustom {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 16px;
 
             .legendItem {
                 display: flex;
@@ -48,21 +47,22 @@
                 gap: 8px;
 
                 .legendColor {
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 3px;
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 2px;
+                    flex-shrink: 0;
                 }
 
                 .legendName {
                     flex: 1;
-                    font-size: 0.85em;
-                    color: #4a5568;
+                    font-size: 0.8rem;
+                    color: var(--text-sub, #64748b);
                 }
 
                 .legendValue {
                     font-weight: 700;
-                    color: #2d3748;
-                    font-size: 0.9em;
+                    color: var(--text-h, #0f172a);
+                    font-size: 0.8125rem;
                 }
             }
         }

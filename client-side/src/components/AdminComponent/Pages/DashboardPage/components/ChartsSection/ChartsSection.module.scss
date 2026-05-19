@@ -1,22 +1,29 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/ChartsSection.module.scss
+// ChartsSection.module.scss — Premium Redesign
 
 .chartsSection {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     .fullWidthChart {
-        margin-bottom: 24px;
+        margin-bottom: 16px;
     }
 
     .twoColumnCharts {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-        gap: 24px;
-        margin-bottom: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
 
         .chartCard {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background: var(--bg-card, white);
+            border-radius: 8px;
+            border: 1px solid var(--border, #e2e8f0);
+            box-shadow: var(--shadow-xs, 0 1px 4px rgba(0,0,0,0.06));
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+
+            &:hover {
+                box-shadow: var(--shadow-sm, 0 4px 14px rgba(0,0,0,0.08));
+            }
         }
     }
 }

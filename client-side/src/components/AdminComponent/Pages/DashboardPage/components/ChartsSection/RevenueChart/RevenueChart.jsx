@@ -1,4 +1,4 @@
-﻿// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/RevenueChart/RevenueChart.jsx
+// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/RevenueChart/RevenueChart.jsx
 
 import React, { useState } from 'react';
 import styles from './RevenueChart.module.scss';
@@ -6,7 +6,7 @@ import {
     AreaChart, Area, LineChart, Line, BarChart, Bar, XAxis, YAxis, 
     CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { FaMoneyBillWave } from 'react-icons/fa';
+import { DollarSign } from 'lucide-react';
 
 const CHART_TYPES = [
     { key: 'area', label: 'Area' },
@@ -93,7 +93,7 @@ const RevenueChart = ({ data, dateRange }) => {
             {/* Header của biểu đồ */}
             <div className={styles.chartHeader}>
                 <div className={styles.headerLeft}>
-                    <FaMoneyBillWave className={styles.icon} />
+                    <DollarSign className={styles.icon} size={22} />
                     <div>
                         <h3>Xu hướng doanh thu</h3>
                         <p>Doanh thu và hiệu suất booking theo ngày</p>

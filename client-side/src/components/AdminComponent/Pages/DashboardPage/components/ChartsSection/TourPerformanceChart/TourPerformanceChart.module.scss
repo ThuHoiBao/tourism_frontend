@@ -1,50 +1,43 @@
 // TourPerformanceChart.module.scss
 
 .tourPerformanceChart {
-    background: var(--card-bg, white);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.05));
+    background: var(--bg-card, white);
+    border-radius: 8px;
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: var(--shadow-xs, 0 1px 4px rgba(0,0,0,0.06));
+    padding: 20px 22px;
 
     .chartHeader {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid var(--border-color, #f7fafc);
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-light, #f1f5f9);
     }
 
     .titleRow {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
 
         .icon {
-            font-size: 1.8em;
             color: #2563eb;
+            flex-shrink: 0;
         }
 
         h3 {
-            margin: 0 0 4px 0;
-            font-size: 1.2em;
-            color: var(--text-primary, #1a202c);
+            margin: 0 0 3px 0;
+            font-size: 0.9375rem;
+            color: var(--text-h, #0f172a);
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .fireIcon {
-            color: #f97316;
-            font-size: 0.85em;
         }
 
         p {
             margin: 0;
-            color: var(--text-secondary, #718096);
-            font-size: 0.85em;
+            color: var(--text-sub, #64748b);
+            font-size: 0.8rem;
         }
     }
 
@@ -53,9 +46,10 @@
         color: #fff;
         font-size: 0.8rem;
         font-weight: 700;
-        padding: 5px 14px;
-        border-radius: 20px;
+        padding: 4px 12px;
+        border-radius: 4px;
         white-space: nowrap;
+        align-self: flex-start;
     }
 
     .chartContainer {
@@ -70,20 +64,16 @@
         justify-content: center;
         padding: 48px 24px;
         gap: 8px;
-
-        .emptyIcon {
-            font-size: 2.5rem;
-        }
+        color: var(--text-muted, #94a3b8);
 
         p {
             margin: 0;
-            color: var(--text-secondary, #718096);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            color: var(--text-sub, #64748b);
         }
 
         .emptyHint {
-            color: var(--text-muted, #94a3b8);
             font-size: 0.82rem;
         }
     }

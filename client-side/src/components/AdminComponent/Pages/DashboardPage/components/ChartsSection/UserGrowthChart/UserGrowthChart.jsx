@@ -6,7 +6,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, 
     Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
-import { FaUsers } from 'react-icons/fa';
+import { Users } from 'lucide-react';
 
 // ─── Smart data aggregation ──────────────────────────────────────────────────
 const aggregateData = (rawData) => {
@@ -74,7 +74,7 @@ const UserGrowthChart = ({ data }) => {
     return (
         <div className={styles.userGrowthChart}>
             <div className={styles.chartHeader}>
-                <FaUsers className={styles.icon} />
+                <Users className={styles.icon} size={22} />
                 <div>
                     <h3>Tăng trưởng người dùng</h3>
                     <p>{totalNewUsers} người dùng mới trong kỳ này</p>
