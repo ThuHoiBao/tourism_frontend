@@ -1,30 +1,30 @@
-// AIAnalysisSection.jsx — Full redesign
+// AIAnalysisSection.jsx — Full redesign with Lucide React icons
 
 import React, { useState } from 'react';
 import styles from './AIAnalysisSection.module.scss';
 import { getDashboardAIAnalysisApi } from '../../../../../../services/dashboard/dashboard.ts';
 import {
-    FaBrain, FaLightbulb, FaMagic, FaChartLine,
-    FaCheckCircle, FaExclamationTriangle, FaSpinner,
-    FaSync, FaGlobe, FaMoneyBillWave, FaUsers, FaMapMarkedAlt,
-    FaCalendarAlt, FaRobot
-} from 'react-icons/fa';
+    Brain, Lightbulb, Wand2, TrendingUp,
+    CheckCircle2, AlertTriangle, Loader2,
+    RefreshCw, Globe, DollarSign, Users, Map,
+    CalendarDays, Bot, Star
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
 // ─── Mode config ──────────────────────────────────────────────────────────────
 const MODES = [
-    { key: 'OVERVIEW', label: 'Tổng quan', Icon: FaGlobe, color: '#6366f1' },
-    { key: 'REVENUE', label: 'Doanh thu', Icon: FaMoneyBillWave, color: '#10b981' },
-    { key: 'USERS', label: 'Người dùng', Icon: FaUsers, color: '#06b6d4' },
-    { key: 'TOURS', label: 'Tours', Icon: FaMapMarkedAlt, color: '#f59e0b' },
+    { key: 'OVERVIEW', label: 'Tổng quan', Icon: Globe, color: '#1f6fb2' },
+    { key: 'REVENUE', label: 'Doanh thu', Icon: DollarSign, color: '#10b981' },
+    { key: 'USERS', label: 'Người dùng', Icon: Users, color: '#06b6d4' },
+    { key: 'TOURS', label: 'Tours', Icon: Map, color: '#f59e0b' },
 ];
 
 const getInsightIcon = (type) => {
     switch (type) {
-        case 'POSITIVE': return <FaCheckCircle className={styles.positive} />;
-        case 'NEGATIVE': return <FaExclamationTriangle className={styles.negative} />;
-        default: return <FaLightbulb className={styles.neutral} />;
+        case 'POSITIVE': return <CheckCircle2 className={styles.positive} size={20} />;
+        case 'NEGATIVE': return <AlertTriangle className={styles.negative} size={20} />;
+        default: return <Lightbulb className={styles.neutral} size={20} />;
     }
 };
 
@@ -62,8 +62,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
         return (
             <div className={styles.aiSection}>
                 <div className={styles.loadingState}>
-                    <div className={styles.loadingOrb} />
-                    <FaSpinner className={styles.spinner} />
+                    <Loader2 className={styles.spinner} size={40} />
                     <h3>AI đang phân tích dữ liệu…</h3>
                     <p>Đang xử lý hàng nghìn điểm dữ liệu, vui lòng đợi.</p>
                 </div>
@@ -76,11 +75,9 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
         return (
             <div className={styles.aiSection}>
                 <div className={styles.emptyState}>
-                    <div className={styles.blobBg} />
-
                     <div className={styles.emptyTop}>
-                        <div className={styles.brainOrb}>
-                            <FaBrain className={styles.brainIcon} />
+                        <div className={styles.brainTile}>
+                            <Brain className={styles.brainIcon} size={32} />
                         </div>
                         <div className={styles.emptyText}>
                             <h2>Phân tích AI Thông minh</h2>
@@ -90,8 +87,8 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
 
                     {dateRange?.from && (
                         <div className={styles.dateBadge}>
-                            <FaCalendarAlt />
-                            <span>{fmtDate(dateRange.from)} → {fmtDate(dateRange.to)}</span>
+                            <CalendarDays size={13} />
+                            <span>{fmtDate(dateRange.from)} - {fmtDate(dateRange.to)}</span>
                         </div>
                     )}
 
@@ -103,7 +100,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                                 style={mode === key ? { '--mode-color': color } : {}}
                                 onClick={() => setMode(key)}
                             >
-                                <Icon style={{ color: mode === key ? color : undefined }} />
+                                <Icon size={15} style={{ color: mode === key ? color : undefined }} />
                                 <span>{label}</span>
                             </button>
                         ))}
@@ -112,7 +109,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                     {error && <div className={styles.errorMsg}>{error}</div>}
 
                     <button className={styles.analyzeBtn} onClick={() => handleAnalyze(mode)}>
-                        <FaBrain /> Phân tích ngay
+                        <Brain size={17} /> Phân tích ngay
                     </button>
                 </div>
             </div>
@@ -127,7 +124,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
             {/* Header */}
             <div className={styles.sectionHeader}>
                 <div className={styles.headerLeft}>
-                    <div className={styles.brainOrbSmall}><FaBrain /></div>
+                    <div className={styles.brainTileSmall}><Brain size={20} /></div>
                     <div>
                         <h2 className={styles.sectionTitle}>Phân tích AI Thông minh</h2>
                         <p className={styles.sectionSub}>Powered by Gemini AI · {modeInfo.label}</p>
@@ -143,12 +140,12 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                                 onClick={() => handleModeClick(key)}
                                 title={label}
                             >
-                                <Icon /><span>{label}</span>
+                                <Icon size={13} /><span>{label}</span>
                             </button>
                         ))}
                     </div>
                     <button className={styles.reAnalyzeBtn} onClick={() => handleAnalyze(mode)}>
-                        <FaSync /> Cập nhật
+                        <RefreshCw size={13} /> Cập nhật
                     </button>
                 </div>
             </div>
@@ -156,7 +153,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
             {/* Summary card */}
             <div className={styles.summaryCard}>
                 <div className={styles.summaryGradient} />
-                <FaRobot className={styles.summaryIcon} />
+                <Bot className={styles.summaryIcon} size={28} />
                 <div className={styles.summaryContent}>
                     <h3>Tóm tắt điều hành</h3>
                     <p>{analysisData.summary}</p>
@@ -167,17 +164,17 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
             <div className={styles.tabBar}>
                 <button className={`${styles.tab} ${activeTab === 'insights' ? styles.tabActive : ''}`}
                     onClick={() => setActiveTab('insights')}>
-                    <FaLightbulb /> Nhận định
+                    <Lightbulb size={14} /> Nhận định
                     <span className={styles.badge}>{analysisData.insights?.length || 0}</span>
                 </button>
                 <button className={`${styles.tab} ${activeTab === 'predictions' ? styles.tabActive : ''}`}
                     onClick={() => setActiveTab('predictions')}>
-                    <FaMagic /> Dự báo
+                    <Wand2 size={14} /> Dự báo
                     <span className={styles.badge}>{analysisData.predictions?.length || 0}</span>
                 </button>
                 <button className={`${styles.tab} ${activeTab === 'recommendations' ? styles.tabActive : ''}`}
                     onClick={() => setActiveTab('recommendations')}>
-                    <FaChartLine /> Khuyến nghị
+                    <TrendingUp size={14} /> Khuyến nghị
                     <span className={styles.badge}>{analysisData.recommendations?.length || 0}</span>
                 </button>
             </div>
@@ -224,7 +221,7 @@ const AIAnalysisSection = ({ analysis: initialAnalysis, dateRange }) => {
                             <div key={i} className={styles.recCard}>
                                 <div className={styles.impactRow}>
                                     {Array.from({ length: item.impact || 1 }).map((_, j) => (
-                                        <span key={j} className={styles.star}>★</span>
+                                        <Star key={j} className={styles.star} size={14} fill="currentColor" />
                                     ))}
                                 </div>
                                 <h4>{item.title}</h4>

@@ -1,106 +1,71 @@
-// Modern 2-Column Profile Layout with Facebook-style Tabs
-
 .informationWrapper {
     min-height: 100vh;
-    background: linear-gradient(to bottom, #f8f9fc 0%, #f3f5fa 100%);
+    background: #f5f7fb;
     padding: 0;
 }
 
-// ============ PROFILE HERO SECTION ============
 .profileHero {
-    background: #ffffff;
-    border-bottom: 1px solid #e7ecf3;
     position: relative;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .coverSection {
-    width: 100%;
-    height: clamp(340px, 40vh, 480px); /* responsive height for better fit */
-    overflow: hidden;
     position: relative;
-}
-
-.coverImage {
     width: 100%;
-    height: clamp(340px, 40vh, 480px);
+    height: clamp(300px, 38vh, 430px);
+    overflow: hidden;
+    background: #073763;
 }
 
 .cover {
     width: 100%;
-    height: clamp(340px, 40vh, 480px);
+    height: 100%;
     object-fit: cover;
+    object-position: center 44%;
+    display: block;
+    transform: scale(1.01);
 }
 
-.editCoverBtn {
+.coverOverlay {
     position: absolute;
-    bottom: 16px;
-.coverBg {
-    width: 100%;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain; /* show full image within fixed area */
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(2, 20, 38, 0.32) 0%, rgba(2, 20, 38, 0.12) 42%, rgba(2, 20, 38, 0.52) 100%),
+        linear-gradient(90deg, rgba(2, 20, 38, 0.45) 0%, rgba(2, 20, 38, 0.12) 52%, rgba(2, 20, 38, 0.36) 100%);
+    pointer-events: none;
 }
 
-    right: 16px;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    object-fit: cover; /* fill area while maintaining aspect ratio */
-    object-position: center 30%; /* keep focal region slightly higher */
-    image-rendering: -webkit-optimize-contrast; /* improve downscale sharpness in Chrome */
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
-    z-index: 1;
-
-    i {
-        font-size: 16px;
-    }
-
-    &:hover {
-        background: rgba(245, 245, 245, 0.95);
-        transform: scale(1.02);
-    }
-}
-
-.coverFallback {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-// Profile Info Container (Overlay)
 .profileInfoContainer {
-    max-width: 1400px;
+    position: relative;
+    z-index: 2;
+    max-width: 1320px;
     margin: 0 auto;
     padding: 0 24px;
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 16px;
-    align-items: flex-end; /* căn đáy để tên nằm ngang với avatar */
-    transform: translateY(-32px); /* giảm top để sát ảnh bìa hơn */
-    position: relative;
-    z-index: 2;
-}
-
-.avatarSection {
-    display: flex;
-    align-items: flex-end;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: end;
+    transform: translateY(-48px);
 }
 
 .avatarWrapper {
     position: relative;
-    width: 160px; /* tăng 20px kích thước avatar */
-    height: 160px;
+    width: 148px;
+    height: 148px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
     cursor: pointer;
     flex-shrink: 0;
-    margin-top: -48px; /* chồng lên ảnh bìa ~1/2 (kết hợp dịch -32px của container) */
+    isolation: isolate;
+    transition: transform 0.22s ease, filter 0.22s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.03);
+    }
 }
 
 .avatar {
@@ -108,379 +73,326 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #ffffff; /* viền trắng nhỏ lại */
-    box-shadow: 0 12px 28px rgba(17, 24, 39, 0.12);
-    transition: all 0.3s ease;
-
-    &:hover {
-        filter: brightness(0.97);
-    }
+    border: 5px solid #ffffff;
+    box-shadow: 0 22px 52px rgba(15, 23, 42, 0.2);
 }
 
 .editAvatarBtn {
-    display: none; /* ẩn hình tròn xanh trên avatar */
+    position: absolute;
+    right: 7px;
+    bottom: 8px;
+    width: 42px;
+    height: 42px;
+    z-index: 2;
+    box-sizing: border-box;
+    border-radius: 50%;
+    
+    /* 1. Triệt tiêu toàn bộ padding/margin có thể bị kế thừa */
+    padding: 0; 
+    margin: 0;
+
+    /* 2. Dùng flex thay vì inline-flex cho phần tử absolute */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    color: #ffffff;
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    border: 3px solid #ffffff;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+
+    svg {
+        display: block;
+        margin: 0;
+        padding: 0;
+        
+        /* 3. Nếu vẫn cảm thấy lệch do thiết kế của icon (như hình bạn gửi ban đầu) */
+        /* Bạn có thể mở comment dòng dưới để đẩy nó sang phải một chút xíu */
+        /* transform: translateX(1px); */
+    }
 }
 
 .nameSection {
-    padding-bottom: 6px;
-    grid-column: 2; /* nằm bên phải avatar */
-    grid-row: 1;
+    padding: 0 0 14px;
+    min-width: 0;
+}
+
+.memberBadge {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    padding: 6px 11px;
+    border-radius: 6px;
+    color: #075985;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    font-size: 0.78rem;
+    font-weight: 600;
 }
 
 .userName {
     margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
-    letter-spacing: -0.5px;
+    color: #0f172a;
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+    font-weight: 760;
+    line-height: 1.12;
+    letter-spacing: 0;
 }
 
 .userRole {
-    margin: 6px 0 0 0;
-    font-size: 14px;
+    margin: 8px 0 0;
+    max-width: 620px;
     color: #6b7280;
+    font-size: 0.98rem;
+    line-height: 1.55;
 }
 
-.coinDisplayRight {
-    padding: 10px 18px;
-    background: linear-gradient(135deg, #fff7e6 0%, #ffe8cc 100%);
-    border: 1px solid #ffe3a3;
-    border-radius: 20px;
-    display: flex;
+.coinCard {
+    margin-bottom: 16px;
+    min-width: 180px;
+    padding: 14px 16px;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: #b45309;
-    font-weight: 800;
-    font-size: 15px;
-    box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15);
+    gap: 12px;
+    color: #854d0e;
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(180, 83, 9, 0.08);
 
-    i {
+    svg {
         color: #f59e0b;
-        font-size: 18px;
+    }
+
+    span,
+    small {
+        display: block;
+    }
+
+    span {
+        color: #713f12;
+        font-size: 1.08rem;
+        font-weight: 700;
+        line-height: 1.05;
+    }
+
+    small {
+        margin-top: 4px;
+        color: #a16207;
+        font-size: 0.76rem;
+        font-weight: 700;
     }
 }
 
-// ============ FACEBOOK-STYLE TABS ============
 .profileTabs {
-    border-top: 1px solid #e7ecf3;
-    background: #ffffff;
-    margin-top: -6px; /* kéo tabs lên gần hơn */
+    margin-top: -34px;
+    background: rgba(255, 255, 255, 0.92);
+    border-top: 1px solid #e2e8f0;
+    backdrop-filter: blur(10px);
 }
 
 .tabsContainer {
-    max-width: 1400px;
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 12px 24px;
     display: flex;
-    gap: 4px;
+    gap: 10px;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+        height: 0;
+    }
 }
 
 .profileTab {
-    padding: 16px 20px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: #65676b;
-    font-size: 15px;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: #475569;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-
-    i {
-        font-size: 16px;
-    }
+    transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
 
     &:hover {
-        background: rgba(0, 0, 0, 0.03);
-        border-radius: 8px 8px 0 0;
-    }
-
-    &.profileTabActive {
-        color: #1890ff;
-        border-bottom-color: #1890ff;
-
-        &:hover {
-            background: rgba(24, 144, 255, 0.05);
-        }
+        color: #075985;
+        background: #f0f9ff;
+        border-color: #bae6fd;
+        transform: translateY(-1px);
     }
 }
 
-// ============ MAIN 2-COLUMN CONTAINER ============
+.profileTabActive {
+    color: #ffffff;
+    background: #1f6fb2;
+    border-color: transparent;
+    box-shadow: 0 6px 14px rgba(31, 111, 178, 0.18);
+
+    &:hover {
+        color: #ffffff;
+        background: #1f6fb2;
+    }
+}
+
 .container {
-    max-width: 1400px;
+    max-width: 1320px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: minmax(0, 1fr) 350px;
     gap: 24px;
-    padding: 20px 24px 40px;
+    padding: 26px 24px 56px;
     align-items: start;
 }
 
-.sidebarWrapper {
-    position: sticky;
-    top: 80px;
-}
-
 .contentArea {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 10px 28px rgba(17, 24, 39, 0.06);
-    border: 1px solid #eef1f6;
-    min-height: 800px;
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 6px;
-
-        &:hover {
-            background: #9ca3af;
-        }
-    }
+    min-width: 0;
+    min-height: 640px;
+    padding: 22px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
 .rightSidebar {
     position: sticky;
-    top: 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-height: calc(180vh - 100px);
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 6px;
-
-        &:hover {
-            background: #9ca3af;
-        }
-    }
+    top: 84px;
+    min-width: 0;
 }
 
-// ============ LOADING & ERROR STATES ============
 .loadingContainer,
 .errorContainer {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 600px;
     gap: 16px;
     padding: 40px;
+    color: #475569;
 }
 
 .spinner {
     width: 48px;
     height: 48px;
-    border: 3px solid #f0f0f0;
-    border-top: 3px solid #1890ff;
+    border: 3px solid #dbeafe;
+    border-top-color: #0ea5e9;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
-.loadingContainer p {
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 600;
-}
-
 .errorContainer {
     p {
-        color: #e25353;
-        font-size: 16px;
-        font-weight: 700;
-        text-align: center;
+        color: #dc2626;
+        font-size: 1rem;
+        font-weight: 800;
     }
 
     button {
-        padding: 10px 24px;
-        background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
+        padding: 11px 22px;
+        border: 0;
+        border-radius: 5px;
+        color: #ffffff;
+        background: #1f6fb2;
+        font-weight: 650;
         cursor: pointer;
-        font-size: 14px;
-        font-weight: 700;
-        transition: all 0.2s ease;
-
-        &:hover {
-            filter: brightness(1.05);
-            transform: translateY(-1px);
-        }
     }
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-// ============ RESPONSIVE ============
-@media (max-width: 1024px) {
+@media (prefers-reduced-motion: reduce) {
+    .avatarWrapper,
+    .profileTab {
+        transition: none;
+    }
+}
+
+@media (max-width: 1100px) {
     .container {
         grid-template-columns: 1fr;
-        padding: 16px 16px 32px;
     }
 
     .rightSidebar {
         position: static;
-        top: auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
-    }
-
-    .navContainer {
-        flex-wrap: wrap;
-    }
-
-    .coinDisplay {
-        order: -1;
-        width: 100%;
-        justify-content: center;
     }
 
     .profileInfoContainer {
-        grid-template-columns: auto 1fr;
-        padding: 0 16px;
-
-        .actionButtons {
-            grid-column: 1 / -1;
-            justify-content: flex-start;
-        }
-    }
-}
-
-@media (max-width: 768px) {
-    .coverSection {
-        height: clamp(160px, 28vh, 260px);
+        grid-template-columns: auto minmax(0, 1fr);
     }
 
-    .avatarWrapper {
-        width: 100px;
-        height: 100px;
-    }
-
-    .userName {
-        font-size: 20px;
-    }
-
-    .profileInfoContainer {
-        gap: 14px;
-        transform: translateY(-40px);
-        grid-template-columns: auto 1fr;
-    }
-
-    .coinDisplayRight {
+    .coinCard {
         grid-column: 2;
-        justify-self: end;
-        margin-top: 12px;
-    }
-
-    .tabsContainer {
-        gap: 2px;
-    }
-
-    .profileTab {
-        padding: 14px 16px;
-        font-size: 14px;
-
-        span {
-            display: none;
-        }
-
-        i {
-            font-size: 18px;
-        }
-    }
-
-    .contentArea {
-        padding: 20px;
-        min-height: 400px;
-        max-height: none;
-        overflow-y: visible;
+        justify-self: start;
+        margin: 0 0 8px;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 720px) {
     .coverSection {
-        height: clamp(140px, 24vh, 200px);
-    }
-
-    .avatarWrapper {
-        width: 80px;
-        height: 80px;
-    }
-
-    .userName {
-        font-size: 20px;
-    }
-
-    .editProfileBtn {
-        padding: 8px 14px;
-        font-size: 12px;
+        height: 260px;
     }
 
     .profileInfoContainer {
-        grid-template-columns: auto 1fr;
-        padding: 0 12px;
+        grid-template-columns: 1fr;
         gap: 12px;
+        transform: translateY(-42px);
+        text-align: center;
+        justify-items: center;
     }
 
-    .coinDisplayRight {
-        grid-column: 1 / -1;
+    .avatarWrapper {
+        width: 116px;
+        height: 116px;
+    }
+
+    .editAvatarBtn {
+        right: 4px;
+        bottom: 5px;
+        width: 36px;
+        height: 36px;
+        border-width: 3px;
+    }
+
+    .nameSection {
+        padding: 0;
+    }
+
+    .memberBadge {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .coinCard {
+        grid-column: auto;
         justify-self: center;
-        margin-top: 8px;
-        padding: 8px 14px;
-        font-size: 13px;
     }
 
-    .tabsContainer {
-        justify-content: space-around;
-        padding: 0 12px;
+    .profileTabs {
+        margin-top: -28px;
     }
 
-    .profileTab {
-        padding: 12px 10px;
-        flex: 1;
-        justify-content: center;
-
-        span {
-            display: none;
-        }
-
-        i {
-            font-size: 20px;
-        }
+    .tabsContainer,
+    .container {
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .contentArea {
         padding: 16px;
-        border-radius: 12px;
+        border-radius: 14px;
     }
 }

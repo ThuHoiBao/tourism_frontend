@@ -1,14 +1,14 @@
-﻿// HotToursSection.jsx — clean redesign
+// HotToursSection.jsx — Lucide React icons
 
 import React from 'react';
 import styles from './HotToursSection.module.scss';
-import { FaFire, FaStar, FaUsers, FaTrophy, FaArrowRight } from 'react-icons/fa';
+import { Flame, Star, Users, Trophy, ArrowRight, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const RANK_STYLES = [
-    { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c', label: '🥇' },
-    { bg: '#fafafa', border: '#e5e7eb', text: '#374151', label: '🥈' },
-    { bg: '#fefce8', border: '#fde68a', text: '#92400e', label: '🥉' },
+    { bg: '#e0f2fe', border: '#bae6fd', text: '#075985' },
+    { bg: '#f9fafb', border: '#e5e7eb', text: '#374151' },
+    { bg: '#fefce8', border: '#fde68a', text: '#92400e' },
 ];
 
 const formatCurrency = (amount) => {
@@ -26,7 +26,7 @@ const HotToursSection = ({ hotTours }) => {
             <div className={styles.hotToursSection}>
                 <div className={styles.header}>
                     <div className={styles.headerLeft}>
-                        <FaTrophy className={styles.icon} />
+                        <Trophy className={styles.icon} size={22} />
                         <div>
                             <h3>Top Tours</h3>
                             <p>Xếp hạng theo booking</p>
@@ -34,7 +34,7 @@ const HotToursSection = ({ hotTours }) => {
                     </div>
                 </div>
                 <div className={styles.emptyState}>
-                    <FaFire className={styles.emptyIcon} />
+                    <Flame className={styles.emptyIcon} size={32} />
                     <p>Chưa có dữ liệu hot tours</p>
                 </div>
             </div>
@@ -47,7 +47,7 @@ const HotToursSection = ({ hotTours }) => {
         <div className={styles.hotToursSection}>
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
-                    <FaTrophy className={styles.icon} />
+                    <Trophy className={styles.icon} size={22} />
                     <div>
                         <h3>Top Tours</h3>
                         <p>Xếp hạng theo lượng booking</p>
@@ -73,33 +73,34 @@ const HotToursSection = ({ hotTours }) => {
                             <div
                                 className={styles.rank}
                                 style={{ background: rankStyle.bg, border: `1.5px solid ${rankStyle.border}`, color: rankStyle.text }}
-                            >
-                                {index < 3 ? rankStyle.label : `#${index + 1}`}
+                            >  
+                                {index + 1}
                             </div>
 
                             {/* Content */}
                             <div className={styles.content}>
                                 <div className={styles.topLine}>
                                     <span className={styles.tourName}>{tour.tourName}</span>
-                                    <FaArrowRight className={styles.arrow} />
+                                    <ArrowRight className={styles.arrow} size={13} />
                                 </div>
                                 <span className={styles.tourCode}>{tour.tourCode}</span>
 
                                 {/* Stats inline */}
                                 <div className={styles.stats}>
                                     <span className={styles.stat}>
-                                        <FaUsers className={styles.statIcon} />
+                                        <Users className={styles.statIcon} size={11} />
                                         {tour.bookingCount} bookings
                                     </span>
                                     <span className={styles.separator}>·</span>
                                     <span className={styles.stat}>
-                                        💰 {formatCurrency(tour.revenue)}
+                                        <DollarSign className={styles.statIcon} size={11} />
+                                        {formatCurrency(tour.revenue)}
                                     </span>
                                     {tour.averageRating > 0 && (
                                         <>
                                             <span className={styles.separator}>·</span>
                                             <span className={styles.stat}>
-                                                <FaStar className={styles.starIcon} />
+                                                <Star className={styles.starIcon} size={11} />
                                                 {tour.averageRating.toFixed(1)}
                                             </span>
                                         </>
@@ -112,9 +113,9 @@ const HotToursSection = ({ hotTours }) => {
                                         className={styles.fill}
                                         style={{
                                             width: `${barWidth}%`,
-                                            background: index === 0 ? '#f97316'
-                                                : index === 1 ? '#eab308'
-                                                : index === 2 ? '#3b82f6'
+                                            background: index === 0 ? '#1f6fb2'
+                                                : index === 1 ? '#0ea5e9'
+                                                : index === 2 ? '#10b981'
                                                 : '#9ca3af'
                                         }}
                                     />

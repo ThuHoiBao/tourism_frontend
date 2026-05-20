@@ -1,70 +1,86 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/ChartsSection/BookingStatusChart/BookingStatusChart.module.scss
-
 .bookingStatusChart {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px 22px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
 
     .chartHeader {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid #f7fafc;
+        padding-bottom: 15px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-light);
 
         .icon {
-            font-size: 1.8em;
-            color: #ed8936;
+            color: var(--amber);
+            flex-shrink: 0;
         }
 
         h3 {
-            margin: 0 0 4px 0;
-            font-size: 1.2em;
-            color: #1a202c;
-            font-weight: 700;
+            margin: 0 0 4px;
+            color: var(--text-h);
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0;
         }
 
         p {
             margin: 0;
-            color: #718096;
-            font-size: 0.85em;
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            font-weight: 600;
         }
     }
 
     .chartContainer {
-        padding: 10px 0;
+        padding-top: 4px;
 
         .legendCustom {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-
-            .legendItem {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-
-                .legendColor {
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 3px;
-                }
-
-                .legendName {
-                    flex: 1;
-                    font-size: 0.85em;
-                    color: #4a5568;
-                }
-
-                .legendValue {
-                    font-weight: 700;
-                    color: #2d3748;
-                    font-size: 0.9em;
-                }
-            }
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin-top: 12px;
         }
+
+        .legendItem {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            padding: 7px 9px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+        }
+
+        .legendColor {
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .legendName {
+            flex: 1;
+            min-width: 0;
+            color: var(--text-sub);
+            font-size: 0.78rem;
+            font-weight: 650;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .legendValue {
+            color: var(--text-h);
+            font-size: 0.82rem;
+            font-weight: 820;
+        }
+    }
+}
+
+@media (max-width: 700px) {
+    .bookingStatusChart .chartContainer .legendCustom {
+        grid-template-columns: 1fr;
     }
 }

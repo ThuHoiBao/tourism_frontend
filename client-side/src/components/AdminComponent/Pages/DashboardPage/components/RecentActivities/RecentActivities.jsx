@@ -1,15 +1,15 @@
-// src/components/AdminComponent/Pages/DashboardPage/components/RecentActivities/RecentActivities.jsx
+// RecentActivities.jsx — Lucide React icons
 
 import React from 'react';
 import styles from './RecentActivities.module.scss';
-import { 
-    FaCalendarCheck, 
-    FaUser, 
-    FaStar, 
-    FaUndo, 
-    FaClock,
-    FaInbox
-} from 'react-icons/fa';
+import {
+    CalendarCheck,
+    UserPlus,
+    Star,
+    RotateCcw,
+    Clock,
+    Inbox
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const RecentActivities = ({ activities }) => {
@@ -18,12 +18,12 @@ const RecentActivities = ({ activities }) => {
     // Lấy icon tương ứng với loại hoạt động
     const getActivityIcon = (type) => {
         switch (type) {
-            case 'BOOKING': return <FaCalendarCheck />;
+            case 'BOOKING': return <CalendarCheck size={16} />;
             case 'USER':
-            case 'NEW_USER': return <FaUser />;
-            case 'REVIEW': return <FaStar />;
-            case 'REFUND': return <FaUndo />;
-            default: return <FaClock />;
+            case 'NEW_USER': return <UserPlus size={16} />;
+            case 'REVIEW': return <Star size={16} />;
+            case 'REFUND': return <RotateCcw size={16} />;
+            default: return <Clock size={16} />;
         }
     };
 
@@ -50,7 +50,6 @@ const RecentActivities = ({ activities }) => {
         if (activity.type === 'BOOKING' || activity.type === 'REFUND') {
             navigate(`/admin/bookings?search=${activity.relatedCode}`);
         } else if (activity.type === 'USER' || activity.type === 'NEW_USER') {
-            // relatedCode for NEW_USER is the email
             navigate(`/admin/users?search=${encodeURIComponent(activity.relatedCode)}`);
         }
     };
@@ -81,13 +80,13 @@ const RecentActivities = ({ activities }) => {
             <div className={styles.activitiesList}>
                 {activities.length > 0 ? (
                     activities.map((activity, index) => (
-                        <div 
-                            key={index} 
+                        <div
+                            key={index}
                             className={`${styles.activityItem} ${getSeverityClass(activity.severity)}`}
                             onClick={() => handleActivityClick(activity)}
                         >
                             <div className={styles.statusIndicator}></div>
-                            
+
                             <div className={styles.activityIcon}>
                                 {getActivityIcon(activity.type)}
                             </div>
@@ -104,7 +103,7 @@ const RecentActivities = ({ activities }) => {
 
                                 <div className={styles.bottomRow}>
                                     <span className={styles.timestamp}>
-                                        <FaClock />
+                                        <Clock size={11} />
                                         {formatDate(activity.timestamp)}
                                     </span>
                                     {activity.relatedCode && (
@@ -119,7 +118,7 @@ const RecentActivities = ({ activities }) => {
                 ) : (
                     <div className={styles.emptyState}>
                         <div className={styles.emptyIcon}>
-                            <FaInbox />
+                            <Inbox size={28} />
                         </div>
                         <p>Chưa có hoạt động nào</p>
                     </div>

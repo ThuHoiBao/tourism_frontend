@@ -9,6 +9,7 @@ import TourComponent from './TourComponent/TourComponent.jsx';
 import styles from './ToursPage.module.scss'; 
 import { useAuth } from '../../context/AuthContext.jsx';
 import { FaHome } from 'react-icons/fa';
+import { FiSearch, FiMapPin, FiCompass } from 'react-icons/fi';
 import toursHeroImage from '../../assets/images/digitalarbyter-maJ7hJBE654-unsplash.jpg';
 // Định nghĩa các Tùy chọn Sắp xếp
 const SORT_OPTIONS = [
@@ -101,7 +102,7 @@ const heroTitle = isSpecificDestinationSelected
     : 'DU LỊCH FUTURE TRAVEL';
 const heroDescription = isSpecificDestinationSelected
     ? (currentEndPointInfo.description || 'Khám phá điểm đến hấp dẫn này cùng Future Travel với các hành trình được chọn lọc kỹ lưỡng.')
-    : 'Khám phá những hành trình trong và ngoài nước được Future Travel tuyển chọn, với lịch khởi hành linh hoạt, mức giá rõ ràng và trải nghiệm được chăm chút từ lúc tìm tour đến khi trở về.';
+    : 'Khám phá những hành trình Việt Nam được Future Travel tuyển chọn, với lịch khởi hành linh hoạt, mức giá rõ ràng và trải nghiệm được chăm chút từ lúc tìm chuyến đi đến khi trở về.';
 // Hàm xử lý khi chọn tùy chọn sắp xếp
     const handleSortSelect = useCallback((option) => {
         setCurrentSort(option);
@@ -117,7 +118,7 @@ const heroDescription = isSpecificDestinationSelected
                     <div className={styles.heroBreadcrumb}>
                         <span className={styles.crumb} onClick={() => navigate('/')} style={{cursor: 'pointer'}}><FaHome /> Du lịch</span>
                         <span className={styles.crumbDivider}>/</span>
-                        <span className={styles.crumb}>Trong nước</span>
+                        <span className={styles.crumb}>Việt Nam</span>
                         <span className={styles.crumbDivider}>/</span>
                         <span className={styles.crumbActive}>{destinationName}</span>
                     </div>
@@ -127,6 +128,25 @@ const heroDescription = isSpecificDestinationSelected
                     </div>
                 </div>
             </section>
+
+            {/* 🌊 WAVE DIVIDER */}
+            <div className={styles.waveWrapper} aria-hidden="true">
+                <svg
+                    viewBox="0 0 1440 80"
+                    preserveAspectRatio="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={styles.waveSvg}
+                >
+                    <path
+                        d="M0,48 C240,0 480,80 720,48 C960,16 1200,72 1440,40 L1440,80 L0,80 Z"
+                        className={styles.waveFill1}
+                    />
+                    <path
+                        d="M0,60 C180,24 400,76 640,52 C880,28 1120,68 1440,56 L1440,80 L0,80 Z"
+                        className={styles.waveFill2}
+                    />
+                </svg>
+            </div>
 
             <div className={styles.toursPageLayout}>
                 {/* Cột Trái: Bộ Lọc */}

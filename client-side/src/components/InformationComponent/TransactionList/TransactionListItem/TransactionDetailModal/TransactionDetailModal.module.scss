@@ -1,408 +1,837 @@
-/* src/components/InformationComponent/TransactionList/TransactionDetailModal/TransactionDetailModal.module.scss */
-$primary-color: #1890ff;
-$danger-color: #ff4d4f;
-$success-color: #52c41a;
-$text-color: #333;
-$border-light: #e0e0e0;
-
-// Keyframes cho hiệu ứng mở modal
-// @keyframes fadeIn {
-//     from { opacity: 0; }
-//     to { opacity: 1; }
-// }
-
-// @keyframes scaleUp {
-//     from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-//     to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-// }
+$primary: #2274b8;
+$primary-dark: #155f9d;
+$text: #172033;
+$muted: #64748b;
+$border: #dbe5f0;
+$surface: #f7fafc;
+$danger: #ef4444;
+$success: #059669;
+$warning: #b45309;
 
 .modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    animation: fadeIn 0.3s ease-out forwards;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
 }
 
 .modalContent {
-    background: white;
-    border-radius: 5px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 700px;
-    max-height: 90vh; /* Giới hạn chiều cao */
-    overflow-y: auto;
-    z-index: 10000;
-    position: relative;
-    animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.4, 1);
+  width: min(1180px, calc(100vw - 42px));
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(219, 229, 240, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+  animation: modalIn 0.22s ease-out;
 }
 
-.closeButton {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #999;
-    cursor: pointer;
-    transition: color 0.2s;
-    &:hover {
-        color: $danger-color;
-    }
+.modalHeader {
+  flex: 0 0 auto;
+  background: #ffffff;
+  border-bottom: 1px solid #e4edf6;
+}
+
+.headerTop {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.titleGroup {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.titleIcon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  background: #eaf6ff;
+  border: 1px solid #d7edff;
+  border-radius: 10px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #0ea5e9;
+  font-size: 0.74rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .modalTitle {
-    font-size: 28px;
-    font-weight: 700;
-    color: #100f0f;
-    border-bottom: 2px solid $border-light;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
+  margin: 0;
+  color: $text;
+  font-size: 1.45rem;
+  line-height: 1.18;
+  font-weight: 760;
+  letter-spacing: 0;
 }
 
-// --- Section General ---
-.section {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px dashed $border-light;
-}
+.headerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 9px;
 
-.sectionTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: $text-color;
-    margin-bottom: 15px;
-    display: flex;
+  span {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    
-    svg {
-        color: $primary-color;
-    }
+    gap: 6px;
+    color: $muted;
+    font-size: 0.84rem;
+    font-weight: 560;
+  }
+
+  svg {
+    color: $primary;
+  }
 }
 
-// --- Tour Summary ---
-.tourSummary {
-    display: flex;
+.closeButton {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background: #ffffff;
+  border: 1px solid #dbe5f0;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+
+  &:hover {
+    color: $danger;
+    border-color: #fecaca;
+    background: #fff5f5;
+    transform: translateY(-1px);
+  }
+}
+
+.sectionNav {
+  display: flex;
+  gap: 8px;
+  padding: 4px 24px 16px;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 0;
+  }
+
+  button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    display: inline-flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-
-    .tourImage {
-        width: 250px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 6px;
-    }
-
-    .tourInfo {
-        h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: $text-color;
-            margin-bottom: 5px;
-        }
-        p {
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            
-            strong {
-                color: $text-color;
-            }
-        }
-    }
-}
-
-// --- Info Grid (Contact) ---
-.infoGrid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-
-    .infoItem {
-        flex: 1 1 calc(50% - 15px);
-        font-size: 14px;
-        color: #555;
-        
-        svg {
-            color: #999;
-            margin-right: 5px;
-        }
-        strong {
-            color: $text-color;
-            font-weight: 600;
-        }
-    }
-    
-    .infoItemFull {
-        flex: 1 1 100%;
-        font-size: 14px;
-        color: #555;
-        
-        svg {
-            color: #999;
-            margin-right: 5px;
-        }
-        strong {
-            font-weight: 600;
-            color: $text-color;
-        }
-    }
-}
-
-// --- Passenger List ---
-.passengerList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    .passengerItem {
-        padding: 10px 15px;
-        border-radius: 6px;
-        background-color: #f8f9fa;
-        border-left: 3px solid $primary-color;
-
-        h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: $primary-color;
-            margin-bottom: 5px;
-        }
-        p {
-            font-size: 13px;
-            color: #666;
-            margin: 0;
-            
-            strong {
-                color: $text-color;
-                font-weight: 500;
-            }
-        }
-        .singleRoom {
-            color: $danger-color;
-            font-weight: 600;
-        }
-    }
-}
-
-// --- Payment Summary ---
-.paymentSummary {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    .paymentItem {
-        display: flex;
-        justify-content: space-between;
-        padding: 5px 0;
-        font-size: 15px;
-        color: #555;
-        border-bottom: 1px dotted #ccc;
-
-        span {
-            font-weight: 500;
-        }
-        strong {
-            font-weight: 600;
-            color: $text-color;
-        }
-        
-        .surcharge {
-            color: $danger-color;
-        }
-        .discount {
-            color: $success-color;
-        }
-        .coinUsed {
-            color: #ff8c00; /* Màu cam cho coin */
-        }
-    }
-
-    .total {
-        margin-top: 10px;
-        border-top: 2px solid $primary-color;
-        border-bottom: none;
-        padding-top: 10px;
-        
-        span {
-            font-size: 17px;
-            font-weight: 700;
-            color: $text-color;
-        }
-        strong {
-            font-size: 17px;
-            font-weight: 700;
-            color: $danger-color;
-        }
-    }
-}
-
-.refundSection {
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    color: #3d5067;
     background: #f8fbff;
     border: 1px solid #dbeafe;
-    border-radius: 8px;
-    padding: 16px;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+
+    svg {
+      color: $primary;
+    }
+
+    &:hover {
+      color: $primary-dark;
+      background: #eef7ff;
+      border-color: #93c5fd;
+      box-shadow: inset 0 0 0 1px #93c5fd;
+    }
+
+    &:focus,
+    &:active {
+      color: #ffffff;
+      background: $primary;
+      border-color: $primary;
+      box-shadow: 0 8px 18px rgba(34, 116, 184, 0.18);
+
+      svg {
+        color: #ffffff;
+      }
+    }
+  }
 }
 
-.refundHeader {
+.modalBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 20px;
+  padding: 22px 24px 26px;
+  overflow-y: auto;
+  background: #f5f7fb;
+  scroll-padding-top: 18px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #edf2f7;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b8c6d8;
+    border-radius: 999px;
+  }
+}
+
+.bookingRail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryPanel,
+.totalPanel,
+.notePanel,
+.section {
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+}
+
+.summaryPanel {
+  overflow: hidden;
+}
+
+.tourImage {
+  width: 100%;
+  height: 184px;
+  display: block;
+  object-fit: cover;
+  background: #e2e8f0;
+}
+
+.summaryContent {
+  padding: 16px;
+
+  h3 {
+    margin: 10px 0 12px;
+    color: $text;
+    font-size: 1.08rem;
+    line-height: 1.38;
+    font-weight: 740;
+  }
+}
+
+.summaryMeta {
+  display: grid;
+  gap: 8px;
+
+  span {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #4f637b;
+    font-size: 0.87rem;
+    line-height: 1.45;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: $primary;
+  }
+}
+
+.totalPanel {
+  padding: 16px;
+  color: #854d0e;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-color: #fde68a;
+
+  span,
+  strong,
+  small {
+    display: block;
+  }
+
+  span {
+    color: #92400e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  strong {
+    margin-top: 6px;
+    color: #713f12;
+    font-size: 1.36rem;
+    line-height: 1.1;
+    font-weight: 780;
+  }
+
+  small {
+    margin-top: 6px;
+    color: #a16207;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+}
+
+.notePanel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 14px;
+  color: #7f1d1d;
+  background: #fff7f7;
+  border-color: #fecaca;
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: $danger;
+  }
+
+  span {
+    color: #991b1b;
+    font-size: 0.82rem;
+    font-weight: 760;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #7f1d1d;
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+}
+
+.detailMain {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.section {
+  scroll-margin-top: 18px;
+  padding: 18px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+
+  p {
+    margin: 0 0 5px;
+    color: #0ea5e9;
+    font-size: 0.74rem;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $text;
+    font-size: 1.08rem;
+    line-height: 1.3;
+    font-weight: 740;
+  }
+
+  svg {
+    color: $primary;
+  }
+}
+
+.infoGrid,
+.bankInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bankInfoGrid {
+  margin-top: 12px;
+}
+
+.infoTile,
+.infoTileWide {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e8eef6;
+  border-radius: 9px;
+  background: $surface;
+
+  span,
+  strong {
+    display: block;
+  }
+
+  div > span {
+    margin-bottom: 4px;
+    color: #71839a;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    color: #243247;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    font-weight: 610;
+    overflow-wrap: anywhere;
+  }
+}
+
+.infoTileWide {
+  grid-column: 1 / -1;
+}
+
+.infoTileIcon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  background: #eaf6ff;
+  border-radius: 8px;
+}
+
+.passengerList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.passengerItem {
+  padding: 14px;
+  border: 1px solid #e5edf6;
+  border-radius: 10px;
+  background: $surface;
+}
+
+.passengerTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  > span {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: #ffffff;
+    background: $primary;
+    border-radius: 50%;
+    font-size: 0.88rem;
+    font-weight: 760;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  h4 {
+    margin: 0;
+    color: $text;
+    font-size: 0.98rem;
+    line-height: 1.3;
+    font-weight: 720;
+  }
+
+  p {
+    margin: 3px 0 0;
+    color: $muted;
+    font-size: 0.84rem;
+  }
+}
+
+.passengerDetails {
+  display: grid;
+  gap: 7px;
+
+  span {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    color: #5b6d83;
+    font-size: 0.86rem;
+  }
 
-    .sectionTitle {
-        margin-bottom: 0;
-    }
+  strong {
+    color: $text;
+    font-weight: 650;
+    text-align: right;
+  }
 }
 
-.refundCard {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: #fff;
-    overflow: hidden;
+.singleRoom {
+  color: $danger !important;
+  font-weight: 650;
 }
 
-.refundRow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 12px;
-    border-bottom: 1px solid #edf2f7;
-    font-size: 14px;
-    color: #4b5563;
+.transactionStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
 
-    &:last-child {
-        border-bottom: none;
-    }
+  div {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #dbeafe;
+    border-radius: 9px;
+    background: #f8fbff;
+  }
 
-    span {
-        font-weight: 500;
-    }
+  span,
+  strong {
+    display: block;
+  }
 
-    strong {
-        color: #111827;
-        font-weight: 700;
-        text-align: right;
-        white-space: nowrap;
-    }
+  span {
+    color: #71839a;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    margin-top: 5px;
+    color: $text;
+    font-size: 0.94rem;
+    font-weight: 690;
+    overflow-wrap: anywhere;
+  }
 }
 
-.refundDeduction {
-    color: #dc2626 !important;
+.paymentSummary,
+.refundSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.refundTotalRow {
-    background: #ecfdf5;
+.paymentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 46px;
+  padding: 11px 12px;
+  color: #42556d;
+  background: $surface;
+  border: 1px solid #e8eef6;
+  border-radius: 9px;
+  font-size: 0.92rem;
 
-    span {
-        color: #065f46;
-        font-weight: 700;
-    }
+  span {
+    font-weight: 590;
+  }
 
-    strong {
-        color: #047857;
-        font-size: 16px;
-    }
+  strong {
+    color: $text;
+    font-weight: 720;
+    text-align: right;
+    white-space: nowrap;
+  }
 }
 
-.coinRefundValue {
-    color: #1d4ed8 !important;
+.surcharge strong {
+  color: $danger;
+}
+
+.discount strong {
+  color: $success;
+}
+
+.coinUsed strong {
+  color: #c46b07;
+}
+
+.total {
+  grid-column: 1 / -1;
+  min-height: 54px;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+
+  span {
+    color: $text;
+    font-weight: 760;
+  }
+
+  strong {
+    color: $danger;
+    font-size: 1.12rem;
+  }
+}
+
+.refundSection {
+  background: #fbfdff;
+  border-color: #cfe4ff;
+}
+
+.refundHighlight {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 13px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 9px;
+  background: #ecfdf5;
+
+  span {
+    color: #065f46;
+    font-size: 0.9rem;
+    font-weight: 730;
+  }
+
+  strong {
+    color: #047857;
+    font-size: 1.08rem;
+    font-weight: 780;
+    text-align: right;
+  }
+}
+
+.refundDeduction strong {
+  color: $danger;
 }
 
 .refundNote {
-    margin: 10px 2px 0;
-    color: #64748b;
-    font-size: 0.82rem;
-    line-height: 1.5;
+  margin: 12px 2px 0;
+  color: #52657b;
+  font-size: 0.86rem;
+  line-height: 1.6;
 }
 
-@media (max-width: 600px) {
-    .modalContent {
-        padding: 20px;
-    }
-    .infoGrid {
-        .infoItem {
-            flex: 1 1 100%;
-        }
-    }
-    .refundHeader,
-    .refundRow {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .refundRow strong {
-        text-align: left;
-        white-space: normal;
-    }
+.notificationHint {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
 }
 
-// --- Coin Refund & Bank Refund status inline badges ---
+.emptyBox {
+  padding: 14px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.statusChip,
+.statusPending,
+.statusDone,
+.statusFailed,
+.statusDefault {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  line-height: 1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .statusPending {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: #92400e;
-    background: #fef3c7;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.82rem;
-    font-weight: 500;
+  color: $warning !important;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
 }
 
 .statusDone {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: #065f46;
-    background: #d1fae5;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.82rem;
-    font-weight: 500;
+  color: #047857 !important;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
 }
 
 .statusFailed {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: #991b1b;
-    background: #fee2e2;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.82rem;
-    font-weight: 500;
+  color: #b91c1c !important;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
 }
 
-// --- Notification hint (email cancellation) ---
-.notificationHint {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin: 0 0 12px;
-    font-size: 0.82rem;
-    color: #1d4ed8;
-    line-height: 1.5;
+.statusDefault {
+  color: #475569 !important;
+  background: #f1f5f9;
+  border: 1px solid #dbe5f0;
+}
 
-    svg {
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
+@media (max-width: 980px) {
+  .modalBody {
+    grid-template-columns: 1fr;
+  }
+
+  .bookingRail {
+    position: static;
+  }
+
+  .summaryPanel {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+
+  .tourImage {
+    height: 100%;
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 740px) {
+  .modalOverlay {
+    padding: 10px;
+  }
+
+  .modalContent {
+    width: calc(100vw - 20px);
+    max-height: 92vh;
+    border-radius: 10px;
+  }
+
+  .headerTop {
+    align-items: flex-start;
+    padding: 18px 16px 12px;
+  }
+
+  .titleIcon {
+    display: none;
+  }
+
+  .modalTitle {
+    font-size: 1.24rem;
+  }
+
+  .sectionNav {
+    padding: 4px 16px 13px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .summaryPanel,
+  .infoGrid,
+  .bankInfoGrid,
+  .passengerList,
+  .transactionStrip,
+  .paymentSummary,
+  .refundSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tourImage {
+    min-height: 180px;
+  }
+
+  .section {
+    padding: 15px;
+  }
+
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .paymentRow,
+  .refundHighlight,
+  .passengerDetails span {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .paymentRow strong,
+  .refundHighlight strong,
+  .passengerDetails strong {
+    text-align: left;
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalContent,
+  .closeButton,
+  .sectionNav button {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

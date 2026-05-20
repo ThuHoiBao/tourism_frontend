@@ -1,188 +1,237 @@
-/* DashboardHeader.module.scss */
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 16px;
-    padding: 24px 28px;
-    background: var(--card-bg);
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px var(--shadow-color);
+    gap: 18px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
     position: relative;
 }
 
 .headerLeft {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    min-width: 0;
 }
 
-.titleBlock {}
+.titleBlock {
+    min-width: 0;
+}
 
 .title {
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 4px;
-    line-height: 1.2;
+    margin: 0;
+    color: var(--text-h);
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
 }
 
 .titleAccent {
-    background: linear-gradient(135deg, #1e40af, #2563eb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
 }
 
 .subtitle {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin: 0;
+    margin: 7px 0 0;
+    color: var(--text-sub);
+    font-size: 0.92rem;
+    font-weight: 550;
+    line-height: 1.45;
 }
 
 .headerRight {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-/* Date button */
 .datePickerWrapper {
     position: relative;
 }
 
+.dateBtn,
+.iconBtn,
+.presetBtn,
+.cancelBtn,
+.applyBtn {
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+    }
+}
+
 .dateBtn {
-    display: flex;
+    min-height: 40px;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 16px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    color: var(--text-primary);
-    font-size: 0.85rem;
-    font-weight: 500;
+    gap: 9px;
+    padding: 0 14px;
+    color: var(--text-body);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 650;
     cursor: pointer;
-    transition: all 0.2s;
     white-space: nowrap;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 
     &:hover {
-        border-color: #2563eb;
-        background: rgba(37, 99, 235, 0.06);
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
     }
 }
 
 .btnIcon {
-    color: #2563eb;
-    font-size: 1rem;
+    color: var(--accent);
+    flex-shrink: 0;
 }
 
-/* Picker dropdown */
 .pickerDropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 10px);
     right: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
     z-index: 1000;
-    padding: 16px;
-    min-width: 580px;
-    animation: fadeIn 0.15s ease;
+    min-width: min(620px, calc(100vw - 48px));
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    animation: pickerIn 0.16s ease-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes pickerIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .presets {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
+    gap: 8px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .presetBtn {
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    min-height: 32px;
+    padding: 0 12px;
+    color: var(--text-sub);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
     font-size: 0.8rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 
     &:hover {
-        background: #2563eb;
-        border-color: #2563eb;
-        color: #fff;
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
     }
 }
 
 .customPicker {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .pickerRow {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
 .pickerCol {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    min-width: 0;
 
     label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--text-secondary);
+        color: var(--text-sub);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
     }
 
     :global(.react-datepicker) {
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        font-size: 0.82rem;
-        background: var(--card-bg);
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-body);
+        background: var(--bg-card);
+        font-family: inherit;
+        overflow: hidden;
+    }
+
+    :global(.react-datepicker__month-container) {
+        width: 100%;
     }
 
     :global(.react-datepicker__header) {
-        background: var(--bg-secondary);
-        border-color: var(--border-color);
+        background: var(--bg-subtle);
+        border-bottom: 1px solid var(--border-light);
     }
 
+    :global(.react-datepicker__current-month),
+    :global(.react-datepicker-time__header),
+    :global(.react-datepicker-year-header) {
+        color: var(--text-h);
+        font-weight: 800;
+    }
+
+    :global(.react-datepicker__day-name),
+    :global(.react-datepicker__day) {
+        width: 2rem;
+        line-height: 2rem;
+        margin: 0.08rem;
+        color: var(--text-body);
+    }
+
+    :global(.react-datepicker__day--keyboard-selected),
     :global(.react-datepicker__day--selected),
     :global(.react-datepicker__day--range-start),
     :global(.react-datepicker__day--range-end) {
-        background: #2563eb !important;
-        color: #fff !important;
-        border-radius: 50%;
+        color: #ffffff !important;
+        background: var(--primary) !important;
+        border-radius: 6px !important;
     }
 
-    :global(.react-datepicker__day--in-range) {
-        background: rgba(37, 99, 235, 0.15) !important;
-        border-radius: 0;
-    }
-
+    :global(.react-datepicker__day--in-range),
     :global(.react-datepicker__day--in-selecting-range) {
-        background: rgba(37, 99, 235, 0.2) !important;
+        color: var(--primary-strong) !important;
+        background: var(--primary-soft) !important;
+        border-radius: 4px !important;
     }
 
     :global(.react-datepicker__day:hover) {
-        background: rgba(37, 99, 235, 0.1);
-        border-radius: 50%;
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-radius: 6px;
     }
 }
 
@@ -192,64 +241,101 @@
     gap: 8px;
 }
 
-.cancelBtn {
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    cursor: pointer;
-
-    &:hover { background: var(--bg-secondary); }
-}
-
+.cancelBtn,
 .applyBtn {
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: none;
-    background: #2563eb;
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 600;
+    min-height: 36px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    font-weight: 720;
     cursor: pointer;
-    transition: opacity 0.2s;
-
-    &:hover { opacity: 0.9; }
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
-/* Icon buttons */
-.iconBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
+.cancelBtn {
+    color: var(--text-sub);
+    background: #ffffff;
+    border: 1px solid var(--border);
 
     &:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: rgba(37, 99, 235, 0.06);
+        color: var(--text-h);
+        background: var(--bg-subtle);
     }
 }
 
-.spinning {
+.applyBtn {
+    color: #ffffff;
+    background: var(--primary);
+    border: 1px solid var(--primary);
+
+    &:hover {
+        background: var(--primary-strong);
+        border-color: var(--primary-strong);
+    }
+}
+
+.iconBtn {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sub);
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+
+    &:hover {
+        color: var(--primary-strong);
+        background: var(--primary-hover);
+        border-color: #bae6fd;
+    }
+}
+
+.spinning svg {
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .pickerOverlay {
     position: fixed;
     inset: 0;
     z-index: 999;
+}
+
+@media (max-width: 720px) {
+    .header {
+        padding: 16px;
+    }
+
+    .headerRight,
+    .datePickerWrapper,
+    .dateBtn {
+        width: 100%;
+    }
+
+    .headerRight {
+        justify-content: flex-start;
+    }
+
+    .dateBtn {
+        justify-content: center;
+    }
+
+    .pickerDropdown {
+        left: 0;
+        right: auto;
+        min-width: min(100%, calc(100vw - 32px));
+    }
+
+    .pickerRow {
+        grid-template-columns: 1fr;
+    }
 }

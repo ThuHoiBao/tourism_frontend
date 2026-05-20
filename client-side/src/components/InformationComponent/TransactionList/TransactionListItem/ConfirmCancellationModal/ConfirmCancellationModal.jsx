@@ -22,14 +22,14 @@ const ConfirmCancellationModal = ({ bookingID, onClose, onBack, onRefetch }) => 
             await cancelBookingApi(bookingID);
             
             // ✅ Bỏ setTimeout và window.location.reload() ở đây
-            setSuccessMessage("Cảm ơn bạn! Yêu cầu hủy tour và hoàn điểm đã thành công.");
+            setSuccessMessage("Cảm ơn bạn! Yêu cầu hủy chuyến đi và hoàn điểm đã thành công.");
             
             // onRefetch() không cần thiết khi dùng window.location.reload()
             
         } catch (error) {
-            console.error("Lỗi khi hủy tour (Hoàn Coin):", error);
+            console.error("Lỗi khi hủy chuyến đi (Hoàn Coin):", error);
             // Lấy thông báo lỗi cụ thể từ response nếu có
-            const apiError = error.response?.data?.message || "Lỗi: Không thể hủy tour. Vui lòng thử lại sau.";
+            const apiError = error.response?.data?.message || "Lỗi: Không thể hủy chuyến đi. Vui lòng thử lại sau.";
             setSuccessMessage(apiError); 
         } finally {
             setIsProcessing(false);
@@ -55,13 +55,13 @@ const ConfirmCancellationModal = ({ bookingID, onClose, onBack, onRefetch }) => 
         return createPortal(successModalJSX, document.body); 
     }
 
-    // --- JSX cho Modal Xác nhận Hủy Tour (Giữ nguyên) ---
+    // --- JSX cho Modal Xác nhận hủy chuyến đi (Giữ nguyên) ---
     const confirmModalJSX = (
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                 <img src={CancelImage} alt="Xác nhận hủy" className={styles.image} />
-                <h3 className={styles.title}>Xác Nhận Hủy Tour</h3>
-                <p className={styles.warning}>Bạn có chắc chắn muốn hủy tour và chuyển toàn bộ giá trị đơn hàng thành điểm cá nhân không?</p>
+                <h3 className={styles.title}>Xác Nhận Hủy Chuyến Đi</h3>
+                <p className={styles.warning}>Bạn có chắc chắn muốn hủy chuyến đi và chuyển toàn bộ giá trị đơn hàng thành điểm cá nhân không?</p>
 
                 <div className={styles.buttonGroup}>
                     <button 

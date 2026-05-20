@@ -1,105 +1,101 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import styles from './PersonalProfile.module.scss';
+import { Mail, Phone, Save, UserRound, Cake, Coins } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { updateUserApi } from '../../../services/user/user.ts';
 import { useAuth } from '../../../context/AuthContext.jsx';
-import { FaUser, FaPhone, FaBirthdayCake, FaEnvelope, FaCoins } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import styles from './PersonalProfile.module.scss';
+
+const DEFAULT_AVATAR =
+    'https://th.bing.com/th/id/OIP.KMh7jiRqiGInQryreHc-UwHaHa?w=180&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3';
 
 const PersonalProfile = ({ isSidebarVersion = false }) => {
     const { user, updateUser } = useAuth();
-    
     const userData = user?.data || user;
-    
+
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
         day: '',
         month: '',
-        year: ''
+        year: '',
     });
     const [loading, setLoading] = useState(false);
-    
     const [phoneError, setPhoneError] = useState('');
-    
+
     const email = userData?.email || '';
-    const userID = userData?.userId || userData?.id;
-    
-    // Calculate points (use coinBalance from user data)
+    const userID = userData?.userId || userData?.userID || userData?.id;
+
     const loyaltyPoints = useMemo(() => {
         return userData?.coinBalance || 0;
     }, [userData?.coinBalance]);
 
-    // Format number with thousand separators
     const formatNumber = (num) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     };
-    
+
     const parsedDate = useMemo(() => {
         const dateOfBirth = userData?.dateOfBirth || '';
         if (!dateOfBirth) {
             return { day: '', month: '', year: '' };
         }
-        
+
         try {
             const date = new Date(dateOfBirth);
             if (isNaN(date.getTime())) {
                 return { day: '', month: '', year: '' };
             }
-            
+
             return {
                 day: date.getDate().toString(),
-                month: (date.getMonth() + 1).toString(), 
-                year: date.getFullYear().toString()
+                month: (date.getMonth() + 1).toString(),
+                year: date.getFullYear().toString(),
             };
         } catch (error) {
             console.error('Error parsing date:', error);
             return { day: '', month: '', year: '' };
         }
-    }, [userData?.dateOfBirth]); 
-    
+    }, [userData?.dateOfBirth]);
+
     useEffect(() => {
         if (userData) {
-            console.log('PersonalProfile userData:', userData);
-            console.log('Phone value:', userData.phone, userData.phoneNumber, userData.phone_number);
             setFormData({
                 fullName: userData.fullName || userData.fullname || '',
                 phone: userData.phone || userData.phoneNumber || userData.phone_number || '',
                 day: parsedDate.day,
                 month: parsedDate.month,
-                year: parsedDate.year
+                year: parsedDate.year,
             });
         }
-    }, [userData, parsedDate]); 
-    
+    }, [userData, parsedDate]);
+
     const handleInputChange = (field, value) => {
         if (field === 'phone') {
             const numericValue = value.replace(/\D/g, '');
-            
+
             if (numericValue.length > 10) {
                 setPhoneError('Số điện thoại chỉ được nhập tối đa 10 chữ số');
                 return;
             }
-            
+
             if (numericValue.length > 0 && numericValue.length < 10) {
                 setPhoneError('Số điện thoại phải có đúng 10 chữ số');
-            } else if (numericValue.length === 10) {
-                setPhoneError(''); 
             } else {
-                setPhoneError(''); 
+                setPhoneError('');
             }
-            
+
             setFormData(prev => ({
                 ...prev,
-                [field]: numericValue
+                [field]: numericValue,
             }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [field]: value
-            }));
+            return;
         }
+
+        setFormData(prev => ({
+            ...prev,
+            [field]: value,
+        }));
     };
-    
+
     const handleSave = async () => {
         try {
             setLoading(true);
@@ -111,11 +107,11 @@ const PersonalProfile = ({ isSidebarVersion = false }) => {
             }
 
             const formDataPayload = new FormData();
-            
+
             if (formData.fullName) {
                 formDataPayload.append('fullName', formData.fullName);
             }
-            
+
             if (formData.phone) {
                 formDataPayload.append('phone', formData.phone);
             }
@@ -133,16 +129,15 @@ const PersonalProfile = ({ isSidebarVersion = false }) => {
             updateUser({
                 fullName: formData.fullName,
                 phone: formData.phone,
-                dateOfBirth: formData.day && formData.month && formData.year 
+                dateOfBirth: formData.day && formData.month && formData.year
                     ? `${formData.year}-${formData.month.padStart(2, '0')}-${formData.day.padStart(2, '0')}`
-                    : userData?.dateOfBirth
+                    : userData?.dateOfBirth,
             });
             toast.success('Cập nhật thông tin thành công!');
-
         } catch (error) {
             console.error('Error updating user:', error);
-            
-            const errorMessage = error.response?.data?.message 
+
+            const errorMessage = error.response?.data?.message
                 || error.response?.data?.error
                 || 'Có lỗi xảy ra khi cập nhật thông tin.';
             toast.error(errorMessage);
@@ -150,7 +145,7 @@ const PersonalProfile = ({ isSidebarVersion = false }) => {
             setLoading(false);
         }
     };
-    
+
     if (!userData) {
         return (
             <div className={styles.personalProfile}>
@@ -160,74 +155,54 @@ const PersonalProfile = ({ isSidebarVersion = false }) => {
     }
 
     return (
-        <div className={styles.personalProfile}>
-            {!isSidebarVersion && (
-                <>
-                    {/* Profile Header - chỉ hiển thị khi không phải sidebar */}
-                    <div className={styles.profileHeader}>
-                        <div className={styles.cover}>
-                            <div className={styles.coverDecor} />
-                        </div>
-                        <div className={styles.headerContent}>
-                            <div className={styles.avatarWrap}>
-                                <img
-                                    src={userData?.avatar || 'https://images.unsplash.com/photo-1544723795-3fb6469f0f34?q=80&w=200&h=200&fit=crop&auto=format&dpr=2'}
-                                    alt={userData?.fullName || 'User avatar'}
-                                    className={styles.avatar}
-                                />
-                            </div>
-                            <div className={styles.identity}>
-                                <h1 className={styles.displayName}>{userData?.fullName || 'Người dùng'}</h1>
-                                <p className={styles.subtitle}>Khách hàng • Future Travel</p>
-                            </div>
-                            <div className={styles.headerActions}>
-                                <button className={styles.editBtn} onClick={() => {}}>
-                                    Chỉnh sửa hồ sơ
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Success/Error Messages replaced by toast notifications */}
-                </>
-            )}
-
-            {/* Personal Stats Section - Thống kê cá nhân */}
-
-            {/* Sidebar message replaced by toast notifications */}
-            
-            {/* Thông tin cá nhân */}
-            <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>
-                    <FaUser /> Thông tin cá nhân
-                </h2>
-                <div className={styles.loyaltyPoints}>
-                    <FaCoins /> {formatNumber(loyaltyPoints)} điểm
+        <aside className={`${styles.personalProfile} ${!isSidebarVersion ? styles.fullWidth : ''}`}>
+            <div className={styles.sectionHeader}>
+                <div className={styles.accountAvatarFrame}>
+                    <img
+                        src={userData?.avatar || DEFAULT_AVATAR}
+                        alt={formData.fullName || 'Ảnh đại diện'}
+                        className={styles.accountAvatar}
+                    />
                 </div>
-                
+                <div>
+                    <p className={styles.eyebrow}>Tài khoản</p>
+                    <h2 className={styles.sectionTitle}>Thông tin cá nhân</h2>
+                </div>
+            </div>
+
+            <div className={styles.loyaltyPoints}>
+                <div className={styles.loyaltyIcon}>
+                    <Coins size={20} />
+                </div>
+                <div>
+                    <strong>{formatNumber(loyaltyPoints)} điểm</strong>
+                    <span>Điểm cá nhân khả dụng</span>
+                </div>
+            </div>
+
+            <div className={styles.formBody}>
                 <div className={styles.formGroup}>
                     <label className={styles.label}>
-                        <FaUser /> Họ và tên
+                        <UserRound size={16} /> Họ và tên
                     </label>
                     <input
                         type="text"
                         className={styles.input}
                         value={formData.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        onChange={(event) => handleInputChange('fullName', event.target.value)}
                         placeholder="Nhập họ và tên"
                     />
-
                 </div>
-                
+
                 <div className={styles.formGroup}>
                     <label className={styles.label}>
-                        <FaPhone /> Số điện thoại
+                        <Phone size={16} /> Số điện thoại
                     </label>
                     <input
                         type="text"
                         className={`${styles.input} ${phoneError ? styles.inputError : ''}`}
                         value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        onChange={(event) => handleInputChange('phone', event.target.value)}
                         placeholder="Nhập 10 chữ số"
                         maxLength={10}
                     />
@@ -235,71 +210,70 @@ const PersonalProfile = ({ isSidebarVersion = false }) => {
                         <p className={styles.errorText}>{phoneError}</p>
                     )}
                 </div>
-                
+
                 <div className={styles.formGroup}>
                     <label className={styles.label}>
-                        <FaBirthdayCake /> Ngày sinh
+                        <Cake size={16} /> Ngày sinh
                     </label>
                     <div className={styles.dateInputs}>
-                        <select 
-                            className={styles.dateSelect} 
+                        <select
+                            className={styles.dateSelect}
                             value={formData.day}
-                            onChange={(e) => handleInputChange('day', e.target.value)}
+                            onChange={(event) => handleInputChange('day', event.target.value)}
                         >
                             <option value="">Ngày</option>
-                            {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-                                <option key={d} value={d.toString()}>{d}</option>
+                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                                <option key={day} value={day.toString()}>{day}</option>
                             ))}
                         </select>
-                        <select 
-                            className={styles.dateSelect} 
+                        <select
+                            className={styles.dateSelect}
                             value={formData.month}
-                            onChange={(e) => handleInputChange('month', e.target.value)}
+                            onChange={(event) => handleInputChange('month', event.target.value)}
                         >
                             <option value="">Tháng</option>
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                                <option key={m} value={m.toString()}>{m}</option>
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                                <option key={month} value={month.toString()}>{month}</option>
                             ))}
                         </select>
-                        <select 
-                            className={styles.dateSelect} 
+                        <select
+                            className={styles.dateSelect}
                             value={formData.year}
-                            onChange={(e) => handleInputChange('year', e.target.value)}
+                            onChange={(event) => handleInputChange('year', event.target.value)}
                         >
                             <option value="">Năm</option>
-                            {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                                <option key={y} value={y.toString()}>{y}</option>
+                            {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                                <option key={year} value={year.toString()}>{year}</option>
                             ))}
                         </select>
                     </div>
                 </div>
+
                 <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            <FaEnvelope /> Email
-                        </label>
-                        <input
-                            type="email"
-                            className={`${styles.input} ${styles.inputReadOnly}`}
-                            value={email}
-                            readOnly
-                        />
-                        <p className={styles.helperText}>
-                            Email không thể thay đổi
-                        </p>
-                    </div>
+                    <label className={styles.label}>
+                        <Mail size={16} /> Email
+                    </label>
+                    <input
+                        type="email"
+                        className={`${styles.input} ${styles.inputReadOnly}`}
+                        value={email}
+                        readOnly
+                    />
+                    <p className={styles.helperText}>Email không thể thay đổi.</p>
+                </div>
             </div>
-        
-            {/* Action Buttons */}
+
             <div className={styles.buttonGroup}>
-                <button 
+                <button
                     className={styles.buttonPrimary}
                     onClick={handleSave}
                     disabled={loading}
+                    type="button"
                 >
-                    {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                    <Save size={17} /> {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </button>
             </div>
-        </div>
+        </aside>
     );
 };
 

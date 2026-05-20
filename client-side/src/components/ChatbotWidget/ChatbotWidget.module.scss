@@ -9,83 +9,189 @@ $user-bubble-bg: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
 $bot-bubble-bg: #ffffff;
 $shadow-soft: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 $shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1);
-$radius-window: 18px;
-$radius-bubble: 18px;
+$radius-window: 12px;
+$radius-bubble: 16px;
 
 .widgetContainer {
   position: fixed;
-  bottom: 20px; 
-  right: 20px;
+  bottom: 0; 
+  right: 10px;
   z-index: 9999;
   display: flex;
   flex-direction: column-reverse;
   align-items: flex-end;
   font-family: Helvetica, Arial, sans-serif;
   
-  
   // Làm cho container "trong suốt" với chuột, cho phép click xuyên qua
   pointer-events: none; 
 }
 
-// --- Launcher Button (Nút tròn mở chat) ---
-.launcher {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: $primary-gradient;
-  border: none;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 132, 255, 0.4);
+// --- Mascot Container (bao gồm bong bóng + nút video) ---
+.mascotContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
+  pointer-events: none; // bật cho con
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-top: 10px;
 
-  // ✅ FIX: Bật lại tương tác cho nút này (để bấm được)
-  pointer-events: auto; 
+  &.hideMascot {
+    opacity: 0;
+    transform: scale(0) translateY(10px);
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+    margin: 0;
+  }
+}
 
-  &:hover {
-    transform: scale(1.1);
+// --- Bong bóng tin nhắn (Speech Bubble) ---
+.speechBubble {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid rgba(14, 165, 233, 0.55); // viền xanh nổi bật nhẹ
+  padding: 10px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14), 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 8px;
+  max-width: 220px;
+  text-align: center;
+  position: relative;
+  pointer-events: none;
+
+  opacity: 0;
+  transform: translateY(12px) scale(0.88);
+  transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  // Mũi tên chỉ xuống mascot
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 9px 0;
+    border-style: solid;
+    border-color: #ffffff transparent transparent;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.06));
   }
 
-  &.hideLauncher {
-    transform: scale(0);
+  // Hiện: fade-in từ dưới lên
+  &.bubbleVisible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  // Thoát: fade-out lên trên — luôn khai báo SAU bubbleVisible để override
+  &.bubbleExiting {
     opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+    transition: opacity 0.45s ease, transform 0.45s ease;
     pointer-events: none;
   }
+}
 
-  .pulse {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: inherit;
-    opacity: 0.6;
-    z-index: -1;
-    animation: pulse-animation 2s infinite;
+// --- Bubble Text ---
+.bubbleText {
+  display: block;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  // Màu chữ đồng bộ với tông xanh navy của trang
+  color: #1d3557;
+  font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  line-height: 1.6;
+  // Chữ xuất hiện với fade-in mượt từ dưới khi câu mới
+  animation: text-fade-up 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes text-fade-up {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// --- Launcher Button — TRANSPARENT, không vòng tròn, phóng to 250% ---
+.launcher {
+  // Kích thước 152px = 190px × 80% (thu nhỏ cho cân đối với khung chat)
+  width: 152px;
+  height: 152px;
+
+  // Xoá hoàn toàn vòng tròn & nền
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible; // hiển thị đủ mascot, không clip
+  padding: 0;
+
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end; // căn mascot "đứng" ở đáy
+  justify-content: center;
+  position: relative;
+
+  // GPU layer — tránh repaint khi float animation chạy
+  will-change: transform;
+
+  // Bóng đổ nhẹ tạo chiều sâu, thay thế box-shadow của circle
+  filter: drop-shadow(0 8px 18px rgba(0, 80, 180, 0.28));
+
+  // ✅ Bật tương tác
+  pointer-events: auto;
+
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              filter 0.25s ease;
+
+  &:hover {
+    // Hiệu ứng nổi lên khi hover
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 14px 28px rgba(0, 80, 180, 0.38));
   }
+
+  // Hoạt ảnh nổi nhẹ tự động (floating) — mượt mà hơn với độ dài 4.5s
+  animation: mascot-float 4.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-.launcherLogo {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  object-fit: cover;
+// Video mascot — hiển thị đầy đủ, không crop, nền trong suốt
+.mascotVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  image-rendering: auto; // browser upscale canvas 180→152 mượt
+
+  // ── TRICK ĐỂ CHE WATERMARK 'PixVerse.ai' ──────────────────────
+  //
+  // TRICK 1 (đang dùng): polygon — cắt chéo góc dưới phải nơi có watermark,
+  // bảo toàn bàn chân gấu ở trung tâm, chỉ xóa góc phải
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 40% 100%, 0 100%);
+  //
+  // TRICK 2: Đẩy video xuống rồi cho overflow:hidden cắt, watermark trượt khỏi viewport
+  //   ửe bên trong .launcher đặt: overflow: hidden;
+  //   ở đây: height: 115%; margin-bottom: -15%;
+  //
+  // TRICK 3: Chèn div phủ đè lên vùng watermark (dùng khi biết vị trí cố định)
+  //   Trong JSX thêm: <div className={styles.watermarkMask} />
+  //   .watermarkMask { position:absolute; bottom:0; left:0; right:0; height:14%;
+  //                   background: transparent; /* màu nền trang */ }
+  // ───────────────────────────────────────────────────────────────
 }
 
-@keyframes pulse-animation {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.5); opacity: 0; }
+// Hoạt ảnh nổi nhẹ cho mascot — dừng ngắn ở đỉnh để tự nhiên hơn
+@keyframes mascot-float {
+  0%   { transform: translateY(0px); }
+  40%  { transform: translateY(-9px); }
+  60%  { transform: translateY(-9px); }
+  100% { transform: translateY(0px); }
 }
 
 // --- Chat Window (Khung chat) ---
 .chatWindow {
-  width: 360px;
-  height: 540px;
-  max-height: calc(100vh - 110px); 
+  width: 420px;
+  height: 590px;
+  max-height: calc(100vh - 120px); 
   background: #fff;
   border-radius: $radius-window;
   box-shadow: $shadow-soft;
@@ -103,7 +209,7 @@ $radius-bubble: 18px;
   visibility: hidden; 
 
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  margin-bottom: 10px;
+  margin-bottom: 18px; // khoảng cách từ đáy trang
 
   // Trạng thái MỞ
   &.showWindow {
