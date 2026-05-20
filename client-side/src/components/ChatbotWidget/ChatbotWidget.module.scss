@@ -131,6 +131,9 @@ $radius-bubble: 16px;
   justify-content: center;
   position: relative;
 
+  // GPU layer — tránh repaint khi float animation chạy
+  will-change: transform;
+
   // Bóng đổ nhẹ tạo chiều sâu, thay thế box-shadow của circle
   filter: drop-shadow(0 8px 18px rgba(0, 80, 180, 0.28));
 
@@ -157,6 +160,7 @@ $radius-bubble: 16px;
   object-fit: contain;
   display: block;
   pointer-events: none;
+  image-rendering: auto; // browser upscale canvas 180→152 mượt
 
   // ── TRICK ĐỂ CHE WATERMARK 'PixVerse.ai' ──────────────────────
   //

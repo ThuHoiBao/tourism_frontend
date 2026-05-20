@@ -23,7 +23,12 @@ const GREETING_MESSAGES = [
  * Mỗi frame video được vẽ lên canvas, sau đó các pixel "teal/xanh lá"
  * bị set alpha = 0 (trong suốt), chỉ giữ lại nhân vật mascot.
  * Hoạt động với video nền xanh (chroma key) không cần convert sang WebM alpha.
+ *
+ * Perf: process tại 180×180 (không phải 540×540) → giảm 9× pixel ops.
+ * Dùng requestVideoFrameCallback khi browser hỗ trợ → chỉ render khi có frame mới.
  */
+const PROCESS_SIZE = 180; // px — đủ sắc nét cho mascot 152×152 hiển thị
+
 const ChromaKeyCanvas = ({ src, className }) => {
   const canvasRef = useRef(null);
   const videoRef  = useRef(null);
@@ -37,25 +42,20 @@ const ChromaKeyCanvas = ({ src, className }) => {
     // willReadFrequently giúp Chrome tối ưu getImageData()
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+    // Cố định kích thước canvas ở mức nhỏ — CSS sẽ scale lên
+    canvas.width  = PROCESS_SIZE;
+    canvas.height = PROCESS_SIZE;
+
     const drawFrame = () => {
       if (video.readyState >= 2) {
-        // Đồng bộ kích thước canvas với video
-        const vw = video.videoWidth  || 540;
-        const vh = video.videoHeight || 540;
-        if (canvas.width !== vw || canvas.height !== vh) {
-          canvas.width  = vw;
-          canvas.height = vh;
-        }
+        ctx.drawImage(video, 0, 0, PROCESS_SIZE, PROCESS_SIZE);
 
-        ctx.drawImage(video, 0, 0, vw, vh);
-
-        const imgData = ctx.getImageData(0, 0, vw, vh);
+        const imgData = ctx.getImageData(0, 0, PROCESS_SIZE, PROCESS_SIZE);
         const d = imgData.data;
 
         for (let i = 0; i < d.length; i += 4) {
           const r = d[i], g = d[i + 1], b = d[i + 2];
           // Loại bỏ pixel teal/green-screen:
-          // Điều kiện: kênh G chiếm ưu thế, B trung bình cao → nền teal xanh
           if (g > 100 && b > 80 && g > r * 1.3 && b > r * 1.1 && g + b > r * 3) {
             d[i + 3] = 0; // transparent
           }
@@ -63,12 +63,23 @@ const ChromaKeyCanvas = ({ src, className }) => {
 
         ctx.putImageData(imgData, 0, 0);
       }
-      rafRef.current = requestAnimationFrame(drawFrame);
+
+      // requestVideoFrameCallback: chỉ render khi video có frame mới (24-30fps)
+      // fallback sang rAF khi browser chưa hỗ trợ
+      if ('requestVideoFrameCallback' in video) {
+        video.requestVideoFrameCallback(drawFrame);
+      } else {
+        rafRef.current = requestAnimationFrame(drawFrame);
+      }
     };
 
     video.addEventListener('loadeddata', () => {
       video.play().catch(() => {});
-      rafRef.current = requestAnimationFrame(drawFrame);
+      if ('requestVideoFrameCallback' in video) {
+        video.requestVideoFrameCallback(drawFrame);
+      } else {
+        rafRef.current = requestAnimationFrame(drawFrame);
+      }
     });
 
     return () => cancelAnimationFrame(rafRef.current);
