@@ -43,8 +43,6 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
         return 0;
     };
 
-    const currentPoints = getCoinPoints(comment.length, images.length);
-    
     // --- Xử lý File Input ---
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -88,7 +86,7 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
                 bookingID: booking.bookingID
             };
             
-            const response = await submitReviewApi(reviewData);
+            await submitReviewApi(reviewData);
             
             // Sau khi thành công, hiển thị modal cuối cùng
             const awardedPoints = getCoinPoints(comment.length, images.length);
@@ -134,13 +132,13 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
     const reviewModalJSX = (
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <button className={styles.closeButton} onClick={onClose} disabled={isSubmitting}>
+                <button type="button" className={styles.closeButton} onClick={onClose} disabled={isSubmitting}>
                     <FaTimes />
                 </button>
 
                 {/* Header cố định */}
                 <div className={styles.modalHeader}>
-                    <div className={styles.headerIcon}>✍️</div>
+                    <div className={styles.headerIcon}><FaStar /></div>
                     <div className={styles.headerText}>
                         <h2 className={styles.modalTitle}>Viết đánh giá</h2>
                         <p className={styles.modalSubtitle}>Chia sẻ trải nghiệm của bạn cùng mọi người</p>
@@ -148,7 +146,7 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
                 </div>
 
                 <div className={styles.mainContent}>
-                    {/* 1. Thông tin Tour */}
+                    {/* 1. Thông tin chuyến đi */}
                     <div className={styles.tourInfo}>
                         <img src={booking.image || 'placeholder.png'} alt={booking.tourName} className={styles.tourImage} />
                         <div className={styles.tourDetails}>
@@ -177,20 +175,26 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
 
                     {/* 3. Rating + Emotion */}
                     <div className={styles.ratingSection}>
-                        <p className={styles.ratingLabel}>Đánh giá Tour *</p>
+                        <p className={styles.ratingLabel}>Đánh giá chuyến đi *</p>
                         <div className={styles.starContainer}>
                             {[1, 2, 3, 4, 5].map((star) => (
-                                <FaStar
+                                <button
                                     key={star}
-                                    className={styles.star}
-                                    color={star <= rating ? '#ffc107' : '#e4e5e9'}
+                                    className={styles.starButton}
                                     onClick={() => setRating(star)}
-                                />
+                                    type="button"
+                                    aria-label={`Chọn ${star} sao`}
+                                >
+                                    <FaStar
+                                        className={styles.star}
+                                        color={star <= rating ? '#ffc107' : '#d8dee8'}
+                                    />
+                                </button>
                             ))}
                         </div>
-                        {emotionData.emoji && (
-                            <div className={styles.emotionDisplay}>
-                                <span className={styles.emotionEmoji} style={{ color: emotionData.color }}>
+                        {emotionData.label && (
+                            <div className={styles.emotionDisplay} style={{ '--emotion-color': emotionData.color }}>
+                                <span className={styles.emotionEmoji} aria-hidden="true">
                                     {emotionData.emoji}
                                 </span>
                                 <span className={styles.emotionLabel} style={{ color: emotionData.color }}>
@@ -233,7 +237,7 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
                             {previewUrls.map((url, index) => (
                                 <div key={index} className={styles.imagePreview}>
                                     <img src={url} alt={`Review ${index + 1}`} />
-                                    <button onClick={() => handleRemoveImage(index)} className={styles.removeImage}>
+                                    <button type="button" onClick={() => handleRemoveImage(index)} className={styles.removeImage}>
                                         ✕
                                     </button>
                                 </div>
@@ -249,6 +253,7 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
                 <div className={styles.stickyFooter}>
                     <button 
                         className={styles.btnCancel} 
+                        type="button"
                         onClick={onClose} 
                         disabled={isSubmitting}
                     >
@@ -256,6 +261,7 @@ const ReviewComponent = ({ booking, onClose, onRefetch }) => {
                     </button>
                     <button 
                         className={styles.btnSubmit} 
+                        type="button"
                         onClick={handleSubmit} 
                         disabled={isSubmitting || rating === 0 }
                     >

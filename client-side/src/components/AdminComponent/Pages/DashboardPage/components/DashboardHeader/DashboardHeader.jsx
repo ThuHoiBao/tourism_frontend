@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { subDays, subMonths, startOfYear, endOfDay, startOfDay } from 'date-fns';
-import { FiRefreshCw, FiMoon, FiSun, FiCalendar, FiDownload } from 'react-icons/fi';
+import { CalendarDays, Download, Moon, RefreshCw, Sun } from 'lucide-react';
 import styles from './DashboardHeader.module.scss';
 
 const PRESETS = [
@@ -61,7 +61,7 @@ const DashboardHeader = ({ dateRange, onDateRangeChange, onRefresh, darkMode, on
                         className={styles.dateBtn}
                         onClick={() => setShowPicker(!showPicker)}
                     >
-                        <FiCalendar className={styles.btnIcon} />
+                        <CalendarDays className={styles.btnIcon} size={16} />
                         <span>{formatRange(dateRange.from, dateRange.to)}</span>
                     </button>
 
@@ -123,13 +123,13 @@ const DashboardHeader = ({ dateRange, onDateRangeChange, onRefresh, darkMode, on
                     onClick={onRefresh}
                     title="Làm mới dữ liệu"
                 >
-                    <FiRefreshCw />
+                    <RefreshCw size={16} />
                 </button>
                 <button className={styles.iconBtn} onClick={handleExport} title="Xuất báo cáo">
-                    <FiDownload />
+                    <Download size={16} />
                 </button>
                 <button className={styles.iconBtn} onClick={onToggleDarkMode} title="Chế độ tối">
-                    {darkMode ? <FiSun /> : <FiMoon />}
+                    {darkMode ? <Sun size={16} /> : <Moon size={16} />}
                 </button>
             </div>
 

@@ -3,11 +3,108 @@ import { X, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import styles from './ChatbotWidget.module.scss';
 import futureMark from '../../assets/brand/future-mark.svg';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mascotVideo from '../../assets/video/PixVerse_V6_Image_Text_540P_Static_camera_lock (2).mp4';
 
 // Danh sách câu thông báo chờ đợi thân thiện
 const LOADING_MESSAGES = [
   "Mình đang tìm kiếm, đợi mình một xíu nhé...",
 ];
+
+// Các câu chào xoay vòng trong speech bubble (tự động chuyển sau 3.5s)
+const GREETING_MESSAGES = [
+  'Chào mừng bạn đến với Future Travel! 👋',
+  'Bạn muốn đi du lịch đâu? Hãy kể cho tôi nghe nhé! ✈️',
+  'Tôi có thể tư vấn các chuyến đi giá tốt nhất của Future Travel cho bạn! 🌏',
+  'Hãy cho tôi về chuyến đi mà bạn muốn trải nghiệm tại Future Travel nhé! 🏖️',
+];
+/**
+ * ChromaKeyCanvas — xử lý green-screen real-time bằng Canvas API.
+ * Mỗi frame video được vẽ lên canvas, sau đó các pixel "teal/xanh lá"
+ * bị set alpha = 0 (trong suốt), chỉ giữ lại nhân vật mascot.
+ * Hoạt động với video nền xanh (chroma key) không cần convert sang WebM alpha.
+ *
+ * Perf: process tại 180×180 (không phải 540×540) → giảm 9× pixel ops.
+ * Dùng requestVideoFrameCallback khi browser hỗ trợ → chỉ render khi có frame mới.
+ */
+const PROCESS_SIZE = 180; // px — đủ sắc nét cho mascot 152×152 hiển thị
+
+const ChromaKeyCanvas = ({ src, className }) => {
+  const canvasRef = useRef(null);
+  const videoRef  = useRef(null);
+  const rafRef    = useRef(null);
+
+  useEffect(() => {
+    const video  = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    // willReadFrequently giúp Chrome tối ưu getImageData()
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    // Cố định kích thước canvas ở mức nhỏ — CSS sẽ scale lên
+    canvas.width  = PROCESS_SIZE;
+    canvas.height = PROCESS_SIZE;
+
+    const drawFrame = () => {
+      if (video.readyState >= 2) {
+        ctx.drawImage(video, 0, 0, PROCESS_SIZE, PROCESS_SIZE);
+
+        const imgData = ctx.getImageData(0, 0, PROCESS_SIZE, PROCESS_SIZE);
+        const d = imgData.data;
+
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          // Loại bỏ pixel teal/green-screen:
+          if (g > 100 && b > 80 && g > r * 1.3 && b > r * 1.1 && g + b > r * 3) {
+            d[i + 3] = 0; // transparent
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      // requestVideoFrameCallback: chỉ render khi video có frame mới (24-30fps)
+      // fallback sang rAF khi browser chưa hỗ trợ
+      if ('requestVideoFrameCallback' in video) {
+        video.requestVideoFrameCallback(drawFrame);
+      } else {
+        rafRef.current = requestAnimationFrame(drawFrame);
+      }
+    };
+
+    video.addEventListener('loadeddata', () => {
+      video.play().catch(() => {});
+      if ('requestVideoFrameCallback' in video) {
+        video.requestVideoFrameCallback(drawFrame);
+      } else {
+        rafRef.current = requestAnimationFrame(drawFrame);
+      }
+    });
+
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [src]);
+
+  return (
+    <>
+      {/* Video ẩn — chỉ dùng làm nguồn frame */}
+      <video
+        ref={videoRef}
+        src={src}
+        loop
+        muted
+        playsInline
+        style={{ display: 'none' }}
+      />
+      {/* Canvas hiển thị với nền trong suốt */}
+      <canvas
+        ref={canvasRef}
+        className={className}
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+      />
+    </>
+  );
+};
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +120,13 @@ const ChatbotWidget = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(''); // State lưu câu thông báo loading
   const [sessionId] = useState(`session_${Date.now()}`);
-  
+  // Trạng thái hiển thị bong bóng chat (hiện sau 1.2s khi trang load)
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+  // Index câu chào hiện tại + key để re-trigger wave animation khi đổi câu
+  const [greetingIndex, setGreetingIndex] = useState(0);
+  const [greetingKey,   setGreetingKey]   = useState(0);
+  const [bubbleExiting, setBubbleExiting] = useState(false);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -38,6 +141,30 @@ const ChatbotWidget = () => {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen]);
+
+  // Hiện bong bóng chat sau 1.2s khi trang load
+  useEffect(() => {
+    const timer = setTimeout(() => setBubbleVisible(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Xoay vòng: hiện 3.5s → mờ dần biến mất 1.5s → câu tiếp theo fade-in
+  useEffect(() => {
+    if (!bubbleVisible) return;
+    const exitTimerRef = { current: null };
+    const showTimer = setTimeout(() => {
+      setBubbleExiting(true); // bắt đầu fade-out
+      exitTimerRef.current = setTimeout(() => {
+        setGreetingIndex(prev => (prev + 1) % GREETING_MESSAGES.length);
+        setGreetingKey(prev => prev + 1);
+        setBubbleExiting(false); // fade-in câu mới
+      }, 1500);
+    }, 3500);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(exitTimerRef.current);
+    };
+  }, [bubbleVisible, greetingKey]); // greetingKey thay đổi → effect chạy lại → chu kỳ tiếp
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -109,14 +236,29 @@ const ChatbotWidget = () => {
   return (
     <div className={`${styles.widgetContainer} ${isOpen ? styles.open : ''}`}>
       
-      {/* Nút Mở Chat */}
-      <button
-        className={`${styles.launcher} ${isOpen ? styles.hideLauncher : ''}`}
-        onClick={() => setIsOpen(true)}
-      >
-        <img src={futureMark} alt="Future Travel assistant" className={styles.launcherLogo} />
-        <span className={styles.pulse}></span>
-      </button>
+
+      {/* Mascot + Bong bóng chat */}
+      <div className={`${styles.mascotContainer} ${isOpen ? styles.hideMascot : ''}`}>
+        {/* Bong bóng tin nhắn — fade-out 1.5s rồi đổi câu tiếp theo */}
+        <div className={`${styles.speechBubble} ${bubbleVisible ? styles.bubbleVisible : ''} ${bubbleExiting ? styles.bubbleExiting : ''}`}>
+          <p className={styles.bubbleText} key={greetingKey}>
+            {GREETING_MESSAGES[greetingIndex]}
+          </p>
+        </div>
+
+        {/* Nút mascot video */}
+        <button
+          className={styles.launcher}
+          onClick={() => { setIsOpen(true); setBubbleVisible(false); setBubbleExiting(false); }}
+          aria-label="Mở trợ lý du lịch"
+        >
+          {/* Canvas chroma-key — tự động loại bỏ nền xanh green-screen */}
+          <ChromaKeyCanvas
+            src={mascotVideo}
+            className={styles.mascotVideo}
+          />
+        </button>
+      </div>
 
       {/* Cửa Sổ Chat */}
       <div className={`${styles.chatWindow} ${isOpen ? styles.showWindow : ''}`}>
@@ -132,7 +274,7 @@ const ChatbotWidget = () => {
               <span className={styles.status}>● Đang hoạt động</span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className={styles.closeBtn}>
+          <button onClick={() => { setIsOpen(false); setBubbleExiting(false); setBubbleVisible(true); }} className={styles.closeBtn}>
             <X size={20} />
           </button>
         </div>

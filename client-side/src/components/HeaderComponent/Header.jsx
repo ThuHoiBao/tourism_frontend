@@ -143,6 +143,8 @@ const Header = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
+    const headerRef = useRef(null); // direct DOM ref for zero-latency scroll class toggle
+
     const currentPath = location.pathname;
     const isHomePage = currentPath === '/';
     const isInformationPage = currentPath.startsWith('/information');
@@ -308,18 +310,35 @@ const Header = () => {
     useEffect(() => {
         // Pages with a hero image start transparent, then turn white on scroll.
         const isTransparentRoute = isHomePage || isInformationPage || isToursPage;
+        const el = headerRef.current;
+
+        // Immediately set correct class on route change (no animation needed here)
+        if (isTransparentRoute) {
+            setScrolled(false);
+            if (el) { el.classList.remove(styles.headerScrolled); el.classList.add(styles.headerHero); }
+        } else {
+            setScrolled(true);
+            if (el) { el.classList.remove(styles.headerHero); el.classList.add(styles.headerScrolled); }
+        }
 
         const handleScroll = () => {
-            if (isTransparentRoute) {
-                setScrolled(window.scrollY > 2);
+            if (!isTransparentRoute || !el) return;
+            const shouldScroll = window.scrollY > 50;
+            // Direct DOM toggle — CSS transition fires THIS frame, no React re-render lag
+            if (shouldScroll) {
+                el.classList.remove(styles.headerHero);
+                el.classList.add(styles.headerScrolled);
+            } else {
+                el.classList.remove(styles.headerScrolled);
+                el.classList.add(styles.headerHero);
             }
+            // setScrolled only swaps the logo src — React re-render is fine here
+            // because classList is already correct, so no visual jump
+            setScrolled(shouldScroll);
         };
 
         if (isTransparentRoute) {
-            window.addEventListener('scroll', handleScroll);
-            handleScroll();
-        } else {
-            setScrolled(true);
+            window.addEventListener('scroll', handleScroll, { passive: true });
         }
 
         return () => window.removeEventListener('scroll', handleScroll);
@@ -365,7 +384,7 @@ const Header = () => {
 
     if (loading) {
         return (
-            <div className={headerClasses}>
+            <div ref={headerRef} className={headerClasses}>
                 <div className={styles.headerLeft}>
                     <Link className={styles.logo} to="/">
                         <img className={styles.logoImage} src={logoSrc} alt="Future Travel" />
@@ -379,13 +398,13 @@ const Header = () => {
     }
 
     return (
-        <div className={headerClasses}>
+        <div ref={headerRef} className={headerClasses}>
             <div className={styles.headerLeft}>
                 <Link className={styles.logo} to="/">
                     <img className={styles.logoImage} src={logoSrc} alt="Future Travel" />
                 </Link>
                 <Link to="/" className={getNavLinkClass('/')}>Trang chủ</Link>
-                <Link to="/tours" className={getNavLinkClass('/tours')}>Tours</Link>
+                <Link to="/tours" className={getNavLinkClass('/tours')}>Chuyến đi</Link>
                 <Link to="/forum" className={getNavLinkClass('/forum')}>Diễn đàn</Link>
 
                 <Link to="/flights" className={getNavLinkClass('/flights')}><IoIosAirplane /> Vé máy bay</Link>

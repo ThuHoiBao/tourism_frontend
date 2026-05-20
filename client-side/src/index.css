@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ---- Page transition ---- */
+/* NOTE: Only use opacity — no translateY here!
+   translateY on a parent causes position:fixed children
+   (e.g. chatbot) to be positioned relative to the
+   transformed ancestor instead of the viewport. */
+@keyframes pageTransitionIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.page-transition-in {
+  animation: pageTransitionIn 0.25s ease-out both;
+}

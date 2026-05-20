@@ -2,13 +2,13 @@
 
 import React from 'react';
 import styles from './StatsOverview.module.scss';
-import { 
-    FaUsers, FaMoneyBillWave, FaCalendarCheck, 
-    FaMapMarkedAlt, FaArrowUp, FaArrowDown 
-} from 'react-icons/fa';
+import {
+    Users, DollarSign, ShoppingBag, Map,
+    TrendingUp, TrendingDown
+} from 'lucide-react';
 
 const StatsOverview = ({ stats }) => {
-    
+
     // Hàm định dạng tiền tệ VND
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -19,8 +19,7 @@ const StatsOverview = ({ stats }) => {
     };
 
     // 1. Tính toán tổng doanh thu hiển thị (PAID + PENDING_CONFIRMATION)
-    // Lý do: Đơn chờ xác nhận có khả năng cao thành công nên tính vào tiềm năng doanh thu
-    const totalRevenueDisplay = (stats.revenueStats.totalRevenue || 0) ;
+    const totalRevenueDisplay = (stats.revenueStats.totalRevenue || 0);
 
     // 2. Cấu trúc dữ liệu cho các Cards
     const cards = [
@@ -29,20 +28,21 @@ const StatsOverview = ({ stats }) => {
             value: stats.userStats.totalUsers.toLocaleString(),
             subtitle: `${stats.userStats.activeUsers} đang hoạt động`,
             growth: stats.userStats.userGrowthRate,
-            icon: FaUsers,
-            color: '#4299e1',
-            bgColor: '#ebf8ff',
-            details: null // Không có chi tiết hover
+            icon: Users,
+            color: '#1f6fb2',
+            bgColor: '#e0f2fe',
+            borderColor: '#1f6fb2',
+            details: null
         },
         {
             title: 'Tổng Doanh Thu',
             value: formatCurrency(totalRevenueDisplay),
             subtitle: `Tháng này: ${formatCurrency(stats.revenueStats.thisMonthRevenue)}`,
             growth: stats.revenueStats.revenueGrowthRate,
-            icon: FaMoneyBillWave,
-            color: '#48bb78',
-            bgColor: '#f0fff4',
-            // ✨ CHI TIẾT DOANH THU (Hover để xem)
+            icon: DollarSign,
+            color: '#0f9f7a',
+            bgColor: '#dcfce7',
+            borderColor: '#10b981',
             details: [
                 { label: 'Đã thanh toán (PAID)', value: formatCurrency(stats.revenueStats.totalRevenue) },
                 { label: 'Chờ xác nhận', value: formatCurrency(stats.revenueStats.pendingConfirmation) },
@@ -55,10 +55,10 @@ const StatsOverview = ({ stats }) => {
             value: stats.bookingStats.totalBookings.toLocaleString(),
             subtitle: `${stats.bookingStats.paidBookings} đơn thành công`,
             growth: stats.bookingStats.conversionRate,
-            icon: FaCalendarCheck,
-            color: '#ed8936',
-            bgColor: '#fffaf0',
-            // ✨ CHI TIẾT BOOKING (Hover để xem)
+            icon: ShoppingBag,
+            color: '#f59e0b',
+            bgColor: '#fff7ed',
+            borderColor: '#f59e0b',
             details: [
                 { label: 'Đã thanh toán', value: stats.bookingStats.paidBookings },
                 { label: 'Chờ xác nhận', value: stats.bookingStats.pendingConfirmation },
@@ -67,13 +67,14 @@ const StatsOverview = ({ stats }) => {
             ]
         },
         {
-        title: 'TỔNG TOUR ĐANG HOẠT ĐỘNG',
+            title: 'Tour Đang Hoạt Động',
             value: stats.tourStats.activeTours.toLocaleString(),
             subtitle: `${stats.tourStats.upcomingDepartures} chuyến sắp khởi hành`,
-            growth: stats.tourStats.averageRating * 20, // Quy đổi rating 5 sao ra %
-            icon: FaMapMarkedAlt,
-            color: '#9f7aea',
-            bgColor: '#faf5ff',
+            growth: stats.tourStats.averageRating * 20,
+            icon: Map,
+            color: '#0891b2',
+            bgColor: '#cffafe',
+            borderColor: '#06b6d4',
             details: null
         }
     ];
@@ -81,28 +82,28 @@ const StatsOverview = ({ stats }) => {
     return (
         <div className={styles.statsOverview}>
             {cards.map((card, index) => (
-                <div 
-                    key={index} 
+                <div
+                    key={index}
                     className={styles.statCard}
-                    style={{ borderTopColor: card.color }}
+                    style={{ borderLeftColor: card.borderColor, color: card.color }}
                 >
                     {/* --- HEADER CỦA CARD --- */}
                     <div className={styles.cardHeader}>
-                        <div 
+                        <div
                             className={styles.iconWrapper}
-                            style={{ 
+                            style={{
                                 backgroundColor: card.bgColor,
-                                color: card.color 
+                                color: card.color
                             }}
                         >
-                            <card.icon />
+                            <card.icon size={22} />
                         </div>
                         {/* Badge tăng trưởng */}
-                        <div className={styles.growthBadge}>
+                        <div className={`${styles.growthBadge} ${card.growth < 0 ? styles.negBadge : ''}`}>
                             {card.growth >= 0 ? (
-                                <FaArrowUp className={styles.positive} />
+                                <TrendingUp className={styles.positive} size={13} />
                             ) : (
-                                <FaArrowDown className={styles.negative} />
+                                <TrendingDown className={styles.negative} size={13} />
                             )}
                             <span className={card.growth >= 0 ? styles.positive : styles.negative}>
                                 {Math.abs(card.growth || 0).toFixed(1)}%
@@ -119,12 +120,15 @@ const StatsOverview = ({ stats }) => {
 
                     {/* --- CHI TIẾT KHI HOVER --- */}
                     {card.details && (
-                        <div className={styles.hoverDetails}>
+                        <div
+                            className={styles.hoverDetails}
+                            style={{ borderLeftColor: card.borderColor }}
+                        >
                             {card.details.map((detail, idx) => (
                                 <div key={idx} className={styles.detailRow}>
                                     <span className={styles.detailLabel}>{detail.label}:</span>
                                     <span className={`
-                                        ${styles.detailValue} 
+                                        ${styles.detailValue}
                                         ${detail.isWarning ? styles.warningText : ''}
                                         ${detail.isGray ? styles.grayText : ''}
                                     `}>
