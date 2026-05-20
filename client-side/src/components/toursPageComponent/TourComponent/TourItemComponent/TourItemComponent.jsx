@@ -27,12 +27,9 @@ const TourItemComponent = ({ tour, currentUserId }) => {
 
     const handleViewDetail = (e) => {
         e.stopPropagation();
-        if (allDepartureDates && allDepartureDates.length > 0) {
-            const firstDepature = allDepartureDates[0];
-            navigate(`/tour/${tour.tourCode}?departureId=${firstDepature.departureID}`);
-        } else {
-            navigate(`/tour/${tour.tourCode}`);
-        }
+        // Vào trang chi tiết KHÔNG kèm departureId → sidebar hiện compact box
+        // ("Giá từ X / Chọn ngày"). User tự chọn ngày trong calendar mới hiện full.
+        navigate(`/tour/${tour.tourCode}`);
     };
 
     const handleToggleFavorite = async () => {

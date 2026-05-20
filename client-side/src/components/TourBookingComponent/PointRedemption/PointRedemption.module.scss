@@ -1,100 +1,184 @@
+// Ocean theme — đồng bộ với toàn trang, bỏ amber lòe loẹt
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to   { opacity: 1; max-height: 300px; }
+}
+
 .pointContainer {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(12,74,110,0.06);
+  animation: fadeSlideUp 0.4s ease both;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 3px 14px rgba(12,74,110,0.1);
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 
   .title {
     font-weight: 700;
-    color: #d48806;
+    color: #0c4a6e;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 15px;
-    
-    .icon { font-size: 18px; }
+    font-size: 14.5px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+
+    .icon { font-size: 17px; color: #0369a1; }
   }
 }
 
+// ── Switch (toggle) — ocean ─────────────────────────────────────────────────
 .switch {
-  position: relative; display: inline-block; width: 40px; height: 22px;
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+
   input { opacity: 0; width: 0; height: 0; }
+
   .slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc; transition: .4s; border-radius: 34px;
-    &:before {
-      position: absolute; content: ""; height: 16px; width: 16px;
-      left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.25s;
+    border-radius: 34px;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
   }
-  input:checked + .slider { background-color: #d48806; }
-  input:checked + .slider:before { transform: translateX(18px); }
+
+  input:checked + .slider { background: #0369a1; }
+  input:checked + .slider::before { transform: translateX(18px); }
 }
 
 .balanceInfo {
   font-size: 13px;
-  color: #666;
+  color: #475569;
   margin-bottom: 10px;
-  b { color: #333; }
+
+  b { color: #0c4a6e; font-weight: 700; }
 }
 
 .redeemSection {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px dashed #eee;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #e0f2fe;
   animation: slideDown 0.3s ease;
 
   .inputGroup {
     display: flex;
     align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
     overflow: hidden;
     margin-bottom: 8px;
+    background: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus-within {
+      border-color: #0369a1;
+      box-shadow: 0 0 0 3px rgba(3,105,161,0.1);
+    }
 
     input {
       flex: 1;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 14px;
       font-size: 14px;
       outline: none;
+      background: transparent;
+      color: #0f172a;
+
+      &::placeholder { color: #94a3b8; }
     }
+
     .suffix {
-      background: #f5f5f5;
-      padding: 8px 12px;
-      color: #666;
+      background: #f0f9ff;
+      padding: 10px 14px;
+      color: #0369a1;
       font-size: 13px;
       font-weight: 600;
+      border-left: 1px solid #e0f2fe;
     }
   }
 
   .conversionResult {
     font-size: 13px;
-    color: #333;
+    color: #475569;
     display: flex;
     justify-content: space-between;
-    
-    .highlight { color: #52c41a; font-weight: 700; }
+    align-items: center;
+    padding: 8px 12px;
+    background: #f0f9ff;
+    border-radius: 6px;
+    margin-top: 8px;
+    border: 1px solid #e0f2fe;
+
+    .highlight {
+      color: #0c4a6e;
+      font-weight: 700;
+      font-size: 14px;
+    }
   }
-  
+
   .helperText {
-    font-size: 11px;
-    color: #999;
-    margin-top: 4px;
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: 6px;
     font-style: italic;
   }
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+// Nút "Dùng tất cả N điểm" — link ghost, tinh tế
+.useMaxBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: transparent;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f0f9ff;
+    border-color: #0369a1;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 }

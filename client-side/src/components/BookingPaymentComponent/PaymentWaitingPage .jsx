@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, XCircle, Loader } from 'lucide-react';
+import {
+    CheckCircle2, Clock, XCircle, Loader2, Smartphone,
+    ScanLine, BadgeCheck, RotateCw, Home, ArrowLeft,
+    Copy, ShieldCheck, Wifi
+} from 'lucide-react';
 import axios from '../../utils/axiosCustomize';
 import { useNavigate } from 'react-router-dom';
 import styles from './PaymentWaiting.module.scss';
@@ -13,165 +17,236 @@ const PaymentWaitingPage = () => {
     const [status, setStatus] = useState('PENDING');
     const [message, setMessage] = useState('Đang kiểm tra thanh toán...');
     const [checkCount, setCheckCount] = useState(0);
+    const [elapsed, setElapsed] = useState(0);          // giây đã chờ
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        if (!orderCode) {
-            navigate('/');
-            return;
-        }
+        if (!orderCode) { navigate('/'); return; }
 
-        let intervalId;
-        let timeoutId;
+        let intervalId, timeoutId, tickerId;
 
         const checkPaymentStatus = async () => {
             try {
-                console.log(`🔍 Checking payment status... (attempt ${checkCount + 1})`);
-
                 const response = await axios.get(`/payment/check-status/${orderCode}`);
                 const data = response.data || response;
-
-                console.log('Payment status response:', data);
 
                 if (data.status === 'SUCCESS' || data.code === '00') {
                     setStatus('SUCCESS');
                     setMessage('Thanh toán thành công!');
                     clearInterval(intervalId);
                     clearTimeout(timeoutId);
-
+                    clearInterval(tickerId);
                     setTimeout(() => {
                         navigate(`/payment-success?bookingCode=${bookingCode}`);
-                    }, 2000);
-
+                    }, 1800);
                 } else if (data.status === 'CANCELLED' || data.status === 'FAILED' || data.code === '99') {
                     setStatus('FAILED');
                     setMessage('Thanh toán thất bại hoặc đã bị hủy');
                     clearInterval(intervalId);
                     clearTimeout(timeoutId);
-
+                    clearInterval(tickerId);
                 } else if (data.status === 'PENDING' || data.code === '01') {
-                    setMessage('Vui lòng hoàn tất thanh toán trên ứng dụng ngân hàng...');
+                    setMessage('Vui lòng hoàn tất thanh toán trên ứng dụng ngân hàng');
                     setCheckCount(prev => prev + 1);
                 }
-
-            } catch (error) {
-                console.error('Error checking payment:', error);
-                setMessage('Đang kiểm tra thanh toán... (đang thử lại)');
+            } catch {
+                setMessage('Đang thử lại kết nối...');
                 setCheckCount(prev => prev + 1);
             }
         };
 
         checkPaymentStatus();
-
         intervalId = setInterval(checkPaymentStatus, 3000);
-
-        timeoutId = setTimeout(() => {
+        tickerId   = setInterval(() => setElapsed(e => e + 1), 1000);
+        timeoutId  = setTimeout(() => {
             clearInterval(intervalId);
+            clearInterval(tickerId);
             if (status === 'PENDING') {
                 setStatus('FAILED');
-                setMessage('Hết thời gian chờ thanh toán. Vui lòng kiểm tra lại.');
+                setMessage('Hết thời gian chờ thanh toán. Vui lòng thử lại.');
             }
         }, 300000);
 
         return () => {
             clearInterval(intervalId);
             clearTimeout(timeoutId);
+            clearInterval(tickerId);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [orderCode, bookingCode, navigate]);
 
-    const handleRetry = () => {
-        navigate(`/booking-payment?bookingCode=${bookingCode}`);
+    const handleRetry  = () => navigate(`/booking-payment?bookingCode=${bookingCode}`);
+    const handleGoHome = () => navigate('/');
+    const handleRefresh = () => window.location.reload();
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(orderCode || '');
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch {}
     };
 
-    const handleGoHome = () => {
-        navigate('/');
+    const fmtTime = (sec) => {
+        const m = String(Math.floor(sec / 60)).padStart(2, '0');
+        const s = String(sec % 60).padStart(2, '0');
+        return `${m}:${s}`;
     };
 
-    const handleRefresh = () => {
-        window.location.reload();
-    };
+    // 3 bước trạng thái thanh toán (timeline)
+    const steps = [
+        { key: 'SCAN',    label: 'Quét mã QR',          icon: ScanLine },
+        { key: 'CONFIRM', label: 'Xác nhận trên ngân hàng', icon: Smartphone },
+        { key: 'DONE',    label: 'Hoàn tất',            icon: BadgeCheck },
+    ];
+    // bước hiện tại
+    let activeStep = 1;                  // đang ở "Xác nhận trên ngân hàng"
+    if (status === 'SUCCESS') activeStep = 2;
+    if (status === 'FAILED')  activeStep = -1;
 
     return (
         <div className={styles.container}>
-            <div className={styles.card}>
+            <div className={styles.shell}>
 
-                {/* Icon Status */}
-                <div className={styles.iconWrapper}>
-                    {status === 'PENDING' && (
-                        <Loader className={styles.loader} />
-                    )}
-                    {status === 'SUCCESS' && (
-                        <CheckCircle className={styles.success} />
-                    )}
-                    {status === 'FAILED' && (
-                        <XCircle className={styles.failed} />
-                    )}
-                </div>
-
-                {/* Title */}
-                <h1 className={styles.title}>
-                    {status === 'PENDING' && 'Đang xử lý thanh toán'}
-                    {status === 'SUCCESS' && 'Thanh toán thành công!'}
-                    {status === 'FAILED' && 'Thanh toán thất bại'}
-                </h1>
-
-                {/* Message */}
-                <p className={styles.message}>{message}</p>
-
-                {/* Info Box - Pending */}
-                {status === 'PENDING' && (
-                    <div className={styles.pendingBox}>
-                        <div className={styles.infoRow}>
-                            <Clock />
-                            <span>Mã đơn hàng: {orderCode}</span>
-                        </div>
-                        <p className={styles.subText}>
-                            Đã kiểm tra {checkCount} lần
-                        </p>
-                        <p className={styles.hintText}>
-                            💡 Vui lòng mở app ngân hàng và hoàn tất thanh toán
-                        </p>
-                    </div>
-                )}
-
-                {/* Info Box - Success */}
-                {status === 'SUCCESS' && (
-                    <div className={styles.successBox}>
-                        <p className={styles.successText}>
-                            Mã booking: <span>{bookingCode}</span>
-                        </p>
-                        <p className={styles.redirectText}>
-                            Đang chuyển hướng...
-                        </p>
-                    </div>
-                )}
-
-                {/* Actions - Failed */}
-                {status === 'FAILED' && (
-                    <div className={styles.actions}>
-                        <button
-                            onClick={handleRetry}
-                            className={styles.retryBtn}
-                        >
-                            Thử lại
-                        </button>
-                        <button
-                            onClick={handleGoHome}
-                            className={styles.homeBtn}
-                        >
-                            Về trang chủ
-                        </button>
-                    </div>
-                )}
-
-                {/* Refresh Button - Only Pending */}
-                {status === 'PENDING' && (
-                    <button
-                        onClick={handleRefresh}
-                        className={styles.refreshBtn}
-                    >
-                        Làm mới trang
+                {/* HEADER: status banner */}
+                <header className={`${styles.banner} ${styles[`banner_${status}`]}`}>
+                    <button className={styles.back} onClick={handleGoHome} aria-label="Về trang chủ">
+                        <ArrowLeft size={18} />
                     </button>
-                )}
+
+                    <div className={styles.bannerIcon}>
+                        {status === 'PENDING' && <Loader2 className={styles.spin} size={28} />}
+                        {status === 'SUCCESS' && <CheckCircle2 size={28} />}
+                        {status === 'FAILED'  && <XCircle size={28} />}
+                    </div>
+
+                    <div className={styles.bannerText}>
+                        <h1>
+                            {status === 'PENDING' && 'Đang chờ thanh toán'}
+                            {status === 'SUCCESS' && 'Thanh toán thành công'}
+                            {status === 'FAILED'  && 'Thanh toán thất bại'}
+                        </h1>
+                        <p>{message}</p>
+                    </div>
+
+                    {status === 'PENDING' && (
+                        <div className={styles.timer}>
+                            <Clock size={14} />
+                            <span>{fmtTime(elapsed)}</span>
+                        </div>
+                    )}
+                </header>
+
+                {/* CONTENT */}
+                <main className={styles.content}>
+
+                    {/* Timeline 3 bước */}
+                    <ol className={styles.steps}>
+                        {steps.map((s, idx) => {
+                            const Icon = s.icon;
+                            const done   = idx <  activeStep;
+                            const active = idx === activeStep;
+                            return (
+                                <li
+                                    key={s.key}
+                                    className={`${styles.step}
+                                        ${done   ? styles.stepDone   : ''}
+                                        ${active ? styles.stepActive : ''}`}
+                                >
+                                    <span className={styles.stepIcon}>
+                                        {done ? <CheckCircle2 size={16} /> : <Icon size={16} />}
+                                    </span>
+                                    <span className={styles.stepLabel}>{s.label}</span>
+                                </li>
+                            );
+                        })}
+                    </ol>
+
+                    {/* INFO GRID 2 cột */}
+                    <div className={styles.infoGrid}>
+                        <div className={styles.infoCard}>
+                            <span className={styles.infoLabel}>Mã đơn hàng</span>
+                            <div className={styles.infoValueRow}>
+                                <span className={styles.infoValueMono}>{orderCode || '—'}</span>
+                                <button
+                                    type="button"
+                                    onClick={handleCopy}
+                                    className={styles.copyBtn}
+                                    title="Sao chép"
+                                >
+                                    {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                                    <span>{copied ? 'Đã copy' : 'Copy'}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <span className={styles.infoLabel}>Mã booking</span>
+                            <div className={styles.infoValueRow}>
+                                <span className={styles.infoValueMono}>{bookingCode || '—'}</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <span className={styles.infoLabel}>Đã kiểm tra</span>
+                            <div className={styles.infoValueRow}>
+                                <span className={styles.infoValue}>
+                                    <Wifi size={13} /> {checkCount} lần
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className={styles.infoCard}>
+                            <span className={styles.infoLabel}>Bảo mật</span>
+                            <div className={styles.infoValueRow}>
+                                <span className={styles.infoValue}>
+                                    <ShieldCheck size={13} /> Mã hóa SSL
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* HINT khi đang chờ */}
+                    {status === 'PENDING' && (
+                        <div className={styles.hintBox}>
+                            <div className={styles.hintHeader}>
+                                <Smartphone size={16} />
+                                <span>Vui lòng mở app ngân hàng để hoàn tất thanh toán</span>
+                            </div>
+                            <ul className={styles.hintList}>
+                                <li>Mở app ngân hàng / ví điện tử trên điện thoại</li>
+                                <li>Xác nhận giao dịch theo hướng dẫn trên app</li>
+                                <li>Trang này sẽ tự cập nhật khi giao dịch hoàn tất</li>
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* SUCCESS BOX */}
+                    {status === 'SUCCESS' && (
+                        <div className={styles.successBox}>
+                            <BadgeCheck size={18} />
+                            <span>Đang chuyển sang trang xác nhận đặt chỗ...</span>
+                        </div>
+                    )}
+
+                    {/* ACTIONS */}
+                    <div className={styles.actions}>
+                        {status === 'PENDING' && (
+                            <button onClick={handleRefresh} className={styles.btnGhost}>
+                                <RotateCw size={15} /> Làm mới trang
+                            </button>
+                        )}
+                        {status === 'FAILED' && (
+                            <>
+                                <button onClick={handleRetry} className={styles.btnPrimary}>
+                                    <RotateCw size={15} /> Thử thanh toán lại
+                                </button>
+                                <button onClick={handleGoHome} className={styles.btnGhost}>
+                                    <Home size={15} /> Về trang chủ
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </main>
             </div>
         </div>
     );

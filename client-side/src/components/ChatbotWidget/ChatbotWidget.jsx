@@ -236,6 +236,7 @@ const ChatbotWidget = () => {
   return (
     <div className={`${styles.widgetContainer} ${isOpen ? styles.open : ''}`}>
       
+
       {/* Mascot + Bong bóng chat */}
       <div className={`${styles.mascotContainer} ${isOpen ? styles.hideMascot : ''}`}>
         {/* Bong bóng tin nhắn — fade-out 1.5s rồi đổi câu tiếp theo */}

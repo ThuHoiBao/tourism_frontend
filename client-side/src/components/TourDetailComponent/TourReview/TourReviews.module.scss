@@ -1,51 +1,72 @@
-// Variables cho dễ chỉnh sửa
-$primary-color: #00b894; // Màu xanh ngọc kiểu du lịch (hoặc dùng #3b82f6 nếu thích xanh dương)
-$text-dark: #2d3436;
-$text-gray: #636e72;
-$bg-light: #f9f9f9;
-$star-color: #fdcb6e;
+// Ocean theme — đồng bộ với Itinerary & Policy
+$ocean-deep:  #0c4a6e;
+$ocean:       #0369a1;
+$ocean-light: #0ea5e9;
+$cyan:        #06b6d4;
+$sky-bg:      #f0f9ff;
+$sky-tint:    #e0f2fe;
+$cyan-tint:   #cffafe;
+$text-dark:   #1f2937;
+$text-gray:   #64748b;
+$star-color:  #f59e0b;
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
 .reviewsContainer {
-  max-width: 1000px; // Thu hẹp lại một chút để nội dung tập trung hơn
-  margin: 0 auto;
-  padding: 40px 20px;
-  background-color: #fff;
+  margin: 40px auto 0;
+  padding: 28px 24px;
+  background: linear-gradient(180deg, $sky-bg 0%, #ffffff 100%);
+  border-radius: 16px;
+  border: 1.5px solid $sky-tint;
+  box-shadow: 0 2px 12px rgba(14,165,233,0.06);
+  animation: fadeSlideUp 0.5s ease both;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .sectionTitle {
-  font-size: 28px;
+  text-align: center;
+  text-transform: uppercase;
   font-weight: 800;
-  color: $text-dark;
-  margin-bottom: 40px;
+  margin: 0 0 26px;
+  color: $ocean-deep;
+  font-size: 22px;
+  letter-spacing: 0.5px;
   position: relative;
-  
-  // Thêm gạch chân nhỏ trang trí
+  padding-bottom: 14px;
+
   &::after {
     content: '';
-    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
     width: 60px;
-    height: 4px;
-    background: $primary-color;
-    margin-top: 8px;
+    height: 3px;
+    background: linear-gradient(90deg, $ocean, $ocean-light);
     border-radius: 2px;
   }
 }
 
-// ==================== STATISTICS (Clean Style) ====================
+// ==================== STATISTICS ====================
 .statisticsWrapper {
   display: flex;
-  gap: 60px;
-  padding: 30px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05); // Bóng mờ nhẹ
-  margin-bottom: 50px;
+  gap: 40px;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid $sky-tint;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.08);
+  margin-bottom: 32px;
   align-items: center;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 30px;
+    gap: 24px;
     padding: 20px;
   }
 }
@@ -53,38 +74,45 @@ $star-color: #fdcb6e;
 .ratingOverview {
   text-align: center;
   min-width: 200px;
-  border-right: 1px solid #eee;
-  padding-right: 40px;
+  border-right: 1.5px solid $sky-tint;
+  padding-right: 36px;
 
   @media (max-width: 768px) {
     border-right: none;
     padding-right: 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1.5px solid $sky-tint;
     padding-bottom: 20px;
     width: 100%;
   }
 }
 
 .bigScore {
-  font-size: 72px;
+  font-size: 64px;
   font-weight: 800;
-  color: $text-dark;
+  background: linear-gradient(135deg, $ocean-deep, $ocean-light);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1;
+  letter-spacing: -1px;
 }
 
 .bigStars {
-  font-size: 24px;
+  font-size: 22px;
   color: $star-color;
-  margin: 8px 0;
+  margin: 10px 0 8px;
+  display: inline-flex;
+  gap: 3px;
 }
 
 .totalCount {
-  font-size: 14px;
+  font-size: 13.5px;
   color: $text-gray;
-  
+  margin: 0;
+
   strong {
-    color: $text-dark;
-    font-weight: 600;
+    color: $ocean-deep;
+    font-weight: 700;
   }
 }
 
@@ -96,130 +124,139 @@ $star-color: #fdcb6e;
 .barRow {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
+  margin-bottom: 11px;
+
+  &:last-child { margin-bottom: 0; }
 }
 
 .starLabel {
   display: flex;
   align-items: center;
   gap: 4px;
-  width: 45px;
-  font-size: 15px;
-  font-weight: 600;
-  color: $text-dark;
-  
-  svg { color: $star-color; font-size: 14px; }
+  width: 46px;
+  font-size: 14px;
+  font-weight: 700;
+  color: $ocean-deep;
+
+  svg { color: $star-color; font-size: 13px; }
 }
 
 .progressTrack {
   flex: 1;
-  height: 8px;
-  background: #f1f2f6;
-  border-radius: 10px;
-  margin: 0 15px;
+  height: 10px;
+  background: $sky-tint;
+  border-radius: 8px;
+  margin: 0 14px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: $primary-color; // Dùng màu chủ đạo phẳng, bỏ gradient lòe loẹt
-  border-radius: 10px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, $ocean, $ocean-light, $cyan);
+  border-radius: 8px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .percentLabel {
   width: 40px;
   text-align: right;
-  font-size: 14px;
+  font-size: 13px;
   color: $text-gray;
+  font-weight: 600;
 }
 
 // ==================== REVIEWS LIST ====================
 .reviewsList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 .reviewItem {
-  background: #fff;
-  padding: 0; // Reset padding
-  border-bottom: 1px solid #f1f1f1; // Chỉ dùng gạch ngang mờ ngăn cách
-  padding-bottom: 30px;
-  
-  &:last-child {
-    border-bottom: none;
+  background: #ffffff;
+  padding: 18px 20px;
+  border: 1.5px solid $sky-tint;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: fadeSlideUp 0.4s ease both;
+
+  &:hover {
+    border-color: $ocean-light;
+    box-shadow: 0 6px 20px rgba(14,165,233,0.12);
+    transform: translateY(-2px);
   }
 }
 
 .reviewHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
-  position: relative;
+  margin-bottom: 12px;
 }
 
 .userAvatar, .avatarPlaceholder {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  margin-right: 15px;
+  margin-right: 14px;
   object-fit: cover;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: 2px solid $sky-tint;
+  flex-shrink: 0;
 }
 
 .avatarPlaceholder {
-  background: #dfe6e9;
-  color: $text-gray;
+  background: linear-gradient(135deg, $ocean, $ocean-light);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 18px;
+  border-color: transparent;
 }
 
 .userInfo {
   flex: 1;
+  min-width: 0;
 }
 
 .userName {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: $text-dark;
-  margin: 0 0 4px 0;
+  color: $ocean-deep;
+  margin: 0 0 2px;
 }
 
 .timeAgo {
-  font-size: 13px;
-  color: #b2bec3;
-  font-weight: 400;
+  font-size: 12.5px;
+  color: $text-gray;
 }
 
 .miniStars {
-  font-size: 14px;
+  font-size: 13px;
   color: $star-color;
-  background: #fffbf0; // Nền vàng siêu nhạt
-  padding: 4px 8px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  padding: 5px 10px;
   border-radius: 20px;
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid #fcd34d;
+  flex-shrink: 0;
 }
 
 .reviewBody {
-  padding-left: 63px; // Thụt vào thẳng hàng với tên user (48px avatar + 15px margin)
-  
-  @media (max-width: 768px) {
+  padding-left: 58px;     // = 44 avatar + 14 margin
+
+  @media (max-width: 600px) {
     padding-left: 0;
   }
 }
 
 .comment {
-  font-size: 15px;
-  line-height: 1.6;
-  color: $text-gray;
-  margin-bottom: 15px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: $text-dark;
+  margin: 0 0 12px;
+  text-align: justify;
 }
 
 // ==================== IMAGES ====================
@@ -230,23 +267,21 @@ $star-color: #fdcb6e;
 }
 
 .imageWrapper {
-  width: 100px;
-  height: 100px;
-  border-radius: 12px; // Bo góc mềm hơn
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: zoom-in;
   position: relative;
-  
+  border: 1.5px solid $sky-tint;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
   &:hover {
-    .reviewImage {
-      transform: scale(1.1);
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.1);
-    }
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(14,165,233,0.25);
+    border-color: $ocean-light;
+
+    .reviewImage { transform: scale(1.1); }
   }
 }
 
@@ -255,54 +290,66 @@ $star-color: #fdcb6e;
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
+  display: block;
+}
+
+.noReviews {
+  text-align: center;
+  padding: 50px 20px;
+  color: $text-gray;
+  font-style: italic;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1.5px dashed $sky-tint;
+
+  p { margin: 0; }
 }
 
 // ==================== PAGINATION ====================
 .pagination {
-  margin-top: 50px;
+  margin-top: 28px;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .paginationBtn, .pageNumber {
-  height: 40px;
-  min-width: 40px;
-  padding: 0 15px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50px; // Hình con nhộng (Pill shape)
-  border: none;
-  background: transparent;
-  color: $text-dark;
-  font-weight: 600;
+  border-radius: 50px;
+  border: 1.5px solid $sky-tint;
+  background: #ffffff;
+  color: $ocean-deep;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-size: 14px;
 
-  &:hover:not(:disabled) {
-    background: #f1f2f6;
+  &:hover:not(:disabled):not(.active) {
+    background: $sky-bg;
+    border-color: $ocean-light;
+    transform: translateY(-1px);
   }
 
   &:disabled {
-    color: #dfe6e9;
+    color: #cbd5e1;
+    border-color: #f1f5f9;
     cursor: not-allowed;
   }
 }
 
-// Nút số trang đang active
 .pageNumber.active {
-  background: $text-dark; // Đen hoặc màu chủ đạo
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  
-  &:hover {
-    background: lighten($text-dark, 10%);
-  }
+  background: linear-gradient(135deg, $ocean, $ocean-light);
+  color: #ffffff;
+  border-color: $ocean;
+  box-shadow: 0 4px 12px rgba(3,105,161,0.4);
 }
 
-// ==================== LOADING & MISC ====================
+// ==================== LOADING ====================
 .loadingContainer {
   display: flex;
   justify-content: center;
@@ -312,25 +359,24 @@ $star-color: #fdcb6e;
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid $primary-color;
+  border: 3px solid $sky-tint;
+  border-top-color: $ocean;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { 100% { transform: rotate(360deg); } }
-
-// Modal
+// ==================== IMAGE MODAL ====================
 .imageModal {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.95); // Nền trắng mờ thay vì đen thui
-  backdrop-filter: blur(5px);
+  background: rgba(12, 74, 110, 0.85);
+  backdrop-filter: blur(8px);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  animation: fadeSlideUp 0.25s ease both;
+
   .modalContent {
     position: relative;
     max-width: 90%;
@@ -338,25 +384,30 @@ $star-color: #fdcb6e;
 
   .modalImage {
     max-height: 85vh;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+    display: block;
   }
 
   .closeButton {
     position: absolute;
-    top: -50px;
+    top: -48px;
     right: 0;
-    background: transparent;
-    border: 2px solid #333;
-    width: 36px;
-    height: 36px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.6);
+    color: #ffffff;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     font-size: 18px;
     cursor: pointer;
-    
+    backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
     &:hover {
-      background: #333;
-      color: #fff;
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.1) rotate(90deg);
     }
   }
 }

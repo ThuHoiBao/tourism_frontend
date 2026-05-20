@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from '../../utils/axiosCustomize';
 import styles from './BookingPayment.module.scss';
-import { 
-  FaCheckCircle, 
-  FaClock, 
-  FaPlane, 
+import {
+  FaCheckCircle,
+  FaClock,
+  FaPlane,
   FaBarcode,
   FaCreditCard,
   FaSpinner,
@@ -14,6 +14,17 @@ import {
   FaTag,
   FaBus
 } from 'react-icons/fa';
+
+// Badge mã sân bay — hover hiện tooltip tên đầy đủ (giống TourCalendar).
+const AirportBadge = ({ code, name }) => (
+  <span
+    className={styles.airportCode}
+    data-tooltip={name || 'Sân bay'}
+    title={name}
+  >
+    {code}
+  </span>
+);
 
 const BookingPayment = () => {
   const [searchParams] = useSearchParams();
@@ -509,12 +520,14 @@ const BookingPayment = () => {
                           )}
                         </div>
                         <div className={styles.routeInfo}>
-                          <span className={styles.airportCode} title={bookingData.outboundTransport.startPointName}>
-                            {bookingData.outboundTransport.startPoint}
-                          </span>
-                          <span className={styles.airportCode} title={bookingData.outboundTransport.endPointName}>
-                            {bookingData.outboundTransport.endPoint}
-                          </span>
+                          <AirportBadge
+                            code={bookingData.outboundTransport.startPoint}
+                            name={bookingData.outboundTransport.startPointName}
+                          />
+                          <AirportBadge
+                            code={bookingData.outboundTransport.endPoint}
+                            name={bookingData.outboundTransport.endPointName}
+                          />
                         </div>
                            <p className={styles.flightInfo}>{bookingData.outboundTransport.vehicleName}</p>
                       </div>
@@ -554,12 +567,14 @@ const BookingPayment = () => {
                           )}
                         </div>
                         <div className={styles.routeInfo}>
-                          <span className={styles.airportCode} title={bookingData.inboundTransport.startPointName}>
-                            {bookingData.inboundTransport.startPoint}
-                          </span>
-                          <span className={styles.airportCode} title={bookingData.inboundTransport.endPointName}>
-                            {bookingData.inboundTransport.endPoint}
-                          </span>
+                          <AirportBadge
+                            code={bookingData.inboundTransport.startPoint}
+                            name={bookingData.inboundTransport.startPointName}
+                          />
+                          <AirportBadge
+                            code={bookingData.inboundTransport.endPoint}
+                            name={bookingData.inboundTransport.endPointName}
+                          />
                         </div>
                            <p className={styles.flightInfo}>{bookingData.inboundTransport.vehicleName}</p>
                       </div>
@@ -613,11 +628,15 @@ const BookingPayment = () => {
                     <div className={styles.radioCircle}>
                       {paymentMethod === 'PAYOS' && <div className={styles.innerCircle} />}
                     </div>
-                    <img 
-                      src="https://sorts.pro/S1zrq0" 
-                      alt="PayOS" 
-                      className={styles.methodLogo} 
-                      style={{height: '25px'}} 
+                    <img
+                      src="https://payos.vn/docs/img/logo.svg"
+                      alt="PayOS"
+                      className={styles.methodLogo}
+                      onError={(e) => {
+                        // Fallback nếu logo PayOS chính thức không load được
+                        e.target.onerror = null;
+                        e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40"><rect width="120" height="40" rx="6" fill="%230369a1"/><text x="60" y="26" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="16" fill="white">PayOS</text></svg>';
+                      }}
                     />
                     <span>Quét mã VietQR (PayOS)</span>
                   </div>

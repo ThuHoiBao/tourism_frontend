@@ -1,83 +1,48 @@
-import React from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { Flame, Eye, Heart, MessageCircle } from 'lucide-react';
-import Avatar from '../../shared/Avatar/Avatar';
-import Badge from '../../shared/Badge/Badge';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { TrendingUp, Eye, Heart, MessageCircle } from 'lucide-react';
+import axios from '../../../utils/axiosCustomize';
 import styles from './TrendingPosts.module.scss';
 
-const TrendingPosts = ({ posts = [], onPostClick }) => {
-  if (posts.length === 0) {
-    return (
-      <div className={styles.trendingContainer}>
-        <h3 className={styles.title}>
-          <Flame size={24} className={styles.titleIcon} />
-          Bài viết phổ biến
-        </h3>
-        <div className={styles.noPosts}>
-          <Flame size={48} className={styles.noPostsIcon} />
-          <p>Chưa có bài viết trending</p>
-        </div>
-      </div>
-    );
-  }
+const TrendingPosts = () => {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    axios.get('/forum/posts/trending', { params: { page: 0, size: 5 } })
+      .then(res => setPosts(res.data?.data?.content || res.data?.data || []))
+      .catch(() => {});
+  }, []);
+
+  const rankClass = (i) => {
+    if (i === 0) return styles.rank1;
+    if (i === 1) return styles.rank2;
+    if (i === 2) return styles.rank3;
+    return styles.rankOther;
+  };
 
   return (
-    <div className={styles.trendingContainer}>
-      <h3 className={styles.title}>
-        <Flame size={24} className={styles.titleIcon} />
-        Bài viết phổ biến
-      </h3>
-
-      <div className={styles.trendingList}>
-        {posts.map((post, index) => (
-          <div
-            key={post.postID}
-            className={styles.trendingItem}
-            onClick={() => onPostClick?.(post)}
-          >
-            {/* Số thứ hạng ở trên đầu với # */}
-            <div className={styles.rankHeader}>
-              <span className={`${styles.rankTag} ${styles[`rank${index + 1}`]}`}>
-                #{index + 1}
-              </span>
-            </div>
-
-            {/* Nội dung bên trái: avatar + info */}
-            <div className={styles.mainContent}>
-              <div className={styles.authorRow}>
-                <Avatar src={post.authorAvatar} size="sm" alt={post.authorName} />
-                <div className={styles.authorInfo}>
-                  <span className={styles.authorName}>{post.authorName}</span>
-                  <span className={styles.postDate}>
-                    {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: vi })}
-                  </span>
-                </div>
+    <div className={styles.sidebar}>
+      <div className={styles.header}>
+        <TrendingUp size={16} className={styles.headerIcon} />
+        <span className={styles.title}>Bài viết nổi bật</span>
+      </div>
+      <div className={styles.list}>
+        {posts.length === 0 ? (
+          <div className={styles.empty}>
+            <TrendingUp size={24} />
+            Chưa có bài nổi bật
+          </div>
+        ) : posts.map((post, i) => (
+          <div key={post.postID} className={styles.item} onClick={() => navigate(`/forum/post/${post.postID}`)}>
+            <span className={`${styles.rank} ${rankClass(i)}`}>{i + 1}</span>
+            <div className={styles.itemContent}>
+              <p className={styles.itemTitle}>{post.title}</p>
+              <div className={styles.itemMeta}>
+                <span className={styles.metaStat}><Eye size={12} />{post.viewCount || 0}</span>
+                <span className={styles.metaStat}><Heart size={12} />{post.likeCount || 0}</span>
+                <span className={styles.metaStat}><MessageCircle size={12} />{post.commentCount || 0}</span>
               </div>
-
-              <h4 className={styles.postTitle}>{post.title}</h4>
-
-              <div className={styles.stats}>
-                <div className={styles.stat}>
-                  <Eye size={16} />
-                  <span>{post.viewCount}</span>
-                </div>
-                <div className={styles.stat}>
-                  <Heart size={16} />
-                  <span>{post.likeCount}</span>
-                </div>
-                <div className={styles.stat}>
-                  <MessageCircle size={16} />
-                  <span>{post.commentCount}</span>
-                </div>
-              </div>
-
-              {/* Category badge bên phải nếu có */}
-              {post.category && (
-                <div className={styles.categoryBadge}>
-                  <Badge label={post.categoryName} type="secondary" size="sm" />
-                </div>
-              )}
             </div>
           </div>
         ))}

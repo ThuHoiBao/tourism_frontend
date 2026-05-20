@@ -1,84 +1,97 @@
-import React from 'react';
-import { LogIn, UserPlus, User, PenTool, MessageSquare, Heart, Trophy } from 'lucide-react';
-import Avatar from '../../shared/Avatar/Avatar';
-import Button from '../../shared/Button/Button';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LogIn, FileText, Users, Heart, Trophy, Sparkles, Settings, UserCheck } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
+import axios from '../../../utils/axiosCustomize';
 import styles from './UserStats.module.scss';
 
-const UserStats = ({ user = null, onManagePostsClick  }) => {
+const UserStats = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ totalPosts: 0, totalFollowers: 0, totalLikesReceived: 0, reputationPoints: 0 });
 
-  console.log('UserStats received user:', user);
+  const userId = user?.userId || user?.userID;
+
+  useEffect(() => {
+    if (!userId) return;
+    axios.get('/forum/posts/user/stats', { params: { userId } })
+      .then(res => {
+        const d = res.data?.data || {};
+        setStats({
+          totalPosts: d.totalPosts || 0,
+          totalFollowers: d.followers || 0,
+          totalLikesReceived: d.totalLikes || 0,
+          reputationPoints: d.reputation || 0,
+        });
+      })
+      .catch(() => {});
+  }, [userId]);
+
+  const initials = (name) =>
+    name ? name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '?';
+
   if (!user) {
     return (
-      <div className={styles.userStats}>
-        <div className={styles.notLoggedIn}>
-          <div className={styles.welcomeIcon}>
-            <LogIn size={48} strokeWidth={1.5} />
-          </div>
-          <h3 className={styles.welcomeTitle}>Chào mừng bạn đến với cộng đồng!</h3>
-          <p className={styles.welcomeText}>
-            Đăng nhập để đăng bài, bình luận và kết nối với những người yêu du lịch
-          </p>
+      <div className={styles.sidebar}>
+        <div className={styles.guestBox}>
+          <div className={styles.guestIcon}><LogIn size={24} /></div>
+          <p className={styles.guestTitle}>Tham gia cộng đồng</p>
+          <p className={styles.guestSubtitle}>Đăng nhập để chia sẻ và kết nối</p>
+          <button className={styles.loginBtn} onClick={() => navigate('/login')}>
+            <LogIn size={16} />
+            Đăng nhập ngay
+          </button>
         </div>
       </div>
-
     );
   }
 
-  const stats = user.statistics || {};
-
   return (
-    <div className={styles.userStats}>
-      <div className={styles.userHeader}>
-        <Avatar
-          src={user.avatar}
-          size="xl"
-          alt={user.fullName}
-          shape="circle"
-        />
-        <div className={styles.userInfo}>
-          <h3 className={styles.userName}>{user.fullName}</h3>
-          <span className={styles.userRole}>
-            <Trophy size={14} />
-            Thành viên tích cực
-          </span>
+    <div className={styles.sidebar}>
+      <div className={styles.profile}>
+        <div className={styles.avatarWrapper}>
+          {user.avatar ? (
+            <img src={user.avatar} alt={user.fullName} className={styles.avatar} />
+          ) : (
+            <div className={styles.avatarFallback}>
+              {initials(user.fullName || user.username)}
+            </div>
+          )}
+          <div className={styles.onlineDot} />
         </div>
+        <h3 className={styles.userName}>{user.fullName || user.username}</h3>
+        <span className={styles.userRole}><Sparkles size={11} /> Thành viên tích cực</span>
       </div>
 
       <div className={styles.statsGrid}>
         <div className={styles.statItem}>
-          <PenTool size={24} className={styles.statIcon} />
-          <div className={styles.statValue}>{stats.totalPosts || 0}</div>
-          <div className={styles.statLabel}>Bài viết</div>
+          <FileText size={18} className={styles.statIcon} />
+          <span className={styles.statValue}>{stats.totalPosts}</span>
+          <span className={styles.statLabel}>Bài viết</span>
         </div>
         <div className={styles.statItem}>
-           <UserPlus size={24} className={styles.statIcon} />
-          <div className={styles.statValue}>{stats.totalFollowers || 0}</div>
-          <div className={styles.statLabel}>Theo dõi</div>
+          <Users size={18} className={styles.statIcon} />
+          <span className={styles.statValue}>{stats.totalFollowers}</span>
+          <span className={styles.statLabel}>Theo dõi</span>
         </div>
         <div className={styles.statItem}>
-          <Heart size={24} className={styles.statIcon} />
-          <div className={styles.statValue}>{stats.totalLikesReceived || 0}</div>
-          <div className={styles.statLabel}>Lượt thích</div>
+          <Heart size={18} className={styles.statIcon} />
+          <span className={styles.statValue}>{stats.totalLikesReceived}</span>
+          <span className={styles.statLabel}>Lượt thích</span>
         </div>
         <div className={styles.statItem}>
-          <Trophy size={24} className={styles.statIcon} />
-          <div className={styles.statValue}>{stats.reputationPoints || 0}</div>
-          <div className={styles.statLabel}>Điểm uy tín</div>
+          <Trophy size={18} className={styles.statIcon} />
+          <span className={styles.statValue}>{stats.reputationPoints}</span>
+          <span className={styles.statLabel}>Điểm uy tín</span>
         </div>
       </div>
 
-       <button
-        className={styles.managePostsBtn}
-        onClick={onManagePostsClick}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
-          <path d="M9 12H15M9 16H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-        Quản lý bài viết
-      </button>
-
+      <div className={styles.actions}>
+        <button className={styles.manageBtn} onClick={() => navigate('/forum/my-posts')}>
+          <Settings size={16} />
+          Quản lý bài viết
+        </button>
+      </div>
     </div>
   );
 };
