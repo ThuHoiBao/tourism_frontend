@@ -110,7 +110,7 @@ const ChatbotWidget = () => {
     <div className={`${styles.widgetContainer} ${isOpen ? styles.open : ''}`}>
       
       {/* Nút Mở Chat */}
-      <button 
+      <button
         className={`${styles.launcher} ${isOpen ? styles.hideLauncher : ''}`}
         onClick={() => setIsOpen(true)}
       >

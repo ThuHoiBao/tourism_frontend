@@ -1,166 +1,395 @@
-.container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.card {
-  background-color: white;
-  border-radius: 1rem; 
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
-  padding: 2rem;
-  max-width: 28rem; 
-  width: 100%;
-  text-align: center;
-}
-
-.iconWrapper {
-  margin-bottom: 1.5rem;
-  display: inline-block;
-
-  svg {
-    width: 5rem; 
-    height: 5rem; 
-  }
-
-  .loader {
-    color: #3b82f6; 
-    animation: spin 1s linear infinite;
-  }
-
-  .success {
-    color: #22c55e;
-  }
-
-  .failed {
-    color: #ef4444; 
-  }
-}
-
-.title {
-  font-size: 1.5rem; 
-  font-weight: 700; 
-  margin-bottom: 1rem;
-  color: #111827;
-}
-
-.message {
-  color: #4b5563; 
-  margin-bottom: 1.5rem;
-}
-
-.pendingBox {
-  background-color: #eff6ff; 
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-
-  .infoRow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem; 
-    color: #1d4ed8; 
-    margin-bottom: 0.5rem;
-
-    svg {
-      width: 1rem;
-      height: 1rem;
-      margin-right: 0.5rem;
-    }
-  }
-
-  .subText {
-    font-size: 0.75rem; 
-    color: #2563eb; 
-  }
-
-  .hintText {
-    font-size: 0.75rem;
-    color: #3b82f6; 
-    margin-top: 0.5rem;
-  }
-}
-
-.successBox {
-  background-color: #f0fdf4; 
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-
-  .successText {
-    font-size: 0.875rem;
-    color: #15803d; 
-
-    span {
-      font-weight: 700;
-    }
-  }
-
-  .redirectText {
-    font-size: 0.75rem;
-    color: #16a34a; // text-green-600
-    margin-top: 0.5rem;
-  }
-}
-
-// Các nút bấm (Failed state)
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-
-  button {
-    width: 100%;
-    padding: 0.75rem 0;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-
-  .retryBtn {
-    background-color: #3b82f6; // bg-blue-500
-    color: white;
-
-    &:hover {
-      background-color: #2563eb; // hover:bg-blue-600
-    }
-  }
-
-  .homeBtn {
-    background-color: #e5e7eb; // bg-gray-200
-    color: #374151; // text-gray-700
-
-    &:hover {
-      background-color: #d1d5db; // hover:bg-gray-300
-    }
-  }
-}
-
-.refreshBtn {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  color: #3b82f6;
-  font-weight: 500;
-  background: none;
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    color: #1d4ed8;
-  }
+// ── Ocean monochrome theme — đồng bộ với BookingPayment ────────────────────
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1);   opacity: 1;   }
+  50%      { transform: scale(1.04); opacity: 0.9; }
+}
+
+// ── Page shell ──────────────────────────────────────────────────────────────
+.container {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 110px 20px 60px;
+}
+
+.shell {
+  width: 100%;
+  max-width: 680px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e0f2fe;
+  box-shadow: 0 8px 28px rgba(12, 74, 110, 0.08);
+  overflow: hidden;
+  animation: fadeSlideUp 0.4s ease both;
+}
+
+// ── Banner (top status) ────────────────────────────────────────────────────
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0c4a6e, #0369a1);
+}
+
+.banner_SUCCESS {
+  background: linear-gradient(135deg, #047857, #10b981);
+}
+
+.banner_FAILED {
+  background: linear-gradient(135deg, #b91c1c, #ef4444);
+}
+
+.back {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
   }
-  to {
-    transform: rotate(360deg);
+}
+
+.bannerIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: pulse 2.4s ease-in-out infinite;
+
+  svg { color: #ffffff; }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.bannerText {
+  flex: 1;
+  min-width: 0;
+
+  h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    opacity: 0.88;
+    line-height: 1.4;
+  }
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+// ── Content area ───────────────────────────────────────────────────────────
+.content {
+  padding: 26px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+// ── 3-step timeline ────────────────────────────────────────────────────────
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+
+  // Đường nối ngang xám nhạt phía sau
+  &::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 16%;
+    right: 16%;
+    height: 2px;
+    background: #e0f2fe;
+    border-radius: 2px;
+    z-index: 0;
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+
+  .stepIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #e0f2fe;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .stepLabel {
+    font-size: 12.5px;
+    color: #94a3b8;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.3;
+    max-width: 100px;
+    transition: color 0.25s ease;
+  }
+}
+
+.stepDone {
+  .stepIcon {
+    background: #0369a1;
+    border-color: #0369a1;
+    color: #ffffff;
+  }
+  .stepLabel { color: #0369a1; }
+}
+
+.stepActive {
+  .stepIcon {
+    background: #ffffff;
+    border-color: #0369a1;
+    color: #0369a1;
+    box-shadow: 0 0 0 4px rgba(3, 105, 161, 0.12);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .stepLabel {
+    color: #0c4a6e;
+    font-weight: 700;
+  }
+}
+
+// ── Info grid 2 cột ───────────────────────────────────────────────────────
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoCard {
+  background: #f8fafc;
+  border: 1px solid #e0f2fe;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: #f0f9ff;
+    border-color: #bae6fd;
+  }
+}
+
+.infoLabel {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.infoValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: #0c4a6e;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  svg { color: #0ea5e9; }
+}
+
+.infoValueMono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  color: #0c4a6e;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  word-break: break-all;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid #bae6fd;
+  background: #ffffff;
+  color: #0369a1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f0f9ff;
+    border-color: #0369a1;
+  }
+}
+
+// ── Hint box (PENDING) ────────────────────────────────────────────────────
+.hintBox {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 16px 18px;
+  animation: fadeSlideUp 0.4s ease 0.1s both;
+}
+
+.hintHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0c4a6e;
+  margin-bottom: 10px;
+
+  svg { color: #0369a1; flex-shrink: 0; }
+}
+
+.hintList {
+  margin: 0;
+  padding: 0 0 0 22px;
+  list-style: disc;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.7;
+
+  li::marker { color: #0ea5e9; }
+}
+
+// ── Success box ───────────────────────────────────────────────────────────
+.successBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #f0fdf4;
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  color: #065f46;
+  font-weight: 700;
+  font-size: 14px;
+  animation: fadeSlideUp 0.4s ease both;
+
+  svg { color: #059669; flex-shrink: 0; }
+}
+
+// ── Actions ──────────────────────────────────────────────────────────────
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btnPrimary {
+  background: #0369a1;
+  color: #ffffff;
+  border: 1px solid #0369a1;
+  box-shadow: 0 3px 10px rgba(3, 105, 161, 0.25);
+
+  &:hover {
+    background: #0c4a6e;
+    border-color: #0c4a6e;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(3, 105, 161, 0.35);
+  }
+}
+
+.btnGhost {
+  background: #ffffff;
+  color: #0c4a6e;
+  border: 1px solid #bae6fd;
+
+  &:hover {
+    background: #f0f9ff;
+    border-color: #0369a1;
+    transform: translateY(-1px);
   }
 }

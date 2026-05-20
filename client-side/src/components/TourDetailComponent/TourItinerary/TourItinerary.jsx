@@ -3,19 +3,21 @@ import styles from './TourItinerary.module.scss';
 import { FaChevronDown, FaUtensils } from 'react-icons/fa';
 
 const TourItinerary = ({ itinerary }) => {
-  console.log('Itinerary data in TourItinerary:', itinerary);
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Multi-open: tất cả ngày ĐÓNG mặc định khi vào trang.
+  // Người dùng bấm header để mở/đóng từng ngày độc lập.
+  const [openDays, setOpenDays] = useState(new Set());
 
   if (!itinerary || itinerary.length === 0) {
-    return <div className={styles.emptyData}>Đang cập nhật lịch trình...</div>; 
+    return <div className={styles.emptyData}>Đang cập nhật lịch trình...</div>;
   }
 
   const toggleAccordion = (index) => {
-    if (activeIndex === index) {
-      setActiveIndex(null);
-    } else {
-      setActiveIndex(index); 
-    }
+    setOpenDays(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
   };
 
   return (
@@ -24,7 +26,7 @@ const TourItinerary = ({ itinerary }) => {
       
       <div className={styles.listWrapper}>
         {itinerary.map((item, index) => {
-          const isOpen = activeIndex === index;
+          const isOpen = openDays.has(index);
 
           return (
             <div key={index} className={`${styles.dayItem} ${isOpen ? styles.active : ''}`}>

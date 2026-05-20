@@ -3,9 +3,9 @@ import styles from './TourPolicy.module.scss';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const TourPolicy = ({ policy, branchContact }) => {
-  // State lưu trạng thái mở/đóng của từng item (Object key-value)
-  // Ví dụ: { 0: true, 2: true } -> Item 0 và 2 đang mở
-  const [expandedItems, setExpandedItems] = useState({});
+  // Single-open mutex: chỉ MỘT mục được mở tại một thời điểm
+  // → tránh layout 2 cột bị "dàn trải" khi nhiều mục mở cùng lúc.
+  const [activeIndex, setActiveIndex] = useState(null);
   if (!policy) return null;
   const renderContactInfo = (contact) => {
     if (!contact) return null;
@@ -80,48 +80,53 @@ const TourPolicy = ({ policy, branchContact }) => {
   ];
 
   const toggleItem = (index) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [index]: !prev[index] // Đảo ngược trạng thái của item đó
-    }));
+    setActiveIndex(prev => (prev === index ? null : index));
   };
 
   return (
     <div className={styles.policyContainer}>
       <h2 className={styles.sectionTitle}>NHỮNG THÔNG TIN CẦN LƯU Ý</h2>
-      
-      <div className={styles.gridWrapper}>
-        {policyItems.map((item, index) => {
-          // Nếu content null hoặc rỗng thì không render ô này
-          if (!item.content) return null;
 
-          const isOpen = !!expandedItems[index]; // Convert sang boolean
+      {/* Chia items có content thành 2 cột cố định (even/odd index).
+          Mỗi cột là 1 flex độc lập → mở 1 mục KHÔNG làm các mục ở cột
+          bên kia nhảy lộn xộn. */}
+      {(() => {
+        const visible = policyItems
+          .map((item, idx) => ({ ...item, _idx: idx }))
+          .filter(it => it.content);
+        const leftCol  = visible.filter((_, i) => i % 2 === 0);
+        const rightCol = visible.filter((_, i) => i % 2 === 1);
 
+        const renderItem = (item) => {
+          const index = item._idx;
+          const isOpen = activeIndex === index;
           return (
             <div key={index} className={`${styles.policyItem} ${isOpen ? styles.active : ''}`}>
-              
-              {/* HEADER: Click để mở */}
               <div className={styles.header} onClick={() => toggleItem(index)}>
                 <span className={styles.label}>{item.label}</span>
                 <span className={styles.icon}>
                   {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                 </span>
               </div>
-
-              {/* BODY: Nội dung xổ xuống */}
               <div className={`${styles.body} ${isOpen ? styles.open : ''}`}>
                 <div className={styles.bodyInner}>
-                  <div 
+                  <div
                     className={styles.content}
                     dangerouslySetInnerHTML={{ __html: item.content }}
                   />
                 </div>
               </div>
-
             </div>
           );
-        })}
-      </div>
+        };
+
+        return (
+          <div className={styles.gridWrapper}>
+            <div className={styles.column}>{leftCol.map(renderItem)}</div>
+            <div className={styles.column}>{rightCol.map(renderItem)}</div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

@@ -1,11 +1,22 @@
 /* PostDetailPage.module.scss */
 
-// --- CÁC STYLE CƠ BẢN CỦA TRANG (GIỮ NGUYÊN) ---
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// --- TRANG ---
 .postDetailPage {
   margin-top: 50px;
-  background: #ffffff;
   min-height: 100vh;
   padding-bottom: 80px;
+  background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 40%, #ffffff 100%);
 }
 
 .breadcrumb {
@@ -18,24 +29,37 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  color: #65676b;
-  font-weight: 600;
+  padding: 9px 20px;
+  color: #ffffff;
+  font-weight: 700;
   font-size: 14px;
   text-decoration: none;
-  background: #f0f2f5;
-  border-radius: 6px;
-  transition: background 0.2s;
+  background: linear-gradient(135deg, #0369a1, #0ea5e9);
+  background-size: 200% 200%;
+  border-radius: 24px;
+  box-shadow: 0 4px 14px rgba(3,105,161,0.35);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  svg { transition: transform 0.25s ease; }
 
   &:hover {
-    background: #e4e6eb;
+    background-position: 100% 50%;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(3,105,161,0.45);
+
+    svg { transform: translateX(-4px); }
   }
 }
 
 .container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 28px 32px 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(14,165,233,0.1);
+  border: 1.5px solid #e0f2fe;
+  animation: fadeSlideUp 0.5s ease both;
 }
 
 .hero {
@@ -81,14 +105,18 @@
 
 .contentBody {
   font-size: 17px;
-  line-height: 1.6;
-  color: #050505;
+  line-height: 1.75;
+  color: #1f2937;
   margin-bottom: 40px;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 
-  p { margin-bottom: 16px; }
+  p { margin-bottom: 16px; text-align: justify; }
   img { max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0; }
-  h2, h3 { color: #050505; margin: 24px 0 12px; font-weight: 600; }
+  h2, h3 { color: #050505; margin: 24px 0 12px; font-weight: 600; text-align: left; }
   ul, ol { margin: 16px 0; padding-left: 24px; }
+  li { text-align: justify; }
 }
 
 .actionsBar {
@@ -112,13 +140,25 @@
   gap: 6px;
   font-size: 15px;
   color: #65676b;
+  transition: color 0.2s ease;
+}
+
+// Tim đỏ khi đã thích
+.statLiked {
+  color: #e41e3f;
+
+  svg {
+    fill: #e41e3f;
+    color: #e41e3f;
+  }
 }
 
 .authorSection {
-  margin: 40px 0;
-  padding: 16px;
-  background: #f0f2f5;
-  border-radius: 8px;
+  margin: 28px 0;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 1.5px solid #bae6fd;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -163,26 +203,26 @@
   display: flex;
   gap: 10px;
   margin-bottom: 32px;
+  align-items: center;
 
   textarea {
     flex: 1;
-    background: #f0f2f5;
-    border: none;
-    border-radius: 20px;
-    padding: 12px 16px;
+    background: #f0f9ff;
+    border: 1.5px solid #bae6fd;
+    border-radius: 22px;
+    padding: 12px 18px;
     font-size: 15px;
     resize: none;
     outline: none;
-    transition: background 0.2s;
+    transition: all 0.2s;
 
     &:focus {
-      background: #e4e6eb;
+      background: #ffffff;
+      border-color: #0369a1;
+      box-shadow: 0 0 0 3px rgba(3,105,161,0.1);
     }
-  }
 
-  button {
-    height: fit-content;
-    border-radius: 20px;
+    &::placeholder { color: #9ca3af; }
   }
 }
 
@@ -198,6 +238,7 @@
   display: flex;
   gap: 8px;
   position: relative; // Để định vị đường kẻ
+  min-width: 0;
 }
 
 .commentAvatar {
@@ -208,6 +249,7 @@
 
 .commentBody {
   flex: 1;
+  min-width: 0;          // cho phép co lại, tránh tràn ngang
   display: flex;
   flex-direction: column;
 }
@@ -218,7 +260,8 @@
   padding: 8px 12px;
   border-radius: 18px;
   display: inline-block;
-  width: fit-content; // Ôm sát nội dung
+  width: fit-content;     // Ôm sát nội dung
+  max-width: 100%;        // không kéo dài quá khung
   position: relative;
   z-index: 2; // Đè lên đường kẻ nếu cần
 
@@ -237,6 +280,12 @@
     line-height: 1.4;
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  // "@Tên" người được trả lời: in đậm, màu xanh (giống Facebook)
+  .mention {
+    font-weight: 700;
+    color: #0369a1;
   }
 }
 
@@ -319,43 +368,69 @@
   }
 }
 
-// --- STYLE CHO REPLIES TREE (Cây phản hồi) ---
+// --- STYLE CHO REPLIES TREE (Cây phản hồi lồng nhiều cấp giống Facebook) ---
 
+// Cây phản hồi tối đa 3 cấp giống Facebook:
+// - Cấp 2 (data-depth 0) và cấp 3 (data-depth 1): thụt lề bình thường.
+// - Cấp 3 là sâu nhất: mọi reply sâu hơn được gộp phẳng vào đây
+//   (data-depth 2) và KHÔNG thụt thêm — chỉ dựa vào "@Tên" in đậm
+//   để biết đang trả lời ai, không bao giờ tràn ngang ra ngoài.
+// padding-left CỐ ĐỊNH ở mọi cấp để đường kẻ dọc + móc cong luôn khớp.
+// Chỉ thay đổi margin-left để kiểm soát mức thụt giữa các cấp.
 .repliesContainer {
-  margin-top: 8px;
-  padding-left: 0; // Reset padding
-  width: 100%;
-}
-
-// Style riêng cho Reply Item để vẽ đường kẻ
-.replyItem {
-  margin-top: 10px;
+  margin-top: 12px;
+  margin-left: 18px;
+  padding-left: 24px;      // cố định — móc cong khớp theo giá trị này
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 
-  // Padding left để thụt đầu dòng và chừa chỗ cho đường kẻ
-  padding-left: 20px;
-
-  // Vẽ đường kẻ cong
+  // Đường kẻ dọc liền mạch cho riêng cấp này
   &::before {
     content: '';
     position: absolute;
-    top: -12px; // Điểm bắt đầu từ trên xuống (nối với avatar cha hoặc anh em)
-    left: -10px; // Vị trí ngang (căn chỉnh với avatar cha)
-    width: 25px; // Độ dài đoạn ngang
-    height: 35px; // Chiều cao đoạn cong xuống
+    top: -6px;
+    bottom: 18px;
+    left: 0;
+    width: 2px;
+    background: #d8dde3;
+    border-radius: 2px;
+  }
 
-    border-left: 2px solid #f0f2f5; // Màu đường kẻ (nhạt)
-    border-bottom: 2px solid #f0f2f5;
-    border-bottom-left-radius: 12px; // Bo góc
+  // Cấp sâu nhất (cấp 3): không thụt thêm so với cấp cha,
+  // GIỮ NGUYÊN padding-left để đường kẻ/móc cong vẫn khớp.
+  &[data-depth="2"] {
+    margin-left: 2px;
+  }
+}
+
+// Mỗi reply có đoạn móc cong L nối từ đường kẻ dọc của cấp cha sang avatar.
+// left = -(padding-left của container) để móc luôn bắt đúng đường kẻ dọc.
+.replyItem {
+  position: relative;
+  display: flex;
+  gap: 8px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -24px;           // = -(padding-left của .repliesContainer)
+    width: 22px;
+    height: 20px;
+    border-left: 2px solid #d8dde3;
+    border-bottom: 2px solid #d8dde3;
+    border-bottom-left-radius: 10px;
     z-index: 0;
   }
 
   .commentAvatar {
-    // Avatar reply nhỏ hơn
-    width: 24px;
-    height: 24px;
     z-index: 1;
+    flex-shrink: 0;
   }
+
+  .commentBody { flex: 1; min-width: 0; }
 }
 
 // Nút "Xem phản hồi" kiểu Facebook
@@ -366,35 +441,97 @@
   background: none;
   border: none;
   padding: 6px 0;
-  margin-left: 20px; // Thụt vào một chút
+  margin-top: 6px;
   cursor: pointer;
   color: #65676b;
   font-weight: 600;
   font-size: 14px;
   transition: color 0.2s;
-  position: relative;
+
+  svg { color: #9ca3af; }
 
   &:hover {
-    color: #1877f2;
+    color: #0369a1;
     text-decoration: underline;
+    svg { color: #0369a1; }
+  }
+}
+
+// Nút Thích / Đã thích — toggle được
+.likeBtn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  background: #f0f9ff !important;
+  color: #0369a1 !important;
+  font-weight: 700 !important;
+  border: 1.5px solid #bae6fd !important;
+  border-radius: 22px !important;
+  padding: 9px 20px !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+
+  svg { transition: transform 0.2s ease; }
+
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 5px 16px rgba(3,105,161,0.25);
+    svg { transform: scale(1.15); }
+  }
+}
+
+// Trạng thái đã thích — tim đỏ, nền hồng nhạt
+.likedBtn {
+  background: linear-gradient(135deg, #fee2e2, #fef2f2) !important;
+  color: #e41e3f !important;
+  border-color: #fca5a5 !important;
+
+  svg {
+    fill: #e41e3f;
+    animation: heartPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  // Đường kẻ nối tới nút xem thêm
-  &::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: -28px;
-    width: 25px;
-    height: 30px;
-    border-left: 2px solid #f0f2f5;
-    border-bottom: 2px solid #f0f2f5;
-    border-bottom-left-radius: 12px;
+  &:hover {
+    box-shadow: 0 5px 16px rgba(228,30,63,0.3);
+  }
+}
+
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+// Nút gửi bình luận
+.commentSubmitBtn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  height: fit-content;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #f59e0b, #f97316) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 11px 20px !important;
+  box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 18px rgba(249,115,22,0.5);
+  }
+
+  &:disabled {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    box-shadow: none;
   }
 }
 
 .loading, .notFound {
   text-align: center;
-  padding: 40px;
-  color: #65676b;
+  padding: 60px 40px;
+  color: #0369a1;
+  font-size: 16px;
+  font-weight: 600;
 }

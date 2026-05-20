@@ -1,160 +1,127 @@
-.trendingContainer {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f4f8;
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-.title {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 20px 0;
+@keyframes rankPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+
+.sidebar {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: 1.5px solid #fed7aa;
+  animation: slideInRight 0.4s ease both;
+}
+
+.header {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  border-bottom: 1px solid #f3f4f6;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.titleIcon {
-  color: #f97316;
+.headerIcon { color: rgba(255,255,255,0.9); }
+
+.title {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
 }
 
-.trendingList {
+.list {
+  padding: 8px;
+}
+
+.item {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+
+  &:hover { background: #fff7ed; transform: translateX(4px); }
 }
 
-.trendingItem {
-  position: relative;
-  padding: 18px 18px 18px 60px; /* Để chừa chỗ cho rank ở trên */
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.rank {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform 0.2s ease;
 
-  &:hover {
-    background: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
-    transform: translateY(-3px);
+  .item:hover & {
+    transform: scale(1.15);
   }
 }
 
-/* Số thứ hạng ở trên đầu bên trái */
-.rankHeader {
-  position: absolute;
-  top: 12px;
-  left: 16px;
+.rank1 { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; animation: rankPulse 2.5s ease-in-out infinite; }
+.rank2 { background: linear-gradient(135deg, #bae6fd, #e0f2fe); color: #0369a1; }
+.rank3 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+.rankOther { background: #f3f4f6; color: #9ca3af; }
+
+.itemContent {
+  flex: 1;
+  min-width: 0;
 }
 
-.rankTag {
-  font-size: 14px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: #e2e8f0;
-  color: #64748b;
-}
-
-.rank1 {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
-}
-
-.rank2 {
-  background: linear-gradient(135deg, #94a3b8, #64748b);
-  color: white;
-}
-
-.rank3 {
-  background: linear-gradient(135deg, #fb923c, #f97316);
-  color: white;
-}
-
-/* Nội dung chính bên trái */
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.authorRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.authorInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.authorName {
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 14.5px;
-}
-
-.postDate {
+.itemTitle {
   font-size: 13px;
-  color: #64748b;
-}
-
-.postTitle {
-  font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
-  margin: 0;
+  color: #1f2937;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: color 0.2s;
-
-  &:hover {
-    color: #3b82f6;
-  }
+  margin: 0 0 5px;
 }
 
-.stats {
-  display: flex;
-  gap: 18px;
-  font-size: 13.5px;
-  color: #64748b;
-}
-
-.stat {
+.itemMeta {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
-
-  svg {
-    color: #94a3b8;
-  }
+  gap: 10px;
 }
 
-.categoryBadge {
-  align-self: flex-start;
-  margin-top: 4px;
+.metaStat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: #9ca3af;
 }
 
-.noPosts {
+.empty {
+  padding: 20px;
   text-align: center;
-  padding: 40px 20px;
-  color: #94a3b8;
+  color: #9ca3af;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-.noPostsIcon {
-  margin-bottom: 16px;
-}
-
-.noPosts p {
-  font-size: 15px;
-  margin: 0;
-}
+.list > div:nth-child(1) { animation: slideInRight 0.3s ease 0.05s both; }
+.list > div:nth-child(2) { animation: slideInRight 0.3s ease 0.10s both; }
+.list > div:nth-child(3) { animation: slideInRight 0.3s ease 0.15s both; }
+.list > div:nth-child(4) { animation: slideInRight 0.3s ease 0.20s both; }
+.list > div:nth-child(5) { animation: slideInRight 0.3s ease 0.25s both; }

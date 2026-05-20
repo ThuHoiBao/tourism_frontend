@@ -24,6 +24,7 @@ import GoogleCallback from './components/GoogleCallback/GoogleCallback';
 import ForumPage from './components/ForumComponent/ForumPage';
 import PostDetailPage from './components/ForumComponent/PostDetail/PostDetailPage';
 import UserPostsManagement from './components/ForumComponent/UserPostsManagement/UserPostsManagement';
+import EditPost from './components/ForumComponent/EditPost/EditPost';
 // // Các trang giả định
 // const HotelPage = () => <div>Trang Khách sạn</div>; 
 // const FlightsPage = () => <div>Trang Vé máy bay</div>; 
@@ -86,6 +87,7 @@ function App() {
           <Route path="/forum" element={<ForumPage />} />
           <Route path="/forum/post/:postId" element={<PostDetailPage />} />
           <Route path="/forum/my-posts" element={<UserPostsManagement />} />
+          <Route path="/forum/post/:postId/edit" element={<EditPost />} />
 
           <Route path="/register" element={<Register />} />
            <Route 

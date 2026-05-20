@@ -11,14 +11,14 @@ import TourItinerary from './TourItinerary/TourItinerary';
 import TourReviews from './TourReview/TourReviews';
 import RelatedTours from './RelatedTours/RelatedTours';
 import axios from '../../utils/axiosCustomize'; 
-import { FaMapMarkerAlt, FaCalendarAlt, FaClock, FaBarcode, FaPhoneAlt, FaPlay } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaClock, FaBarcode, FaPhoneAlt, FaPlay, FaTicketAlt, FaGift, FaPiggyBank, FaCheck } from 'react-icons/fa';
 import { BsPeopleFill } from "react-icons/bs";
 import { set } from 'date-fns';
 
   const TourDetail = () => {
   const { tourCode } = useParams(); 
   const navigate = useNavigate(); 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const departureIdFromUrl = searchParams.get('departureId');
   
   const [tourData, setTourData] = useState(null);
@@ -57,19 +57,21 @@ import { set } from 'date-fns';
       
        if (data?.departures && data.departures.length > 0) {
           if (departureIdFromUrl) {
+            // Chỉ auto-select khi URL có ?departureId=... (user vào từ link cụ thể)
             const foundDeparture = data.departures.find(
               dep => dep.departureId === parseInt(departureIdFromUrl)
             );
-            
             if (foundDeparture) {
               setSelectedDeparture(foundDeparture);
               console.log('Selected departure from URL:', foundDeparture);
             } else {
-              setSelectedDeparture(data.departures[0]);
-              console.warn('Departure ID not found, using first departure');
+              setSelectedDeparture(null);
+              console.warn('Departure ID not found in URL');
             }
           } else {
-            setSelectedDeparture(data.departures[0]);
+            // Mới vào trang: KHÔNG auto-select để hiện compact box,
+            // user phải tự bấm "Chọn ngày" rồi chọn một ngày khởi hành.
+            setSelectedDeparture(null);
           }
         } else {
           setSelectedDeparture(null);
@@ -88,6 +90,11 @@ import { set } from 'date-fns';
 
   const handleDepartureSelect = (departure) => {
     setSelectedDeparture(departure);
+    // Đồng bộ URL: thêm ?departureId=X để có thể chia sẻ link hoặc
+    // refresh vẫn giữ đúng ngày đã chọn.
+    if (departure?.departureId != null) {
+      setSearchParams({ departureId: String(departure.departureId) }, { replace: true });
+    }
   };
 
   const getPriceData = () => {
@@ -283,44 +290,63 @@ import { set } from 'date-fns';
 
           <div className={styles.rightColumn}>
             <div className={styles.bookingSidebar}>
-              
-              {/* Giá */}
-             <div className={styles.priceBox}>
+
+              {/* Khi chưa chọn ngày: hiện box gọn + nút Chọn ngày */}
+              {!selectedDeparture ? (
+                <div className={styles.compactPrice}>
+                  <span className={styles.label}>Giá từ:</span>
+                  <div className={styles.compactPriceValue}>
+                    {formatCurrency(priceData.salePrice || priceData.finalPrice).replace('₫', '')}
+                    <span className={styles.currency}>₫</span>
+                    <span className={styles.unit}>/ khách</span>
+                  </div>
+
+                  <div className={styles.compactActions}>
+                    <button
+                      className={styles.compactCallBtn}
+                      onClick={() => window.location.href = 'tel:19002045'}
+                      aria-label="Liên hệ tư vấn"
+                    >
+                      <FaPhoneAlt />
+                    </button>
+                    <button
+                      className={styles.compactPickDateBtn}
+                      onClick={scrollToCalendar}
+                    >
+                      Chọn ngày
+                    </button>
+                  </div>
+                </div>
+              ) : (
+              <>
+              {/* Đã chọn ngày: hiện bảng giá đầy đủ */}
+              <div className={styles.priceBox}>
                 <span className={styles.label}>Giá từ:</span>
                 {priceData.totalDiscount  && priceData.totalDiscount  > 0 && (
                     <span className={styles.originalPrice}>
                         {formatCurrency(priceData.salePrice)}
                     </span>
                 )}
-            </div>
-              
+              </div>
+
               <div className={styles.finalPrice}>
-                {formatCurrency(priceData.finalPrice).replace('₫', '')} 
-                <span className={styles.currency}>₫</span> 
+                {formatCurrency(priceData.finalPrice).replace('₫', '')}
+                <span className={styles.currency}>₫</span>
                 <span className={styles.unit}>/ Khách</span>
               </div>
 
               {priceData.departureCoupon && priceData.departureCouponDiscount > 0 && (
-                <div style={{ 
-                  backgroundColor: '#fff7e6', 
-                  border: '1px solid #ffa940', 
-                  padding: '10px 12px', 
-                  borderRadius: '6px', 
-                  marginBottom: '10px', 
-                  fontSize: '13px', 
-                  color: '#d46b08',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <span style={{ fontSize: '16px' }}>🎫</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>
+                <div className={`${styles.couponBox} ${styles.couponDeparture}`}>
+                  <div className={styles.couponIcon}>
+                    <FaTicketAlt />
+                  </div>
+                  <div className={styles.couponBody}>
+                    <div className={styles.couponTitle}>
                       Ưu đãi đặc biệt ngày {selectedDeparture?.departureDate}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className={styles.couponRow}>
                       <span>Code: <b>{priceData.departureCoupon}</b></span>
-                      <span style={{ color: '#d46b08', fontWeight: 'bold' }}>
+                      <span className={styles.couponAmount}>
                         -{formatCurrency(priceData.departureCouponDiscount)}
                       </span>
                     </div>
@@ -329,50 +355,34 @@ import { set } from 'date-fns';
               )}
 
               {priceData.globalCoupon && priceData.globalCouponDiscount > 0 && (
-                <div style={{ 
-                  backgroundColor: '#e6f7ff', 
-                  border: '1px solid #91d5ff', 
-                  padding: '10px 12px', 
-                  borderRadius: '6px', 
-                  marginBottom: '10px', 
-                  fontSize: '13px', 
-                  color: '#0050b3',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <span style={{ fontSize: '16px' }}>🎁</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>
-                      Ưu đãi khi đặt tour
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className={`${styles.couponBox} ${styles.couponGlobal}`}>
+                  <div className={styles.couponIcon}>
+                    <FaGift />
+                  </div>
+                  <div className={styles.couponBody}>
+                    <div className={styles.couponTitle}>Ưu đãi khi đặt tour</div>
+                    <div className={styles.couponRow}>
                       <span>Code: <b>{priceData.globalCoupon}</b></span>
-                      <span style={{ color: '#0050b3', fontWeight: 'bold' }}>
+                      <span className={styles.couponAmount}>
                         -{formatCurrency(priceData.globalCouponDiscount)}
                       </span>
                     </div>
                   </div>
                 </div>
               )}
+
               {priceData.totalDiscount > 0 && (
-                <div style={{ 
-                  backgroundColor: '#f6ffed', 
-                  border: '2px solid #52c41a', 
-                  padding: '10px 12px', 
-                  borderRadius: '6px', 
-                  marginBottom: '15px', 
-                  fontSize: '14px', 
-                  color: '#135200',
-                  fontWeight: 'bold',
-                  textAlign: 'center'
-                }}>
-                  💰 Tổng tiết kiệm: {formatCurrency(priceData.totalDiscount)}
-                  <div style={{ fontSize: '12px', fontWeight: 'normal', marginTop: '4px', color: '#389e0d' }}>
+                <div className={styles.savingsBox}>
+                  <div className={styles.savingsHeader}>
+                    <FaPiggyBank className={styles.savingsIcon} />
+                    <span>Tổng tiết kiệm: {formatCurrency(priceData.totalDiscount)}</span>
+                  </div>
+                  <div className={styles.savingsHint}>
+                    <FaCheck className={styles.savingsCheck} />
                     Giá đã bao gồm tất cả ưu đãi
                   </div>
                 </div>
-            )}
+              )}
               <div className={styles.infoGrid}>
                 <div className={styles.infoRow}>
                   <FaBarcode className={styles.icon} />
@@ -419,6 +429,8 @@ import { set } from 'date-fns';
               <button className={styles.btnConsult}>
                 <FaPhoneAlt /> Liên hệ tư vấn
               </button>
+              </>
+              )}
             </div>
           </div>
 

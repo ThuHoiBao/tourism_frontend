@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Plus,
-  Edit2,
-  Trash2,
-  Eye,
-  EyeOff,
-  Search,
-  Filter,
-  Calendar,
-  TrendingUp,
-  MessageCircle,
-  Heart,
-  MoreVertical,
-  FileText,
-  Image
+  Plus, Edit2, Trash2, Eye, EyeOff, Search, FileText, Image as ImageIcon,
+  TrendingUp, MessageCircle, Heart, LayoutGrid, Calendar, AlertTriangle,
+  BookOpen, CheckCircle2, PenSquare, MapPin
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import CreatePost from '../CreatePost/CreatePost';
@@ -22,6 +12,7 @@ import styles from './UserPostsManagement.module.scss';
 
 const UserPostsManagement = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +22,8 @@ const UserPostsManagement = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [stats, setStats] = useState({
-    total: 0,
-    published: 0,
-    draft: 0,
-    totalViews: 0,
-    totalLikes: 0,
-    totalComments: 0
+    total: 0, published: 0, draft: 0,
+    totalViews: 0, totalLikes: 0, totalComments: 0,
   });
 
   useEffect(() => {
@@ -48,49 +35,27 @@ const UserPostsManagement = () => {
     try {
       const res = await axios.get('/forum/categories');
       setCategories(res.data?.data || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
+    } catch {}
   };
 
   const fetchUserPosts = async () => {
     setLoading(true);
     try {
       const userId = user?.userId || user?.userID;
-      if (!userId) {
-        console.error('User not found');
-        return;
-      }
-
-      const response = await axios.get(`/forum/posts/user/${userId}`, {
-        params: {
-          page: 0,
-          size: 100 // Lấy nhiều để hiển thị hết
-        }
-      });
-
-      const postsData = response.data?.data?.content || response.data?.content || [];
-      console.log('Fetched user posts:', postsData);
+      if (!userId) return;
+      const res = await axios.get(`/forum/posts/user/${userId}`, { params: { page: 0, size: 100 } });
+      const postsData = res.data?.data?.content || res.data?.content || [];
       setPosts(postsData);
-
-      // Calculate stats
-      const published = postsData.filter(p => p.status === 'PUBLISHED').length;
-      const draft = postsData.filter(p => p.status === 'DRAFT').length;
-      const totalViews = postsData.reduce((sum, p) => sum + (p.viewCount || 0), 0);
-      const totalLikes = postsData.reduce((sum, p) => sum + (p.likeCount || 0), 0);
-      const totalComments = postsData.reduce((sum, p) => sum + (p.commentCount || 0), 0);
-
       setStats({
         total: postsData.length,
-        published,
-        draft,
-        totalViews,
-        totalLikes,
-        totalComments
+        published: postsData.filter(p => p.status === 'PUBLISHED').length,
+        draft: postsData.filter(p => p.status === 'DRAFT').length,
+        totalViews: postsData.reduce((s, p) => s + (p.viewCount || 0), 0),
+        totalLikes: postsData.reduce((s, p) => s + (p.likeCount || 0), 0),
+        totalComments: postsData.reduce((s, p) => s + (p.commentCount || 0), 0),
       });
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      setPosts([]);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -99,14 +64,9 @@ const UserPostsManagement = () => {
   const handleDeletePost = async (postId) => {
     try {
       await axios.delete(`/forum/posts/${postId}`);
-      setPosts(posts.filter(p => p.postID !== postId));
       setShowDeleteModal(false);
-      alert('Xóa bài viết thành công!');
-
-      // Refresh để cập nhật stats
       fetchUserPosts();
-    } catch (error) {
-      console.error('Error deleting post:', error);
+    } catch {
       alert('Không thể xóa bài viết. Vui lòng thử lại.');
     }
   };
@@ -114,282 +74,284 @@ const UserPostsManagement = () => {
   const handleToggleStatus = async (postId, currentStatus) => {
     try {
       const newStatus = currentStatus === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
-
-      await axios.patch(`/forum/posts/${postId}/status`, {
-        status: newStatus
-      });
-
-      setPosts(posts.map(p =>
-        p.postID === postId ? { ...p, status: newStatus } : p
-      ));
-
-      alert(`Đã ${newStatus === 'PUBLISHED' ? 'xuất bản' : 'ẩn'} bài viết thành công!`);
-    } catch (error) {
-      console.error('Error toggling status:', error);
-      alert('Không thể thay đổi trạng thái. Vui lòng thử lại.');
+      await axios.patch(`/forum/posts/${postId}/status`, { status: newStatus });
+      setPosts(posts.map(p => p.postID === postId ? { ...p, status: newStatus } : p));
+    } catch {
+      alert('Không thể thay đổi trạng thái.');
     }
   };
 
-  const handleCreateSuccess = () => {
-    setShowCreateModal(false);
-    fetchUserPosts(); // Refresh danh sách
+  const formatDate = (str) => {
+    if (!str) return '';
+    return new Date(str).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
-  const filteredPosts = posts.filter(post => {
-    const matchSearch = (post.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       (post.summary || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = filterStatus === 'all' ||
-                       (post.status || 'DRAFT').toLowerCase() === filterStatus.toLowerCase();
+  const STAT_ITEMS = [
+    { label: 'Tổng bài viết', value: stats.total,         icon: LayoutGrid,    color: '#0369a1', bg: '#e0f2fe' },
+    { label: 'Đã xuất bản',   value: stats.published,     icon: CheckCircle2,  color: '#059669', bg: '#dcfce7' },
+    { label: 'Bản nháp',      value: stats.draft,          icon: PenSquare,     color: '#d97706', bg: '#fef9c3' },
+    { label: 'Lượt xem',      value: stats.totalViews,     icon: TrendingUp,    color: '#0891b2', bg: '#cffafe' },
+    { label: 'Lượt thích',    value: stats.totalLikes,     icon: Heart,         color: '#ef4444', bg: '#fee2e2' },
+    { label: 'Bình luận',     value: stats.totalComments,  icon: MessageCircle, color: '#7c3aed', bg: '#ede9fe' },
+  ];
+
+  const FILTER_TABS = [
+    { value: 'all',       label: 'Tất cả',       icon: LayoutGrid   },
+    { value: 'published', label: 'Đã xuất bản',  icon: Eye          },
+    { value: 'draft',     label: 'Bản nháp',     icon: FileText     },
+  ];
+
+  const filteredPosts = posts.filter(p => {
+    const matchSearch = (p.title || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = filterStatus === 'all' || (p.status || '').toLowerCase() === filterStatus;
     return matchSearch && matchStatus;
   });
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Chưa xuất bản';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className={styles.statCard}>
-      <div className={styles.statContent}>
-        <div>
-          <p className={styles.label}>{label}</p>
-          <p className={styles.value}>{value.toLocaleString()}</p>
-        </div>
-        <div className={styles.iconWrapper} style={{ backgroundColor: color }}>
-          <Icon size={24} color="white" />
-        </div>
-      </div>
-    </div>
-  );
-
-  const PostCard = ({ post }) => (
-    <div className={styles.postCard}>
-      <div className={styles.cardBody}>
-        {/* Thumbnail */}
-        <div className={styles.thumbnail}>
-          {post.thumbnailUrl ? (
-            <img
-              src={post.thumbnailUrl}
-              alt={post.title}
-            />
-          ) : (
-            <div className={styles.placeholder}>
-              <Image size={48} />
-            </div>
-          )}
-          <span className={`${styles.statusBadge} ${post.status === 'PUBLISHED' ? styles.published : styles.draft}`}>
-            {post.status === 'PUBLISHED' ? 'Đã xuất bản' : 'Nháp'}
-          </span>
-        </div>
-
-        {/* Content */}
-        <div className={styles.content}>
-          <div className={styles.headerRow}>
-            <h3 className={styles.postTitle}>{post.title}</h3>
-            <button
-              className={styles.menuBtn}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MoreVertical size={20} />
-            </button>
-          </div>
-
-          <p className={styles.summary}>{post.summary}</p>
-
-          <div className={styles.metaInfo}>
-            <span
-              className={styles.categoryBadge}
-              style={{
-                backgroundColor: `${post.categoryColor || '#3b82f6'}15`,
-                color: post.categoryColor || '#3b82f6'
-              }}
-            >
-              {post.categoryName}
-            </span>
-            <span className={styles.date}>
-              <Calendar size={12} />
-              {formatDate(post.publishedAt || post.createdAt)}
-            </span>
-          </div>
-
-          {/* Stats */}
-          <div className={styles.statsRow}>
-            <span><Eye size={16} /> {post.viewCount || 0}</span>
-            <span><Heart size={16} /> {post.likeCount || 0}</span>
-            <span><MessageCircle size={16} /> {post.commentCount || 0}</span>
-          </div>
-
-          {/* Actions */}
-          <div className={styles.actions}>
-            <button
-              className={styles.btnView}
-              onClick={() => window.open(`/forum/post/${post.postID}`, '_blank')}
-            >
-              <Eye size={16} /> Xem
-            </button>
-            <button
-              className={styles.btnEdit}
-              onClick={() => window.location.href = `/posts/${post.postID}/edit`}
-            >
-              <Edit2 size={16} /> Sửa
-            </button>
-            <button
-              className={styles.btnToggle}
-              onClick={() => handleToggleStatus(post.postID, post.status)}
-            >
-              {post.status === 'PUBLISHED' ? (
-                <><EyeOff size={16} /> Ẩn</>
-              ) : (
-                <><Eye size={16} /> Xuất bản</>
-              )}
-            </button>
-            <button
-              className={styles.btnDelete}
-              onClick={() => {
-                setSelectedPost(post);
-                setShowDeleteModal(true);
-              }}
-            >
-              <Trash2 size={16} /> Xóa
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
-      <div className={styles.container}>
-        <div className={styles.wrapper}>
-          {/* Header */}
-          <div className={styles.header}>
-            <div className={styles.headerTop}>
-              <div>
-                <h1>Quản lý bài viết</h1>
-                <p>Quản lý và theo dõi các bài viết của bạn</p>
+      <div className={styles.page}>
+
+        {/* ── Hero banner ── */}
+        <div className={styles.hero}>
+          {/* decorative blobs */}
+          <div className={styles.heroBlob1} />
+          <div className={styles.heroBlob2} />
+
+          {/* left content */}
+          <div className={styles.heroContent}>
+            <div className={styles.heroIconWrap}>
+              <div className={styles.heroIconRing} />
+              <div className={styles.heroIcon}><BookOpen size={24} /></div>
+            </div>
+            <h1 className={styles.heroTitle}>Quản lý bài viết</h1>
+            <p className={styles.heroSubtitle}>Theo dõi và quản lý tất cả bài viết của bạn</p>
+            <button className={styles.heroCreateBtn} onClick={() => setShowCreateModal(true)}>
+              <Plus size={16} /> Viết bài mới
+            </button>
+          </div>
+
+          {/* right side: slider + floating cards */}
+          <div className={styles.heroRight}>
+            {/* mosaic photo collage */}
+            <div className={styles.mosaic}>
+              <div className={`${styles.mosaicCell} ${styles.mosaicBig}`}>
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="" loading="lazy" />
+                <div className={styles.mosaicOverlay}><MapPin size={13} /> Hạ Long, VN</div>
               </div>
-              <button
-                className={styles.createBtn}
-                onClick={() => setShowCreateModal(true)}
-              >
-                <Plus size={20} />
-                Tạo bài viết mới
-              </button>
+              <div className={styles.mosaicCol}>
+                <div className={`${styles.mosaicCell} ${styles.mosaicSm}`}>
+                  <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=240&h=130&fit=crop" alt="" loading="lazy" />
+                  <div className={styles.mosaicOverlay}><MapPin size={12} /> Santorini</div>
+                </div>
+                <div className={`${styles.mosaicCell} ${styles.mosaicSm}`}>
+                  <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=240&h=130&fit=crop" alt="" loading="lazy" />
+                  <div className={styles.mosaicOverlay}><MapPin size={12} /> Alps, CH</div>
+                </div>
+              </div>
+              <div className={styles.mosaicCol}>
+                <div className={`${styles.mosaicCell} ${styles.mosaicSm}`}>
+                  <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=240&h=130&fit=crop" alt="" loading="lazy" />
+                  <div className={styles.mosaicOverlay}><MapPin size={12} /> Maldives</div>
+                </div>
+                <div className={`${styles.mosaicCell} ${styles.mosaicSm}`}>
+                  <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=240&h=130&fit=crop" alt="" loading="lazy" />
+                  <div className={styles.mosaicOverlay}><MapPin size={12} /> Road trip</div>
+                </div>
+              </div>
+              <div className={`${styles.mosaicCell} ${styles.mosaicBig}`}>
+                <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=300&fit=crop" alt="" loading="lazy" />
+                <div className={styles.mosaicOverlay}><MapPin size={13} /> Kyoto, JP</div>
+              </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className={styles.statsGrid}>
-              <StatCard icon={FileText} label="Tổng bài viết" value={stats.total} color="#3b82f6" />
-              <StatCard icon={Eye} label="Đã xuất bản" value={stats.published} color="#10b981" />
-              <StatCard icon={EyeOff} label="Bản nháp" value={stats.draft} color="#f59e0b" />
-              <StatCard icon={TrendingUp} label="Lượt xem" value={stats.totalViews} color="#8b5cf6" />
-              <StatCard icon={Heart} label="Lượt thích" value={stats.totalLikes} color="#ef4444" />
-              <StatCard icon={MessageCircle} label="Bình luận" value={stats.totalComments} color="#6366f1" />
-            </div>
-
-            {/* Search and Filter */}
-            <div className={styles.filterBar}>
-              <div className={styles.searchWrapper}>
-                <Search className={styles.searchIcon} size={20} />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm bài viết..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            {/* floating stat badges */}
+            <div className={styles.floatCards}>
+              <div className={`${styles.floatCard} ${styles.floatCard1}`}>
+                <div className={styles.floatIcon} style={{ background: 'rgba(16,185,129,0.3)' }}>
+                  <CheckCircle2 size={15} color="#6ee7b7" />
+                </div>
+                <div>
+                  <span>{stats.published} bài xuất bản<small>Đã công khai</small></span>
+                </div>
               </div>
-              <div className={styles.filterWrapper}>
-                <Filter className={styles.filterIcon} size={20} />
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="published">Đã xuất bản</option>
-                  <option value="draft">Bản nháp</option>
-                </select>
+              <div className={`${styles.floatCard} ${styles.floatCard2}`}>
+                <div className={styles.floatIcon} style={{ background: 'rgba(249,115,22,0.3)' }}>
+                  <TrendingUp size={15} color="#fdba74" />
+                </div>
+                <div>
+                  <span>{stats.totalViews.toLocaleString()} lượt xem<small>Tổng lượt đọc</small></span>
+                </div>
+              </div>
+              <div className={`${styles.floatCard} ${styles.floatCard3}`}>
+                <div className={styles.floatIcon} style={{ background: 'rgba(239,68,68,0.25)' }}>
+                  <Heart size={15} color="#fca5a5" />
+                </div>
+                <div>
+                  <span>{stats.totalLikes} lượt thích<small>Từ cộng đồng</small></span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Posts List */}
+          {/* wave bottom */}
+          <div className={styles.heroWave}>
+            <svg viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z" fill="#e0f2fe" />
+            </svg>
+          </div>
+        </div>
+
+        {/* ── Stats strip ── */}
+        <div className={styles.statsStrip}>
+          {STAT_ITEMS.map(({ label, value, icon: Icon, color, bg }) => (
+            <div key={label} className={styles.statCard}>
+              <div className={styles.statIconBox} style={{ background: bg }}>
+                <Icon size={18} style={{ color }} />
+              </div>
+              <div className={styles.statValue}>{value.toLocaleString()}</div>
+              <div className={styles.statLabel}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Content area ── */}
+        <div className={styles.container}>
+
+          {/* Filter bar */}
+          <div className={styles.filterBar}>
+            <div className={styles.searchWrapper}>
+              <Search size={15} />
+              <input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className={styles.filterTabs}>
+              {FILTER_TABS.map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  className={`${styles.filterTab} ${filterStatus === value ? styles.active : ''}`}
+                  onClick={() => setFilterStatus(value)}
+                >
+                  <Icon size={13} />{label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Posts */}
           {loading ? (
             <div className={styles.loading}>
-              <div className={styles.spinner}></div>
-              <p>Đang tải bài viết...</p>
+              <div className={styles.spinner} />
+              Đang tải bài viết...
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className={styles.emptyState}>
-              <FileText className={styles.emptyIcon} size={64} />
+              <FileText size={56} className={styles.emptyIcon} />
               <h3>Chưa có bài viết nào</h3>
-              <p>
-                {searchTerm || filterStatus !== 'all'
-                  ? 'Không tìm thấy bài viết phù hợp với bộ lọc của bạn'
-                  : 'Bắt đầu tạo bài viết đầu tiên của bạn ngay hôm nay!'
-                }
-              </p>
+              <p>{searchTerm || filterStatus !== 'all' ? 'Không tìm thấy bài viết phù hợp' : 'Hãy tạo bài viết đầu tiên!'}</p>
               {!searchTerm && filterStatus === 'all' && (
-                <button
-                  className={styles.createBtn}
-                  onClick={() => setShowCreateModal(true)}
-                >
-                  <Plus size={20} />
-                  Tạo bài viết đầu tiên
+                <button className={styles.emptyBtn} onClick={() => setShowCreateModal(true)}>
+                  <Plus size={16} /> Tạo bài viết đầu tiên
                 </button>
               )}
             </div>
           ) : (
             <div className={styles.postList}>
               {filteredPosts.map(post => (
-                <PostCard key={post.postID} post={post} />
-              ))}
-            </div>
-          )}
+                <div key={post.postID} className={styles.postCard}>
+                  <div className={styles.postCardInner}>
+                    <div className={styles.postThumbnail}>
+                      {post.thumbnailUrl
+                        ? <img src={post.thumbnailUrl} alt={post.title} />
+                        : <div className={styles.thumbnailPlaceholder}><ImageIcon size={28} /></div>
+                      }
+                      <span className={`${styles.statusBadge} ${post.status === 'PUBLISHED' ? styles.published : styles.draft}`}>
+                        {post.status === 'PUBLISHED'
+                          ? <><Eye size={10} /> Xuất bản</>
+                          : <><FileText size={10} /> Nháp</>
+                        }
+                      </span>
+                    </div>
 
-          {/* Delete Confirmation Modal */}
-          {showDeleteModal && (
-            <div className={styles.modalOverlay}>
-              <div className={styles.modalContent}>
-                <div className={styles.modalIcon}>
-                  <Trash2 size={24} />
+                    <div className={styles.postBody}>
+                      <h3 className={styles.postTitle}>{post.title}</h3>
+                      {post.summary && <p className={styles.postSummary}>{post.summary}</p>}
+
+                      <div className={styles.postMeta}>
+                        <span className={styles.metaItem}><Calendar size={12} />{formatDate(post.createdAt)}</span>
+                        <span className={styles.metaItem}><Eye size={12} />{post.viewCount || 0}</span>
+                        <span className={styles.metaItem}><Heart size={12} />{post.likeCount || 0}</span>
+                        <span className={styles.metaItem}><MessageCircle size={12} />{post.commentCount || 0}</span>
+                        {post.categoryName && (
+                          <span
+                            className={styles.categoryChip}
+                            style={{ background: `${post.categoryColor || '#0ea5e9'}18`, color: post.categoryColor || '#0369a1' }}
+                          >
+                            {post.categoryName}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className={styles.postActions}>
+                        <button className={`${styles.actionBtn} ${styles.btnView}`}
+                          onClick={() => window.open(`/forum/post/${post.postID}`, '_blank')}>
+                          <Eye size={12} /> Xem
+                        </button>
+                        <button className={`${styles.actionBtn} ${styles.btnEdit}`}
+                          onClick={() => navigate(`/forum/post/${post.postID}/edit`)}>
+                          <Edit2 size={12} /> Sửa
+                        </button>
+                        <button
+                          className={`${styles.actionBtn} ${post.status === 'PUBLISHED' ? styles.btnToggleHide : styles.btnToggle}`}
+                          onClick={() => handleToggleStatus(post.postID, post.status)}
+                        >
+                          {post.status === 'PUBLISHED'
+                            ? <><EyeOff size={12} /> Ẩn</>
+                            : <><Eye size={12} /> Xuất bản</>
+                          }
+                        </button>
+                        <button className={`${styles.actionBtn} ${styles.btnDelete}`}
+                          onClick={() => { setSelectedPost(post); setShowDeleteModal(true); }}>
+                          <Trash2 size={12} /> Xóa
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3>Xác nhận xóa bài viết</h3>
-                <p>
-                  Bạn có chắc chắn muốn xóa bài viết "<strong>{selectedPost?.title}</strong>"?
-                  Hành động này không thể hoàn tác.
-                </p>
-                <div className={styles.modalActions}>
-                  <button
-                    onClick={() => setShowDeleteModal(false)}
-                    className={styles.btnCancel}
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(selectedPost.postID)}
-                    className={styles.btnConfirm}
-                  >
-                    Xóa bài viết
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
           )}
         </div>
       </div>
 
-      {/* Create Post Modal */}
+      {/* ── Delete confirm modal ── */}
+      {showDeleteModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowDeleteModal(false)}>
+          <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalIcon}><AlertTriangle size={26} /></div>
+            <h3 className={styles.modalTitle}>Xóa bài viết?</h3>
+            <p className={styles.modalDesc}>
+              Bạn chắc chắn muốn xóa "<strong>{selectedPost?.title}</strong>"?<br />
+              Hành động này không thể hoàn tác.
+            </p>
+            <div className={styles.modalActions}>
+              <button className={styles.btnCancel} onClick={() => setShowDeleteModal(false)}>Hủy</button>
+              <button className={styles.btnConfirmDelete} onClick={() => handleDeletePost(selectedPost.postID)}>
+                Xóa bài viết
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CreatePost
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         categories={categories}
-        onSuccess={handleCreateSuccess}
+        onSuccess={() => { setShowCreateModal(false); fetchUserPosts(); }}
       />
     </>
   );

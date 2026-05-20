@@ -1,302 +1,209 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ForumLayout from './ForumLayout/ForumLayout';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MessageSquarePlus, Search, TrendingUp, Clock, Flame, BookOpen, Compass } from 'lucide-react';
 import PostList from './PostList/PostList';
-import CreatePost from './CreatePost/CreatePost';
 import CategorySidebar from './CategorySidebar/CategorySidebar';
 import TagCloud from './TagCloud/TagCloud';
 import TrendingPosts from './TrendingPosts/TrendingPosts';
 import UserStats from './UserStats/UserStats';
-import styles from './ForumPage.module.scss';
+import CreatePost from './CreatePost/CreatePost';
 import axios from '../../utils/axiosCustomize';
 import { useAuth } from '../../context/AuthContext';
-import UserPostsManagement from './UserPostsManagement/UserPostsManagement.jsx';
+import styles from './ForumPage.module.scss';
 
-// Component con để tách riêng phần header tĩnh
-const ForumHeader = React.memo(({ onSearchChange, onSortChange, filters }) => {
-  return (
-    <div className={styles.stickyHeaderWrapper}>
-      <div className={styles.forumHeaderSlider}>
-        <div className={styles.sliderTrack}>
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766476201/tourism_app_tours/avatars/bxwsqnq7o53u9z8xxrjn.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766406016/tourism_app_tours/avatars/xhrfv1pz6lsftjowg2su.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766344857/tourism_app_tours/review_images/vfiri1ypqlk2vdn71pyl.jpg" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766333453/tourism_app_tours/SN5-002-100126VN-D/du2zr5ac6vmp01zlgdmp.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766136366/tourism_app_tours/NDSGN596/om1jrvehzbdgu2aq5fo5.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766133215/tourism_app_tours/NDCRV550/jfzv0spkzd2q9gbeu3h7.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766130120/tourism_app_tours/NDSGN1064/dpjpmhlqmuzjcostqcmj.webp" alt="Du lịch Việt Nam" />
-          <img src="https://res.cloudinary.com/dnt8vx1at/image/upload/v1766130110/tourism_app_tours/NDSGN1064/ayx6akdtasl1wd64o0tb.webp" alt="Du lịch Việt Nam" />
-        </div>
-      </div>
-
-      <div className={styles.forumFilters}>
-        <div className={styles.filterGroup}>
-          <select
-            className={styles.filterSelect}
-            value={
-              filters.sortBy === 'createdAt' ? 'newest' :
-              filters.sortBy === 'viewCount' ? 'popular' :
-              filters.sortBy === 'likeCount' ? 'mostLiked' :
-              filters.sortBy === 'commentCount' ? 'mostCommented' : 'newest'
-            }
-            onChange={onSortChange}
-          >
-            <option value="newest">Mới nhất</option>
-            <option value="popular">Phổ biến</option>
-            <option value="mostLiked">Nhiều lượt thích</option>
-            <option value="mostCommented">Nhiều bình luận</option>
-            <option value="mostViewed">Nhiều lượt xem</option>
-          </select>
-
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Tìm kiếm bài viết..."
-            value={filters.searchQuery}
-            onChange={onSearchChange}
-          />
-        </div>
-      </div>
-    </div>
-  );
-});
-
-ForumHeader.displayName = 'ForumHeader';
+const FILTER_TABS = [
+  { key: 'newest', label: 'Mới nhất', icon: Clock },
+  { key: 'trending', label: 'Xu hướng', icon: TrendingUp },
+  { key: 'popular', label: 'Nổi bật', icon: Flame },
+];
 
 const ForumPage = () => {
-  const navigate = useNavigate();
-  const { user: authUser } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.userId || user?.userID;
   const [posts, setPosts] = useState([]);
-  const [trendingPosts, setTrendingPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [filters, setFilters] = useState({
-    page: 0,
-    size: 10,
-    sortBy: 'createdAt',
-    sortDirection: 'DESC',
-    categoryId: null,
-    tagId: null,
-    searchQuery: ''
-  });
-
-  const handleManagerPostClick = () => {
-    navigate('/forum/my-posts');
-  }
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
-    if (authUser) {
-      fetchUserStats();
-    } else {
-      setCurrentUser(null);
-    }
-  }, [authUser]);
-
-  const fetchUserStats = async () => {
-    try {
-      const response = await axios.get('/forum/posts/user/stats', { params: { userId: authUser?.userId || authUser?.userID } });
-      const stats = response.data.data || {};
-      setCurrentUser({
-        ...authUser,
-        statistics: {
-          totalPosts: stats.postCount || stats.totalPosts || 0,
-          totalComments: stats.commentCount || stats.totalComments || 0,
-          totalLikesReceived: stats.likeCount || stats.totalLikesReceived || 0,
-          reputationPoints: stats.reputationPoints || 0,
-          totalFollowers: stats.totalFollowers || 0
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching user stats:', error);
-      setCurrentUser(authUser);
-    }
-  };
-
-  // Chỉ fetch posts khi filters thay đổi
-  useEffect(() => {
-    fetchPosts();
-  }, [filters]);
-
-  // Fetch data ban đầu (categories, tags, trending) - chỉ 1 lần
-  useEffect(() => {
-    fetchInitialStaticData();
+    fetchCategories();
   }, []);
 
-  const fetchInitialStaticData = async () => {
+  useEffect(() => {
+    setPage(0);
+    setPosts([]);
+    fetchPosts(0, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedTag, searchTerm, sortBy, userId]);
+
+  const fetchCategories = async () => {
     try {
-      const [trendingRes, categoriesRes, tagsRes] = await Promise.all([
-        axios.get('/forum/posts/trending', { params: { page: 0, size: 5 } }),
-        axios.get('/forum/categories'),
-        axios.get('/forum/tags/popular', { params: { limit: 15 } })
-      ]);
-
-      const getContent = (res) => res.data?.data?.content || res.data?.content || res.data || [];
-
-      setTrendingPosts(getContent(trendingRes));
-      setCategories(categoriesRes.data?.data || categoriesRes.data || []);
-      setTags(tagsRes.data?.data || tagsRes.data || []);
-    } catch (error) {
-      console.error('Error fetching static data:', error);
+      const res = await axios.get('/forum/categories');
+      setCategories(res.data?.data || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
     }
   };
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async (pageNum = 0, reset = false) => {
     setLoading(true);
     try {
-      const params = {
-        page: filters.page,
-        size: filters.size,
-        sortBy: filters.sortBy,
-        sortDirection: filters.sortDirection,
-        ...(filters.categoryId && { categoryId: filters.categoryId }),
-        ...(filters.tagId && { tagId: filters.tagId }),
-        ...(filters.searchQuery?.trim() && { search: filters.searchQuery.trim() })
-      };
-
-      const response = await axios.get('/forum/posts', { params });
-      const getContent = (res) => res.data?.data?.content || res.data?.content || res.data || [];
-      setPosts(getContent(response));
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      setPosts([]);
+      const sortMap = { newest: 'createdAt', trending: 'viewCount', popular: 'likeCount' };
+      const res = await axios.get('/forum/posts', {
+        params: {
+          page: pageNum,
+          size: 10,
+          sortBy: sortMap[sortBy] || 'createdAt',
+          sortDirection: 'DESC',
+          categoryId: selectedCategory || undefined,
+          tagId: selectedTag || undefined,
+          search: searchTerm || undefined,
+          userId: userId || undefined,
+        },
+      });
+      const data = res.data?.data;
+      const content = data?.content || [];
+      setPosts(prev => reset ? content : [...prev, ...content]);
+      setHasMore(!data?.last);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
     } finally {
       setLoading(false);
     }
+  }, [selectedCategory, selectedTag, searchTerm, sortBy, userId]);
+
+  const handleLoadMore = () => {
+    const next = page + 1;
+    setPage(next);
+    fetchPosts(next);
   };
 
-  const handleCategorySelect = (categoryId) => {
-    setFilters(prev => ({
-      ...prev,
-      categoryId: categoryId,
-      tagId: null,
-      page: 0
-    }));
+  const handleCreateSuccess = () => {
+    setShowCreateModal(false);
+    setPage(0);
+    setPosts([]);
+    fetchPosts(0, true);
   };
 
-  const handleTagSelect = (tagId) => {
-    setFilters(prev => ({
-      ...prev,
-      tagId: tagId,
-      categoryId: null,
-      page: 0
-    }));
-  };
-
-  const handleSearchChange = (e) => {
-    setFilters(prev => ({
-      ...prev,
-      searchQuery: e.target.value,
-      page: 0
-    }));
-  };
-
-  const handleSortChange = (e) => {
-    const value = e.target.value;
-    let sortBy = 'createdAt';
-    let sortDirection = 'DESC';
-
-    switch (value) {
-      case 'popular':
-      case 'mostViewed':
-        sortBy = 'viewCount';
-        break;
-      case 'mostLiked':
-        sortBy = 'likeCount';
-        break;
-      case 'mostCommented':
-        sortBy = 'commentCount';
-        break;
-      default:
-        sortBy = 'createdAt';
-    }
-
-    setFilters(prev => ({
-      ...prev,
-      sortBy,
-      sortDirection,
-      page: 0
-    }));
-  };
-
-  const handlePostClick = (post) => {
-    navigate(`/forum/post/${post.postID}`);
-  };
-
-  // Memo để tránh re-render không cần thiết
-  const leftSidebarContent = useMemo(() => (
+  const leftSidebar = (
     <>
       <CategorySidebar
         categories={categories}
-        selectedCategory={filters.categoryId}
-        onSelectCategory={handleCategorySelect}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
       />
-      <TagCloud
-        tags={tags}
-        selectedTag={filters.tagId}
-        onSelectTag={handleTagSelect}
-      />
+      <TagCloud selectedTag={selectedTag} onSelectTag={setSelectedTag} />
     </>
-  ), [categories, tags, filters.categoryId, filters.tagId]);
+  );
 
-  const rightSidebarContent = useMemo(() => (
+  const rightSidebar = (
     <>
-      <UserStats user={currentUser} onManagePostsClick={handleManagerPostClick} />
-      <TrendingPosts posts={trendingPosts} onPostClick={handlePostClick} />
+      <UserStats />
+      <TrendingPosts />
     </>
-  ), [currentUser, trendingPosts]);
+  );
 
   return (
     <div className={styles.forumPage}>
-      <ForumLayout
-        leftSidebarContent={leftSidebarContent}
-        rightSidebarContent={rightSidebarContent}
-      >
-        <div className={styles.forumContent}>
-          {/* Header tĩnh - không re-render khi posts thay đổi */}
-          <ForumHeader
-            filters={filters}
-            onSearchChange={handleSearchChange}
-            onSortChange={handleSortChange}
-          />
-
-          {/* Chỉ phần danh sách posts re-render */}
-          <div className={styles.scrollableContent}>
-            {authUser && (
-              <div style={{ padding: '12px 0 4px', display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  style={{
-                    background: '#1a73e8', color: '#fff', border: 'none',
-                    borderRadius: 8, padding: '10px 20px', fontWeight: 600,
-                    cursor: 'pointer', fontSize: 14
-                  }}
-                >
-                  + Tạo bài viết
-                </button>
-              </div>
-            )}
-            <PostList
-              posts={posts}
-              loading={loading}
-              onPostClick={handlePostClick}
-              emptyMessage="Chưa có bài viết nào phù hợp."
-            />
+      <div className={styles.heroSection}>
+        {/* Left: text */}
+        <div className={styles.heroContent}>
+          <div className={styles.heroIcon}>
+            <Compass size={26} />
+          </div>
+          <h1 className={styles.heroTitle}>Cộng đồng Du lịch</h1>
+          <p className={styles.heroSubtitle}>Chia sẻ trải nghiệm, khám phá điểm đến mới cùng hàng nghìn người yêu du lịch</p>
+          <div className={styles.heroActions}>
+            <button className={styles.createBtn} onClick={() => setShowCreateModal(true)}>
+              <MessageSquarePlus size={18} />
+              Viết bài mới
+            </button>
+            <button className={styles.searchBtn} onClick={() => setShowSearch(s => !s)}>
+              <Search size={18} />
+              Tìm kiếm
+            </button>
           </div>
         </div>
-      </ForumLayout>
+
+        {/* Right: sliding images */}
+        <div className={styles.heroSlider}>
+          <div className={styles.sliderTrack}>
+            {[
+              'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=320&h=200&fit=crop',
+              // duplicate for seamless loop
+              'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=320&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=320&h=200&fit=crop',
+            ].map((src, i) => (
+              <div key={i} className={styles.slideCard}>
+                <img src={src} alt={`travel-${i}`} loading="lazy" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.mainContainer}>
+        <div className={styles.leftSidebar}>{leftSidebar}</div>
+
+        <div className={styles.mainContent}>
+          <div className={styles.filterBar}>
+            {showSearch && (
+              <div className={styles.searchWrapper}>
+                <Search size={16} />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bài viết..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            )}
+            <div className={styles.filterTabs}>
+              {FILTER_TABS.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  className={`${styles.filterTab} ${sortBy === key ? styles.active : ''}`}
+                  onClick={() => setSortBy(key)}
+                >
+                  <Icon size={14} />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <PostList
+            posts={posts}
+            loading={loading}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+          />
+        </div>
+
+        <div className={styles.rightSidebar}>{rightSidebar}</div>
+      </div>
 
       <CreatePost
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
         categories={categories}
-        onSuccess={() => {
-          setIsCreateModalOpen(false);
-          fetchPosts();
-        }}
+        onSuccess={handleCreateSuccess}
       />
     </div>
   );

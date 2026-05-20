@@ -45,7 +45,7 @@ $radius-bubble: 18px;
   margin-top: 10px;
 
   // ✅ FIX: Bật lại tương tác cho nút này (để bấm được)
-  pointer-events: auto; 
+  pointer-events: auto;
 
   &:hover {
     transform: scale(1.1);
