@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
-import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt } from 'react-icons/fa';
+import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo } from 'react-icons/fa';
 import { IoIosAirplane } from "react-icons/io";
 import { GiShipBow } from "react-icons/gi";
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +10,7 @@ import websocketService from '../../services/websocket';
 import futureLogoLight from '../../assets/brand/future-logo-light.svg';
 import futureLogoDark from '../../assets/brand/future-logo-dark.svg';
 
-const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, onViewAll }) => {
+const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, onViewAll, onNotificationClick }) => {
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -28,10 +28,12 @@ const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, on
     }, [onClose]);
 
     const formatTime = (timestamp) => {
+        if (!timestamp) return 'Vừa xong';
         const now = new Date();
         const time = new Date(timestamp);
+        if (isNaN(time.getTime())) return 'Vừa xong';
         const diff = Math.floor((now - time) / 1000);
-
+        if (diff < 0) return 'Vừa xong';
         if (diff < 60) return 'Vừa xong';
         if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
         if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
@@ -39,57 +41,93 @@ const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, on
         return time.toLocaleDateString('vi-VN');
     };
 
-    const getNotificationIcon = (type) => {
+    const getNotificationMeta = (type) => {
         switch (type) {
+            case 'POST_LIKED':
+                return { icon: <FaHeart />, color: '#ef4444', bg: '#fef2f2' };
+            case 'POST_COMMENTED':
+                return { icon: <FaComment />, color: '#3b82f6', bg: '#eff6ff' };
+            case 'COMMENT_REPLIED':
+                return { icon: <FaReply />, color: '#8b5cf6', bg: '#f5f3ff' };
+            case 'COMMENT_LIKED':
+                return { icon: <FaHeart />, color: '#f97316', bg: '#fff7ed' };
+            case 'NEW_POST_FROM_FOLLOWING':
+                return { icon: <FaUserPlus />, color: '#10b981', bg: '#ecfdf5' };
             case 'NEW_COUPON':
             case 'COUPON_UPDATED':
-            case 'COUPON_EXPIRING': return '🎟️';
+            case 'COUPON_EXPIRING':
+                return { icon: <FaTicketAlt />, color: '#f59e0b', bg: '#fffbeb' };
             case 'BOOKING_CONFIRMED':
-            case 'BOOKING_CANCELLED': return '✈️';
-            case 'PAYMENT_SUCCESS': return '💳';
-            default: return '📢';
+                return { icon: <FaCheckCircle />, color: '#10b981', bg: '#ecfdf5' };
+            case 'BOOKING_CANCELLED':
+                return { icon: <FaTimesCircle />, color: '#ef4444', bg: '#fef2f2' };
+            case 'REFUND_REQUESTED':
+                return { icon: <FaUndo />, color: '#f59e0b', bg: '#fffbeb' };
+            case 'REFUND_APPROVED':
+                return { icon: <FaCheckCircle />, color: '#10b981', bg: '#ecfdf5' };
+            case 'REFUND_REJECTED':
+                return { icon: <FaTimesCircle />, color: '#ef4444', bg: '#fef2f2' };
+            case 'PAYMENT_SUCCESS':
+                return { icon: <FaCreditCard />, color: '#3b82f6', bg: '#eff6ff' };
+            default:
+                return { icon: <FaExclamationCircle />, color: '#6b7280', bg: '#f3f4f6' };
         }
     };
+
+    const unreadCount = notifications.filter(n => !n.isRead).length;
 
     return (
         <div className={styles.notificationDropdown} ref={dropdownRef}>
             <div className={styles.notificationHeader}>
-                <h3>Thông báo</h3>
+                <div className={styles.notifHeaderLeft}>
+                    <FaBell className={styles.notifHeaderIcon} />
+                    <span>Thông báo</span>
+                </div>
+                {unreadCount > 0 && (
+                    <span className={styles.notifBadge}>{unreadCount} mới</span>
+                )}
             </div>
+
             <div className={styles.notificationList}>
                 {notifications.length === 0 ? (
                     <div className={styles.emptyNotification}>
-                        <FaBell className={styles.emptyIcon} />
-                        <p>Không có thông báo mới</p>
+                        <div className={styles.emptyIconWrap}>
+                            <FaBell className={styles.emptyIcon} />
+                        </div>
+                        <p>Chưa có thông báo nào</p>
+                        <span>Các hoạt động sẽ xuất hiện ở đây</span>
                     </div>
                 ) : (
-                    notifications.map((notification) => (
-                        <div
-                            key={notification.notificationID}
-                            className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
-                            onClick={() => onMarkAsRead(notification.notificationID)}
-                        >
-                            <div className={styles.notificationIcon}>
-                                {getNotificationIcon(notification.type)}
+                    notifications.map((notification) => {
+                        const meta = getNotificationMeta(notification.type);
+                        return (
+                            <div
+                                key={notification.notificationID}
+                                className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
+                                onClick={() => onNotificationClick(notification)}
+                            >
+                                <div
+                                    className={styles.notifIconWrap}
+                                    style={{ background: meta.bg, color: meta.color }}
+                                >
+                                    {meta.icon}
+                                </div>
+                                <div className={styles.notificationContent}>
+                                    <h4>{notification.title}</h4>
+                                    <p>{notification.message}</p>
+                                    <span className={styles.notificationTime}>
+                                        {formatTime(notification.createdAt)}
+                                    </span>
+                                </div>
+                                {!notification.isRead && <div className={styles.unreadDot} />}
                             </div>
-                            <div className={styles.notificationContent}>
-                                <h4>{notification.title}</h4>
-                                <p>{notification.message}</p>
-                                <span className={styles.notificationTime}>
-                                    {formatTime(notification.createdAt)}
-                                </span>
-                            </div>
-                            {!notification.isRead && <div className={styles.unreadDot}></div>}
-                        </div>
-                    ))
+                        );
+                    })
                 )}
             </div>
-           {notifications.length > 0 && (
-                <div 
-                    className={styles.viewAllLink} 
-                    onClick={onViewAll}
-                    style={{ cursor: 'pointer' }} 
-                >
+
+            {notifications.length > 0 && (
+                <div className={styles.viewAllLink} onClick={onViewAll}>
                     Xem tất cả thông báo
                 </div>
             )}
@@ -212,7 +250,13 @@ const Header = () => {
                 params: { userId, page: 0, size: 10 }
             });
             console.log('✅ Notifications Response:', response);
-            setNotifications(response.data.content || []);
+            const sorted = (response.data.content || []).sort((a, b) => {
+                if (!a.createdAt && !b.createdAt) return b.notificationID - a.notificationID;
+                if (!a.createdAt) return 1;
+                if (!b.createdAt) return -1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            setNotifications(sorted);
         } catch (error) {
             console.error('❌ Error fetching notifications:', error);
             setNotifications([]);
@@ -237,6 +281,56 @@ const Header = () => {
             console.error('❌ Error marking notification as read:', error);
             fetchNotifications();
             fetchUnreadCount();
+        }
+    };
+
+    const getNotificationLink = (notification) => {
+        const type = notification.type;
+        const meta = notification.metadata;
+        const postId = meta?.postId;
+        const commentId = meta?.commentId;
+        const parentCommentId = meta?.parentCommentId;
+
+        if (['POST_LIKED', 'POST_COMMENTED', 'COMMENT_REPLIED', 'COMMENT_LIKED', 'NEW_POST_FROM_FOLLOWING'].includes(type)) {
+            if (!postId) return '/forum';
+            // Với comment/reply → scroll đến đúng comment đó
+            const anchor = commentId
+                ? `#comment-${parentCommentId || commentId}`
+                : '';
+            return `/forum/post/${postId}${anchor}`;
+        }
+        if (['BOOKING_CONFIRMED', 'BOOKING_CANCELLED', 'BOOKING_PENDING', 'REFUND_REQUESTED', 'REFUND_APPROVED', 'REFUND_REJECTED',
+             'BOOKING_REFUND_REQUESTED', 'BOOKING_REFUNDED'].includes(type)) {
+            return '/information/transaction';
+        }
+        if (['NEW_COUPON', 'COUPON_UPDATED', 'COUPON_EXPIRING'].includes(type)) {
+            return '/tours';
+        }
+        return null;
+    };
+
+    const extractBookingCode = (notification) => {
+        // 1. Ưu tiên lấy từ metadata (thông báo mới)
+        if (notification.metadata?.bookingCode) return notification.metadata.bookingCode;
+        // 2. Fallback: extract từ message text (thông báo cũ chưa có metadata)
+        //    Pattern: "Booking BKxxxxxxxx " hoặc "booking BKxxxxxxxx "
+        const match = (notification.message || '').match(/[Bb]ooking\s+(BK[A-Za-z0-9]+)/);
+        return match ? match[1] : null;
+    };
+
+    const handleNotificationItemClick = async (notification) => {
+        if (!notification.isRead) {
+            handleMarkAsRead(notification.notificationID);
+        }
+        setIsNotificationOpen(false);
+        const link = getNotificationLink(notification);
+        if (!link) return;
+
+        if (link === '/information/transaction') {
+            const bookingCode = extractBookingCode(notification);
+            navigate(link, bookingCode ? { state: { bookingCode } } : {});
+        } else {
+            navigate(link);
         }
     };
 
@@ -440,6 +534,7 @@ const Header = () => {
                                     notifications={notifications}
                                     onMarkAsRead={handleMarkAsRead}
                                     onViewAll={handleViewAllNotifications}
+                                    onNotificationClick={handleNotificationItemClick}
                                 />
                             )}
                         </div>

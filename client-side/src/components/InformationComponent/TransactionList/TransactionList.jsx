@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { ClipboardList, Inbox, Search } from 'lucide-react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { ClipboardList, Inbox, Search, X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import useBookings from '../../../hook/useBookings.ts';
 import useWebSocket from '../../../hook/useWebSocket.ts';
 import TransactionListItem from './TransactionListItem/TransactionListItem';
@@ -17,8 +18,25 @@ const statusTabs = [
 ];
 
 const TransactionList = ({ user }) => {
+    const location = useLocation();
+    const searchInputRef = useRef(null);
     const [activeStatus, setActiveStatus] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [highlightedCode, setHighlightedCode] = useState(null);
+
+    // Auto-fill search khi navigate từ thông báo booking
+    useEffect(() => {
+        const code = location.state?.bookingCode;
+        if (code) {
+            setSearchTerm(code);
+            setActiveStatus(null);
+            setHighlightedCode(code);
+            // Focus input để user thấy rõ
+            setTimeout(() => searchInputRef.current?.focus(), 100);
+            // Clear state khỏi history để không re-trigger khi back/forward
+            window.history.replaceState({}, '');
+        }
+    }, [location.state]);
 
     const { bookings, loading, error, refetch, silentRefetch, updateBookingInList } = useBookings(
         user?.id || user?.userID || -1,
@@ -75,14 +93,28 @@ const TransactionList = ({ user }) => {
                         </div>
                     </div>
 
-                    <label className={styles.searchBox}>
+                    <label className={`${styles.searchBox} ${highlightedCode ? styles.searchHighlighted : ''}`}>
                         <Search size={18} strokeWidth={2.2} className={styles.searchIcon} />
                         <input
+                            ref={searchInputRef}
                             value={searchTerm}
-                            onChange={(event) => setSearchTerm(event.target.value)}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                if (highlightedCode) setHighlightedCode(null);
+                            }}
                             placeholder="Tìm mã booking, tên chuyến đi..."
                             className={styles.searchInput}
                         />
+                        {searchTerm && (
+                            <button
+                                className={styles.searchClear}
+                                onClick={() => { setSearchTerm(''); setHighlightedCode(null); }}
+                                type="button"
+                                title="Xóa tìm kiếm"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                     </label>
                 </div>
 

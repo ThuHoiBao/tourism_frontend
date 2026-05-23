@@ -1,27 +1,55 @@
-import React, { useEffect } from 'react';
-import { Plus, Trash2, Star, Image, Video, Upload, Grid } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Plus, Trash2, Star, Image as ImageIcon, Video, Upload, UploadCloud,
+  GripVertical, Eye, FileImage, FileVideo, AlertCircle
+} from 'lucide-react';
 import { toast } from 'react-toastify';
 import styles from './TabStyles.module.scss';
 
-const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
+const MAX_IMG_MB   = 5;
+const MAX_VIDEO_MB = 100;
 
-  useEffect(() => {
-    return () => {
-      images.forEach(img => { if (img._previewUrl) URL.revokeObjectURL(img._previewUrl); });
-      mediaList.forEach(m => { if (m._previewUrl) URL.revokeObjectURL(m._previewUrl); });
-    };
+const fmtSize = (bytes) => {
+  if (!bytes && bytes !== 0) return '';
+  if (bytes < 1024)        return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+};
+
+const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
+  // Drag state cho reorder ảnh
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  // Drag state cho drop zone upload
+  const [dragOver, setDragOver] = useState(false);
+  const dropZoneRef = useRef(null);
+  // Preview overlay (lightbox-mini)
+  const [previewSrc, setPreviewSrc] = useState(null);
+
+  useEffect(() => () => {
+    images.forEach(img => { if (img._previewUrl) URL.revokeObjectURL(img._previewUrl); });
+    mediaList.forEach(m => { if (m._previewUrl) URL.revokeObjectURL(m._previewUrl); });
+    // eslint-disable-next-line
   }, []);
 
   // ── IMAGES ──────────────────────────────────────────────────────────────
+  const validateImageFile = (file) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error(`${file.name}: Không phải file ảnh`);
+      return false;
+    }
+    if (file.size > MAX_IMG_MB * 1024 * 1024) {
+      toast.error(`${file.name}: Kích thước quá lớn (tối đa ${MAX_IMG_MB}MB)`);
+      return false;
+    }
+    return true;
+  };
 
-  const handleMultipleImageUpload = (files) => {
-    const fileArray = Array.from(files);
+  const addImageFiles = (files) => {
+    const fileArr = Array.from(files);
     const newImages = [];
-    fileArray.forEach((file, idx) => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name}: Kích thước quá lớn (tối đa 5MB)`);
-        return;
-      }
+    fileArr.forEach((file, idx) => {
+      if (!validateImageFile(file)) return;
       newImages.push({
         _file: file,
         _previewUrl: URL.createObjectURL(file),
@@ -35,22 +63,8 @@ const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
     }
   };
 
-  const handleSingleImageAdd = () => {
-    setImages([...images, { _file: null, _previewUrl: null, imageUrl: '', isMainImage: images.length === 0 }]);
-  };
-
   const handleSetMainImage = (index) => {
     setImages(images.map((img, i) => ({ ...img, isMainImage: i === index })));
-  };
-
-  const handleImageFileChange = (index, file) => {
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { toast.error('Kích thước file quá lớn (tối đa 5MB)'); return; }
-    const old = images[index];
-    if (old._previewUrl) URL.revokeObjectURL(old._previewUrl);
-    const updated = [...images];
-    updated[index] = { ...old, _file: file, _previewUrl: URL.createObjectURL(file), imageUrl: '' };
-    setImages(updated);
   };
 
   const handleRemoveImage = (index) => {
@@ -61,15 +75,81 @@ const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
     setImages(updated);
   };
 
+  const handleReplaceImage = (index, file) => {
+    if (!file || !validateImageFile(file)) return;
+    const old = images[index];
+    if (old._previewUrl) URL.revokeObjectURL(old._previewUrl);
+    const updated = [...images];
+    updated[index] = { ...old, _file: file, _previewUrl: URL.createObjectURL(file), imageUrl: '' };
+    setImages(updated);
+  };
+
+  // Drop zone events (toàn vùng)
+  const onZoneDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!dragOver) setDragOver(true);
+    e.dataTransfer.dropEffect = 'copy';
+  };
+  const onZoneDragLeave = (e) => {
+    e.preventDefault();
+    // Chỉ tắt khi rời khỏi container (không phải con bên trong)
+    if (dropZoneRef.current && !dropZoneRef.current.contains(e.relatedTarget)) {
+      setDragOver(false);
+    }
+  };
+  const onZoneDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (dragIdx !== null) return; // đang reorder, không upload
+    const files = e.dataTransfer.files;
+    if (files && files.length) addImageFiles(files);
+  };
+
+  // Reorder image cards
+  const onImgDragStart = (idx) => (e) => {
+    setDragIdx(idx);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(idx));
+  };
+  const onImgDragOver = (idx) => (e) => {
+    if (dragIdx === null) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (overIdx !== idx) setOverIdx(idx);
+  };
+  const onImgDrop = (idx) => (e) => {
+    if (dragIdx === null) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (dragIdx === idx) { setDragIdx(null); setOverIdx(null); return; }
+    const next = [...images];
+    const [moved] = next.splice(dragIdx, 1);
+    next.splice(idx, 0, moved);
+    setImages(next);
+    setDragIdx(null); setOverIdx(null);
+  };
+  const onImgDragEnd = () => { setDragIdx(null); setOverIdx(null); };
+
   // ── MEDIA ────────────────────────────────────────────────────────────────
+  const validateVideoFile = (file) => {
+    if (!file.type.startsWith('video/')) {
+      toast.error(`${file.name}: Không phải file video`);
+      return false;
+    }
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
+      toast.error(`${file.name}: Kích thước quá lớn (tối đa ${MAX_VIDEO_MB}MB)`);
+      return false;
+    }
+    return true;
+  };
 
   const handleAddMedia = () => {
     setMediaList([...mediaList, { _file: null, _previewUrl: null, mediaUrl: '', mediaType: 'video' }]);
   };
 
   const handleMediaFileChange = (index, file) => {
-    if (!file) return;
-    if (file.size > 100 * 1024 * 1024) { toast.error('Kích thước file quá lớn (tối đa 100MB)'); return; }
+    if (!file || !validateVideoFile(file)) return;
     const old = mediaList[index];
     if (old._previewUrl) URL.revokeObjectURL(old._previewUrl);
     const updated = [...mediaList];
@@ -83,88 +163,154 @@ const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
     setMediaList(mediaList.filter((_, i) => i !== index));
   };
 
-  // ── RENDER ───────────────────────────────────────────────────────────────
+  // ── STATS ────────────────────────────────────────────────────────────────
+  const newImgCount     = images.filter(i => i._file).length;
+  const newVideoCount   = mediaList.filter(m => m._file).length;
+  const hasMain         = images.some(i => i.isMainImage);
 
+  // ── RENDER ───────────────────────────────────────────────────────────────
   return (
     <div className={styles.tabContainer}>
 
-      {/* IMAGES */}
+      {/* ── IMAGES SECTION ─────────────────────────────────────────────── */}
       <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h3>Bộ sưu tập hình ảnh</h3>
-          <div className={styles.headerActions}>
+        <div className={styles.itinToolbar}>
+          <div className={styles.itinTitle}>
+            <h3>Bộ sưu tập hình ảnh</h3>
+            <div className={styles.itinStats}>
+              <span className={styles.statChip}>
+                <FileImage size={12} /> {images.length} ảnh
+              </span>
+              {newImgCount > 0 && (
+                <span className={`${styles.statChip} ${styles.statWarn}`}>
+                  <UploadCloud size={12} /> {newImgCount} chờ upload
+                </span>
+              )}
+              {!hasMain && images.length > 0 && (
+                <span className={`${styles.statChip} ${styles.statWarn}`}>
+                  <AlertCircle size={12} /> Chưa có ảnh chính
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.itinActions}>
             <label className={styles.btnAdd} style={{ cursor: 'pointer' }}>
-              <Grid size={16} />
-              <span>Upload nhiều ảnh</span>
-              <input type="file" accept="image/*" multiple
-                onChange={e => handleMultipleImageUpload(e.target.files)}
-                style={{ display: 'none' }} />
+              <Upload size={14} /> Chọn ảnh từ máy
+              <input type="file" accept="image/*" multiple style={{ display: 'none' }}
+                onChange={e => addImageFiles(e.target.files)} />
             </label>
-            <button className={styles.btnAdd} type="button" onClick={handleSingleImageAdd}>
-              <Plus size={16} /> Thêm ảnh
-            </button>
           </div>
         </div>
 
-        {images.length === 0 ? (
-          <div className={styles.emptyState}>
-            <Image size={48} />
-            <p>Chưa có hình ảnh nào</p>
-            <label className={styles.btnPrimary} style={{ cursor: 'pointer' }}>
-              <Upload size={16} /> Chọn ảnh
-              <input type="file" accept="image/*" multiple
-                onChange={e => handleMultipleImageUpload(e.target.files)}
-                style={{ display: 'none' }} />
-            </label>
+        {/* Drop zone — luôn hiển thị (kể cả khi có ảnh) để admin có thể kéo thêm */}
+        <div
+          ref={dropZoneRef}
+          className={`${styles.dropZone} ${dragOver ? styles.dropZoneActive : ''}`}
+          onDragOver={onZoneDragOver}
+          onDragLeave={onZoneDragLeave}
+          onDrop={onZoneDrop}
+        >
+          <UploadCloud size={images.length === 0 ? 36 : 22} />
+          <div>
+            <strong>Kéo & thả ảnh vào đây</strong> hoặc bấm nút "Chọn ảnh từ máy"
+            <p className={styles.dropZoneHint}>
+              Hỗ trợ JPG, PNG, WebP &mdash; tối đa {MAX_IMG_MB}MB / ảnh.
+              Kéo ảnh trong danh sách để sắp xếp lại thứ tự.
+            </p>
           </div>
-        ) : (
+        </div>
+
+        {images.length > 0 && (
           <div className={styles.imageGrid}>
             {images.map((image, index) => {
-              const src = image._previewUrl || image.imageUrl;
+              const src       = image._previewUrl || image.imageUrl;
+              const isDragging = dragIdx === index;
+              const isOver     = overIdx === index && dragIdx !== null && dragIdx !== index;
+
               return (
-                <div key={index} className={styles.imageCard}>
+                <div
+                  key={index}
+                  className={`${styles.imageCard}
+                    ${image.isMainImage ? styles.imageCardMain : ''}
+                    ${isDragging ? styles.itinDragging : ''}
+                    ${isOver ? styles.itinDropTarget : ''}`}
+                  draggable
+                  onDragStart={onImgDragStart(index)}
+                  onDragOver={onImgDragOver(index)}
+                  onDrop={onImgDrop(index)}
+                  onDragEnd={onImgDragEnd}
+                >
                   <div className={styles.imageCardHeader}>
+                    <span className={styles.dragHandle} title="Kéo để sắp xếp">
+                      <GripVertical size={14} />
+                    </span>
                     <span className={styles.imageBadge}>#{index + 1}</span>
-                    <div className={styles.imageActions}>
-                      <button type="button"
-                        className={`${styles.btnIcon} ${image.isMainImage ? styles.active : ''}`}
-                        onClick={() => handleSetMainImage(index)}
-                        title={image.isMainImage ? 'Ảnh chính' : 'Đặt làm ảnh chính'}>
-                        <Star size={16} />
-                      </button>
-                      <button type="button" className={styles.btnIconDelete}
-                        onClick={() => handleRemoveImage(index)} title="Xóa">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    {image.isMainImage && (
+                      <span className={styles.mainBadge}>
+                        <Star size={11} /> Ảnh chính
+                      </span>
+                    )}
                   </div>
 
                   <div className={styles.imagePreviewWrapper}>
-                    {src
-                      ? <img src={src} alt={`Preview ${index + 1}`} className={styles.imagePreview}
-                          onError={e => { e.target.style.display = 'none'; }} />
-                      : <div className={styles.imagePlaceholder}><Image size={32} /></div>
-                    }
+                    {src ? (
+                      <>
+                        <img
+                          src={src}
+                          alt={`Preview ${index + 1}`}
+                          className={styles.imagePreview}
+                          onError={e => { e.target.style.display = 'none'; }}
+                        />
+                        <button
+                          type="button"
+                          className={styles.previewZoomBtn}
+                          onClick={() => setPreviewSrc(src)}
+                          title="Xem ảnh lớn"
+                        >
+                          <Eye size={14} />
+                        </button>
+                      </>
+                    ) : (
+                      <div className={styles.imagePlaceholder}><ImageIcon size={28} /></div>
+                    )}
                   </div>
 
                   <div className={styles.imageCardBody}>
-                    {image._file
-                      ? <p className={styles.infoText}>{image._file.name}</p>
-                      : image.imageUrl
-                        ? <p className={styles.infoText} style={{ fontSize: 11, wordBreak: 'break-all' }}>{image.imageUrl}</p>
-                        : null
-                    }
-                    {!image.imageUrl && (
-                      <label className={styles.btnAdd} style={{ cursor: 'pointer', marginTop: 8 }}>
-                        <Upload size={14} /> {image._file ? 'Đổi ảnh' : 'Chọn ảnh'}
-                        <input type="file" accept="image/*"
-                          onChange={e => handleImageFileChange(index, e.target.files[0])}
-                          style={{ display: 'none' }} />
+                    {image._file && (
+                      <p className={styles.fileMeta}>
+                        <span className={styles.fileName} title={image._file.name}>
+                          {image._file.name}
+                        </span>
+                        <span className={styles.fileSize}>{fmtSize(image._file.size)}</span>
+                      </p>
+                    )}
+
+                    <div className={styles.imageActionRow}>
+                      {!image.isMainImage && (
+                        <button
+                          type="button"
+                          className={styles.btnGhostSm}
+                          onClick={() => handleSetMainImage(index)}
+                          title="Đặt làm ảnh chính"
+                        >
+                          <Star size={12} /> Ảnh chính
+                        </button>
+                      )}
+                      <label className={styles.btnGhostSm} style={{ cursor: 'pointer' }}>
+                        <Upload size={12} /> {image._file || image.imageUrl ? 'Đổi' : 'Chọn'}
+                        <input type="file" accept="image/*" style={{ display: 'none' }}
+                          onChange={e => handleReplaceImage(index, e.target.files[0])} />
                       </label>
-                    )}
-                    {image.isMainImage && (
-                      <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>Ảnh chính</span>
-                    )}
+                      <button
+                        type="button"
+                        className={`${styles.btnGhostSm} ${styles.btnGhostDanger}`}
+                        onClick={() => handleRemoveImage(index)}
+                        title="Xóa"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -173,78 +319,98 @@ const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
         )}
       </div>
 
-      {/* MEDIA */}
+      {/* ── MEDIA SECTION ──────────────────────────────────────────────── */}
       <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h3>Media (Video)</h3>
-          <button className={styles.btnAdd} type="button" onClick={handleAddMedia}>
-            <Plus size={16} /> Thêm video
-          </button>
+        <div className={styles.itinToolbar}>
+          <div className={styles.itinTitle}>
+            <h3>Video & Media</h3>
+            <div className={styles.itinStats}>
+              <span className={styles.statChip}>
+                <FileVideo size={12} /> {mediaList.length} video
+              </span>
+              {newVideoCount > 0 && (
+                <span className={`${styles.statChip} ${styles.statWarn}`}>
+                  <UploadCloud size={12} /> {newVideoCount} chờ upload
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.itinActions}>
+            <button className={styles.btnAdd} type="button" onClick={handleAddMedia}>
+              <Plus size={15} /> Thêm video
+            </button>
+          </div>
         </div>
 
         {mediaList.length === 0 ? (
           <div className={styles.emptyState}>
-            <Video size={48} />
-            <p>Chưa có video nào</p>
+            <Video size={40} />
+            <p>Chưa có video nào. Thêm video giới thiệu để tour thêm sinh động.</p>
             <button className={styles.btnPrimary} type="button" onClick={handleAddMedia}>
-              Thêm video đầu tiên
+              <Plus size={14} /> Thêm video đầu tiên
             </button>
           </div>
         ) : (
-          <div className={styles.itemList}>
+          <div className={styles.mediaList}>
             {mediaList.map((media, index) => (
-              <div key={index} className={styles.itemCard}>
-                <div className={styles.cardHeader}>
-                  <h4>Video #{index + 1}</h4>
-                  <button type="button" className={styles.btnDelete}
-                    onClick={() => handleRemoveMedia(index)}>
-                    <Trash2 size={18} />
+              <div key={index} className={styles.mediaCard}>
+                <div className={styles.mediaCardHead}>
+                  <span className={styles.imageBadge}>Video #{index + 1}</span>
+                  <button type="button" className={styles.btnIconDelete}
+                    onClick={() => handleRemoveMedia(index)} title="Xóa video">
+                    <Trash2 size={14} />
                   </button>
                 </div>
 
-                <div className={styles.grid2}>
-                  <div>
-                    {media._previewUrl || media.mediaUrl ? (
-                      <div className={styles.previewBox}>
-                        {media._previewUrl ? (
-                          <video muted autoPlay loop playsInline style={{ width: '100%', borderRadius: 8 }}>
-                            <source src={media._previewUrl} type={media._file?.type || 'video/mp4'} />
-                          </video>
-                        ) : (
-                          <p className={styles.infoText} style={{ wordBreak: 'break-all' }}>{media.mediaUrl}</p>
-                        )}
+                <div className={styles.mediaCardBody}>
+                  <div className={styles.mediaPreview}>
+                    {media._previewUrl ? (
+                      <video muted autoPlay loop playsInline>
+                        <source src={media._previewUrl} type={media._file?.type || 'video/mp4'} />
+                      </video>
+                    ) : media.mediaUrl ? (
+                      <div className={styles.mediaUrlNote}>
+                        <Video size={20} />
+                        <span>{media.mediaUrl}</span>
                       </div>
                     ) : (
                       <div className={styles.previewPlaceholder}>
-                        <Video size={32} />
+                        <Video size={28} />
                         <p>Chọn file video để xem trước</p>
                       </div>
                     )}
-
-                    <div className={styles.formGroup} style={{ marginTop: 12 }}>
-                      <label>
-                        <Upload size={14} style={{ marginRight: 4 }} />
-                        Tải video lên (tối đa 100MB)
-                      </label>
-                      <input type="file" accept="video/*"
-                        onChange={e => handleMediaFileChange(index, e.target.files[0])} />
-                      {media._file && <p className={styles.infoText}>Đã chọn: {media._file.name}</p>}
-                    </div>
                   </div>
 
-                  <div>
+                  <div className={styles.mediaCardForm}>
                     <div className={styles.formGroup}>
                       <label>Loại media</label>
-                      <select value={media.mediaType || 'video'}
+                      <select
+                        value={media.mediaType || 'video'}
                         onChange={e => {
                           const updated = [...mediaList];
                           updated[index] = { ...media, mediaType: e.target.value };
                           setMediaList(updated);
-                        }}>
-                        <option value="video">Video</option>
+                        }}
+                      >
+                        <option value="video">Video chuẩn</option>
                         <option value="360">Video 360°</option>
                         <option value="virtual_tour">Virtual Tour</option>
                       </select>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>
+                        <Upload size={11} /> Tải file video lên (tối đa {MAX_VIDEO_MB}MB)
+                      </label>
+                      <input type="file" accept="video/*"
+                        onChange={e => handleMediaFileChange(index, e.target.files[0])} />
+                      {media._file && (
+                        <p className={styles.fileMeta} style={{ marginTop: 6 }}>
+                          <span className={styles.fileName}>{media._file.name}</span>
+                          <span className={styles.fileSize}>{fmtSize(media._file.size)}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -253,6 +419,16 @@ const GalleryTab = ({ tourId, images, setImages, mediaList, setMediaList }) => {
           </div>
         )}
       </div>
+
+      {/* ── PREVIEW LIGHTBOX MINI ──────────────────────────────────────── */}
+      {previewSrc && (
+        <div className={styles.lightbox} onClick={() => setPreviewSrc(null)}>
+          <img src={previewSrc} alt="Xem ảnh" onClick={e => e.stopPropagation()} />
+          <button className={styles.lightboxClose} onClick={() => setPreviewSrc(null)} type="button">
+            <Trash2 size={0} style={{ display: 'none' }} />×
+          </button>
+        </div>
+      )}
     </div>
   );
 };

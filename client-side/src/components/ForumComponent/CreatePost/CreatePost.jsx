@@ -74,11 +74,12 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
     const plainText = content.replace(/<[^>]*>/g, '').trim();
     const summary = plainText.length > 200 ? plainText.substring(0, 197) + '...' : plainText;
     const payload = {
-      title: title.trim(), content, summary, categoryId: Number(categoryId),
-      tagIds: selectedTags.map(tag => {
-        const found = availableTags.find(t => t.name === tag || t.tagName === tag);
-        return found ? (found.tagId || found.tagID) : null;
-      }).filter(id => id !== null),
+      userId: user?.userId || user?.userID || user?.id,
+      title: title.trim(),
+      content,
+      summary,
+      categoryId: Number(categoryId),
+      tagNames: selectedTags,
     };
     setLoading(true);
     try {
