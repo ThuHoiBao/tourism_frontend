@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
@@ -21,6 +21,7 @@ import styles from './PostDetailPage.module.scss';
 
 const PostDetailPage = () => {
   const { postId } = useParams();
+  const { hash } = useLocation();
   const { user } = useAuth();
   const userId = user?.userId || user?.userID;
 
@@ -35,6 +36,33 @@ const PostDetailPage = () => {
   const [commentLoading, setCommentLoading] = useState(false);
 
   const [expandedCommentIds, setExpandedCommentIds] = useState(new Set());
+
+  // Scroll đến comment được chỉ định qua URL hash (e.g. #comment-42)
+  // Chạy sau khi post load xong + expand comment cha nếu cần
+  useEffect(() => {
+    if (!hash || loading || !post) return;
+    const commentId = hash.replace('#comment-', '');
+    if (!commentId) return;
+
+    // Expand comment cha để reply hiện ra (nếu có)
+    setExpandedCommentIds(prev => {
+      const newSet = new Set(prev);
+      newSet.add(Number(commentId));
+      return newSet;
+    });
+
+    // Delay nhỏ để DOM render xong sau khi expand
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`comment-${commentId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('highlight-comment');
+        setTimeout(() => el.classList.remove('highlight-comment'), 2000);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hash, loading, post]);
 
   // Guard so a view is recorded at most once per mounted post
   // (avoids React StrictMode double-mount + re-render double counting)

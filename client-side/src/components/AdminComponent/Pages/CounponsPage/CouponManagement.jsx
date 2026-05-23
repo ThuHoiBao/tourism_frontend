@@ -1,102 +1,123 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Plus, Edit2, Trash2, Calendar, Tag, TrendingUp, Users, RotateCcw, Bell, TicketPercent  } from 'lucide-react';
-import axios from '../../../../utils/axiosCustomize'; 
-import { toast } from 'react-toastify'; 
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  Search, Plus, Edit2, Trash2, Calendar, Tag, TrendingUp, Users,
+  RotateCcw, TicketPercent, Filter, X, Download, AlertTriangle,
+  Copy, CheckCircle2, Ban, Clock, Globe, MapPin, ArrowUpDown,
+  ArrowUp, ArrowDown, Hash, Sparkles
+} from 'lucide-react';
+import axios from '../../../../utils/axiosCustomize';
+import { toast } from 'react-toastify';
 import styles from './CouponManagement.module.scss';
-import CouponModal from './CouponModal/CouponModal'; 
+import CouponModal from './CouponModal/CouponModal';
+
+// ── Confirm modal đẹp ────────────────────────────────────────────────────
+const ConfirmDeleteModal = ({ open, title, message, onCancel, onConfirm, busy }) => {
+  if (!open) return null;
+  return (
+    <div className={styles.modalBackdrop} onClick={onCancel}>
+      <div className={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.confirmIcon}><AlertTriangle size={22} /></div>
+        <h3>{title}</h3>
+        <p>{message}</p>
+        <div className={styles.confirmActions}>
+          <button className={styles.btnGhost} onClick={onCancel} disabled={busy}>Hủy</button>
+          <button className={styles.btnDanger} onClick={onConfirm} disabled={busy}>
+            {busy ? 'Đang xử lý…' : 'Xác nhận xóa'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CouponManagement = () => {
-  const [coupons, setCoupons] = useState([]);
-  const [loading, setLoading] = useState(false);
-  
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [filterType, setFilterType] = useState('ALL'); 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [coupons, setCoupons]           = useState([]);
+  const [loading, setLoading]           = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
+  const [page, setPage]                 = useState(0);
+  const [pageSize, setPageSize]         = useState(10);
+  const [totalPages, setTotalPages]     = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const [filterType, setFilterType]     = useState('ALL');
+  const [searchTerm, setSearchTerm]     = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // all | active | expired | used_up | inactive
+
+  // Sort
+  const [sortBy, setSortBy]             = useState('createdAt');
+  const [sortDir, setSortDir]           = useState('DESC');
+
+  // Bulk select
+  const [selectedIds, setSelectedIds]   = useState(new Set());
+
+  // Confirm
+  const [confirm, setConfirm]           = useState({ open: false, ids: [], busy: false });
+
+  // Copied feedback
+  const [copiedCode, setCopiedCode]     = useState(null);
+
+  // Modal
+  const [showModal, setShowModal]       = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
 
   const fetchCoupons = useCallback(async () => {
     setLoading(true);
     try {
       let url = '/admin/coupons';
-      const params = {
-        page: page,
-        size: 10,
-        sortDir: 'DESC' 
-      };
+      const params = { page, size: pageSize, sortBy, sortDir };
 
       if (searchTerm.trim()) {
         url = '/admin/coupons/search';
         params.keyword = searchTerm.trim();
-      } 
-      else if (filterType === 'GLOBAL') {
+      } else if (filterType === 'GLOBAL') {
         url = '/admin/coupons/global';
       } else if (filterType === 'DEPARTURE') {
         url = '/admin/coupons/departure';
       }
 
-      const response = await axios.get(url, { params });
-      
-      if (response && response.data) {
-        setCoupons(response.data.content || []);
-        setTotalPages(response.data.totalPages || 1);
+      const res = await axios.get(url, { params });
+      if (res?.data) {
+        setCoupons(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalElements(res.data.totalElements ?? res.data.totalItems ?? (res.data.content?.length || 0));
+        setSelectedIds(new Set());
       }
-    } catch (error) {
-      console.error('Error fetching coupons:', error);
+    } catch {
       toast.error('Không thể tải danh sách coupon');
       setCoupons([]);
     } finally {
       setLoading(false);
     }
-  }, [page, filterType, searchTerm]);
+  }, [page, pageSize, filterType, searchTerm, sortBy, sortDir]);
 
-  useEffect(() => {
-    fetchCoupons();
-  }, [fetchCoupons]);
+  useEffect(() => { fetchCoupons(); }, [fetchCoupons]);
 
-  const handleFilterChange = useCallback((type) => {
-    if (filterType === type) return; 
-    setSearchTerm(''); 
+  const handleFilterChange = (type) => {
+    if (filterType === type) return;
+    setSearchTerm('');
     setPage(0);
     setFilterType(type);
-  }, [filterType]);
+  };
 
-  const handleRefresh = useCallback(() => {
-    if (filterType !== 'ALL' || searchTerm !== '' || page !== 0) {
-      setFilterType('ALL');
-      setSearchTerm('');
-      setPage(0);
-      toast.info('Đã reset về trạng thái ban đầu');
+  const handleRefresh = () => {
+    if (filterType !== 'ALL' || searchTerm || page !== 0 || statusFilter !== 'all') {
+      setFilterType('ALL'); setSearchTerm(''); setPage(0); setStatusFilter('all');
+      toast.info('Đã reset bộ lọc');
     } else {
       fetchCoupons();
       toast.info('Đã cập nhật dữ liệu mới nhất');
     }
-  }, [filterType, searchTerm, page, fetchCoupons]);
-
-  const handleCreate = () => {
-    setEditingCoupon(null);
-    setShowModal(true);
   };
 
-  const handleEdit = (coupon) => {
-    // Khi bấm sửa, truyền toàn bộ object coupon vào modal
-    // Backend cần trả về field 'departureDetails' trong response danh sách hoặc chi tiết
-    setEditingCoupon(coupon);
-    setShowModal(true);
-  };
+  const handleCreate = () => { setEditingCoupon(null); setShowModal(true); };
+  const handleEdit = (coupon) => { setEditingCoupon(coupon); setShowModal(true); };
 
-  // --- HÀM QUAN TRỌNG ĐÃ ĐƯỢC FIX ---
   const handleSubmit = async (formData) => {
-    // Validate cơ bản
     if (!formData.couponCode || !formData.discountAmount) {
       toast.warning('Vui lòng điền mã coupon và số tiền giảm');
       return;
     }
-
     try {
-      // Construct Payload chuẩn theo DTO backend mới
       const payload = {
         couponCode: formData.couponCode,
         description: formData.description,
@@ -104,19 +125,11 @@ const CouponManagement = () => {
         couponType: formData.couponType,
         usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null,
         minOrderValue: formData.minOrderValue ? Number(formData.minOrderValue) : null,
-        
-        // [FIX QUAN TRỌNG]: Sử dụng departureIds (mảng) thay vì departureId (đơn)
         departureIds: formData.couponType === 'DEPARTURE' ? formData.departureIds : [],
-        
-        // Thêm trường gửi thông báo
         sendNotification: formData.sendNotification,
-
         startDate: formData.startDate ? `${formData.startDate}T00:00:00` : null,
-        endDate: formData.endDate ? `${formData.endDate}T23:59:59` : null
+        endDate: formData.endDate ? `${formData.endDate}T23:59:59` : null,
       };
-      
-      console.log("Payload sending to server:", payload); // Debug log
-
       if (editingCoupon) {
         await axios.put(`/admin/coupons/${editingCoupon.couponId}`, payload);
         toast.success('Cập nhật coupon thành công');
@@ -125,246 +138,490 @@ const CouponManagement = () => {
         toast.success('Tạo coupon thành công');
       }
       setShowModal(false);
-      fetchCoupons(); 
-    } catch (error) {
-      console.error('Error submitting coupon:', error);
-      const msg = error.response?.data?.message || 'Có lỗi xảy ra';
-      toast.error(msg);
+      fetchCoupons();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc muốn xóa coupon này?')) {
-      try {
-        await axios.delete(`/admin/coupons/${id}`);
-        toast.success('Đã xóa coupon');
-        fetchCoupons();
-      } catch (error) {
-        console.error('Error deleting coupon:', error);
-        toast.error('Xóa thất bại');
-      }
+  // Confirm delete
+  const askDeleteOne = (id) => setConfirm({ open: true, ids: [id], busy: false });
+  const askDeleteSelected = () => {
+    if (selectedIds.size === 0) return;
+    setConfirm({ open: true, ids: [...selectedIds], busy: false });
+  };
+  const doDelete = async () => {
+    setConfirm(c => ({ ...c, busy: true }));
+    try {
+      await Promise.all(confirm.ids.map(id => axios.delete(`/admin/coupons/${id}`)));
+      toast.success(`Đã xóa ${confirm.ids.length} coupon`);
+      setConfirm({ open: false, ids: [], busy: false });
+      fetchCoupons();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Xóa thất bại');
+      setConfirm(c => ({ ...c, busy: false }));
     }
   };
 
-  const handleSearchChange = useCallback((value) => {
-    setSearchTerm(value);
+  // Sort
+  const toggleSort = (col) => {
+    if (sortBy === col) setSortDir(d => (d === 'ASC' ? 'DESC' : 'ASC'));
+    else { setSortBy(col); setSortDir('ASC'); }
     setPage(0);
-    if (value.trim() && filterType !== 'ALL') {
-      setFilterType('ALL');
-    }
-  }, [filterType]);
+  };
+  const SortIcon = ({ col }) => {
+    if (sortBy !== col) return <ArrowUpDown size={11} className={styles.sortIconIdle} />;
+    return sortDir === 'ASC'
+      ? <ArrowUp size={11} className={styles.sortIconActive} />
+      : <ArrowDown size={11} className={styles.sortIconActive} />;
+  };
 
+  // Selection
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  // Search with debounce
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchTerm !== undefined) {
-        fetchCoupons();
-      }
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, fetchCoupons]); 
+    const t = setTimeout(() => { if (searchTerm !== undefined) fetchCoupons(); }, 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line
+  }, [searchTerm]);
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  // Copy code
+  const handleCopy = async (code) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 1500);
+    } catch {
+      toast.error('Không thể copy');
+    }
   };
 
-  const getStatusBadge = (coupon) => {
-    if (!coupon.isActive) return <span className={`${styles.statusBadge} ${styles.inactive}`}>Không hoạt động</span>;
-    if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) return <span className={`${styles.statusBadge} ${styles.limit}`}>Đã hết lượt</span>;
-    if (new Date(coupon.endDate) < new Date()) return <span className={`${styles.statusBadge} ${styles.expired}`}>Hết hạn</span>;
-    return <span className={`${styles.statusBadge} ${styles.active}`}>Đang hoạt động</span>;
+  // Helpers
+  const formatCurrency = (a) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(a || 0);
+  const formatDate = (s) => {
+    if (!s) return '—';
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return '—';
+    return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
   };
 
-  const stats = [
-    { label: 'Tổng Coupons', value: coupons.length || 0, icon: Tag, color: 'blue' },
-    { label: 'Đang hoạt động', value: coupons.filter(c => c.isActive).length || 0, icon: TrendingUp, color: 'green' },
-    { label: 'Đã sử dụng', value: coupons.reduce((sum, c) => sum + (c.usageCount || 0), 0), icon: Users, color: 'purple' },
-    { label: 'Lượt thông báo', value: coupons.length * 2, icon: Bell, color: 'orange' } // Giả lập
-  ];
+  const daysLeft = (endDate) => {
+    if (!endDate) return null;
+    const e = new Date(endDate);
+    const now = new Date();
+    const diff = Math.ceil((e - now) / (1000 * 60 * 60 * 24));
+    return diff;
+  };
 
-  // (Phần JSX render bảng stats và table giữ nguyên như cũ, chỉ thay đổi phần gọi Modal)
+  const couponStatus = (c) => {
+    if (!c.isActive) return { key: 'inactive', label: 'Không hoạt động', cls: styles.statusInactive, Icon: Ban };
+    if (c.usageLimit && c.usageCount >= c.usageLimit)
+      return { key: 'used_up', label: 'Đã hết lượt', cls: styles.statusUsedUp, Icon: Users };
+    if (c.endDate && new Date(c.endDate) < new Date())
+      return { key: 'expired', label: 'Hết hạn', cls: styles.statusExpired, Icon: Clock };
+    return { key: 'active', label: 'Đang hoạt động', cls: styles.statusActive, Icon: CheckCircle2 };
+  };
+
+  // Filter trên page (client-side cho statusFilter)
+  const displayedCoupons = useMemo(() => {
+    if (statusFilter === 'all') return coupons;
+    return coupons.filter(c => couponStatus(c).key === statusFilter);
+  }, [coupons, statusFilter]);
+
+  // Real stats (không còn giả lập)
+  const stats = useMemo(() => {
+    const active = coupons.filter(c => couponStatus(c).key === 'active').length;
+    const expired = coupons.filter(c => couponStatus(c).key === 'expired').length;
+    const usedUp = coupons.filter(c => couponStatus(c).key === 'used_up').length;
+    const totalUsage = coupons.reduce((s, c) => s + (c.usageCount || 0), 0);
+    const totalDiscountValue = coupons.reduce((s, c) =>
+      s + (Number(c.discountAmount || 0) * (c.usageCount || 0)), 0);
+    return { active, expired, usedUp, totalUsage, totalDiscountValue, total: totalElements };
+  }, [coupons, totalElements]);
+
+  // Export CSV
+  const exportCsv = () => {
+    if (displayedCoupons.length === 0) { toast.info('Không có dữ liệu'); return; }
+    const rows = [
+      ['ID', 'Mã', 'Mô tả', 'Loại', 'Giảm giá', 'Đơn tối thiểu', 'Đã dùng', 'Giới hạn', 'Bắt đầu', 'Kết thúc', 'Trạng thái'],
+      ...displayedCoupons.map(c => [
+        c.couponId, c.couponCode, c.description || '',
+        c.couponType === 'GLOBAL' ? 'Toàn cục' : 'Theo tour',
+        c.discountAmount || 0, c.minOrderValue || '',
+        c.usageCount || 0, c.usageLimit || '∞',
+        c.startDate || '', c.endDate || '',
+        couponStatus(c).label
+      ])
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `coupons-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Đã xuất CSV');
+  };
+
+  // Select all (current page filtered)
+  const toggleSelectAll = () => {
+    if (selectedIds.size === displayedCoupons.length && displayedCoupons.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(displayedCoupons.map(c => c.couponId)));
+    }
+  };
+  const allSelected = selectedIds.size > 0 && selectedIds.size === displayedCoupons.length;
+
   return (
-    <div className={styles.couponManagement}>
-      <div className={styles.container}>
-        {/* Header */}
-        <div className={styles.header}>
+    <div className={styles.container}>
+
+      {/* ── HEADER ───────────────────────────────────────────── */}
+      <header className={styles.pageHeader}>
+        <div className={styles.titleBlock}>
+          <div className={styles.titleIcon}><TicketPercent size={22} /></div>
           <div>
-          
-            <h1><TicketPercent size={32} /> Quản lý Coupon & Thông báo</h1>
-            <p>Tạo và quản lý mã giảm giá, gửi thông báo tự động đến khách hàng</p>
+            <h1>Quản lý Coupon</h1>
+            <p>Tạo, theo dõi mã giảm giá và gửi thông báo đến khách hàng</p>
           </div>
-          <button onClick={handleCreate} className={styles.btnCreate}>
-            <Plus size={20} />
-            Tạo Coupon Mới
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.btnGhost} onClick={exportCsv}>
+            <Download size={15} /> Xuất CSV
+          </button>
+          <button className={styles.btnGhost} onClick={handleRefresh} title="Reset bộ lọc / làm mới">
+            <RotateCcw size={15} /> Làm mới
+          </button>
+          <button className={styles.btnPrimary} onClick={handleCreate}>
+            <Plus size={16} /> Tạo coupon
           </button>
         </div>
+      </header>
 
-        {/* Stats Grid */}
-        <div className={styles.statsGrid}>
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className={styles.statCard}>
-                <div className={styles.cardContent}>
-                  <div>
-                    <p className={styles.label}>{stat.label}</p>
-                    <p className={styles.value}>{stat.value}</p>
-                  </div>
-                  <div className={`${styles.iconWrapper} ${styles[stat.color]}`}>
-                    <Icon size={24} />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Filter Section */}
-        <div className={styles.filterSection}>
-          <div className={styles.controls}>
-            <div className={styles.searchBox}>
-              <Search size={20} />
-              <input 
-                type="text" 
-                placeholder="Tìm kiếm mã coupon..." 
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
-            </div>
-            <div className={styles.filterButtons}>
-              {['ALL', 'GLOBAL', 'DEPARTURE'].map((type) => (
-                <button 
-                  key={type} 
-                  type="button"
-                  onClick={() => handleFilterChange(type)} 
-                  className={filterType === type ? styles.active : ''}
-                >
-                  {type === 'ALL' ? 'Tất cả' : type === 'GLOBAL' ? 'Toàn cục' : 'Theo tour'}
-                </button>
-              ))}
-              
-              <button 
-                type="button"
-                onClick={handleRefresh} 
-                className={styles.btnRefresh}
-                title="Tải lại dữ liệu"
-              >
-                <RotateCcw size={18} />
-              </button>
-            </div>
+      {/* ── STAT CARDS ──────────────────────────────────────── */}
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statBlue}`}><Tag size={20} /></div>
+          <div>
+            <div className={styles.statLabel}>Tổng coupon</div>
+            <div className={styles.statValue}>{stats.total.toLocaleString('vi-VN')}</div>
           </div>
         </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statGreen}`}><CheckCircle2 size={20} /></div>
+          <div>
+            <div className={styles.statLabel}>Đang hoạt động</div>
+            <div className={styles.statValue}>{stats.active}</div>
+            <div className={styles.statHint}>trên trang hiện tại</div>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statPurple}`}><Users size={20} /></div>
+          <div>
+            <div className={styles.statLabel}>Lượt sử dụng</div>
+            <div className={styles.statValue}>{stats.totalUsage}</div>
+            <div className={styles.statHint}>trên trang hiện tại</div>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.statAmber}`}><TrendingUp size={20} /></div>
+          <div>
+            <div className={styles.statLabel}>Tổng giảm đã áp dụng</div>
+            <div className={styles.statValue}>{formatCurrency(stats.totalDiscountValue)}</div>
+            <div className={styles.statHint}>{stats.expired} hết hạn · {stats.usedUp} hết lượt</div>
+          </div>
+        </div>
+      </section>
 
-        {/* Data Table */}
-        <div className={styles.tableContainer}>
-          <table>
-            <thead>
-              <tr>
-                <th>Mã Coupon</th>
-                <th>Mô tả</th>
-                <th>Giảm giá</th>
-                <th>Loại</th>
-                <th>Sử dụng</th>
-                <th>Thời hạn</th>
-                <th>Trạng thái</th>
-                <th className="text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan="8" style={{textAlign: 'center', padding: '3rem'}}>Đang tải dữ liệu...</td></tr>
-              ) : coupons.length === 0 ? (
-                <tr><td colSpan="8" style={{textAlign: 'center', padding: '3rem'}}>Không tìm thấy coupon nào.</td></tr>
-              ) : coupons.map((coupon) => (
-                <tr key={coupon.couponId}>
-                  <td>
-                    <div className={styles.couponInfo}>
-                      <div className={styles.iconBox}>
-                        <Tag size={18} />
-                      </div>
-                      <div>
-                        <div className={styles.code}>{coupon.couponCode}</div>
-                        <div className={styles.id}>ID: {coupon.couponId}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{maxWidth: '200px'}}>
-                      <p style={{fontSize: '0.875rem'}}>{coupon.description || 'Không có mô tả'}</p>
-                      {/* Hiển thị tóm tắt nếu là departure coupon */}
-                      {coupon.couponType === 'DEPARTURE' && (
-                        <p style={{fontSize: '0.75rem', color: '#2563eb', marginTop: '0.25rem'}}>
-                          📍 Áp dụng cho các chuyến đi cụ thể
-                        </p>
-                      )}
-                    </div>
-                  </td>
-                  <td className={styles.priceCol}>
-                    <div className={styles.amount}>{formatCurrency(coupon.discountAmount)}</div>
-                    {coupon.minOrderValue && <div className={styles.min}>Min: {formatCurrency(coupon.minOrderValue)}</div>}
-                  </td>
-                  <td>
-                    <span className={`${styles.typeBadge} ${coupon.couponType === 'GLOBAL' ? styles.global : styles.departure}`}>
-                      {coupon.couponType === 'GLOBAL' ? '🌐 Toàn cục' : '🎫 Theo tour'}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.progressBar}>
-                      <div className={styles.text}>{coupon.usageCount} / {coupon.usageLimit || '∞'}</div>
-                      <div className={styles.track}>
-                        <div className={styles.fill} style={{ width: coupon.usageLimit ? `${Math.min((coupon.usageCount / coupon.usageLimit) * 100, 100)}%` : '0%' }} />
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{fontSize: '0.875rem', color: '#4b5563'}}>
-                      <div style={{display: 'flex', alignItems: 'center', gap: '0.25rem'}}><Calendar size={14} />{formatDate(coupon.startDate)}</div>
-                      <div style={{display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem'}}><Calendar size={14} />{formatDate(coupon.endDate)}</div>
-                    </div>
-                  </td>
-                  <td>{getStatusBadge(coupon)}</td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button onClick={() => handleEdit(coupon)} className={styles.edit}><Edit2 size={18} /></button>
-                      <button onClick={() => handleDelete(coupon.couponId)} className={styles.delete}><Trash2 size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
-          {totalPages > 1 && (
-             <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem', gap: '10px' }}>
-                <button 
-                  onClick={() => setPage(p => Math.max(0, p - 1))} 
-                  disabled={page === 0}
-                  style={{ padding: '5px 10px', border: '1px solid #ccc', borderRadius: '4px', cursor: page === 0 ? 'not-allowed' : 'pointer' }}
-                >
-                  Trước
-                </button>
-                <span style={{ display: 'flex', alignItems: 'center' }}>Trang {page + 1} / {totalPages}</span>
-                <button 
-                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} 
-                  disabled={page >= totalPages - 1}
-                  style={{ padding: '5px 10px', border: '1px solid #ccc', borderRadius: '4px', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}
-                >
-                  Sau
-                </button>
-             </div>
+      {/* ── TOOLBAR ──────────────────────────────────────────── */}
+      <section className={styles.toolbar}>
+        <div className={styles.searchBox}>
+          <Search size={15} />
+          <input
+            type="text"
+            placeholder="Tìm theo mã coupon, mô tả…"
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+          />
+          {searchTerm && (
+            <button className={styles.clearBtn} onClick={() => { setSearchTerm(''); setPage(0); }}>
+              <X size={13} />
+            </button>
           )}
         </div>
-      </div>
-      
-      {/* Component Modal đã fix logic */}
-      <CouponModal 
+
+        <div className={styles.filterGroup}>
+          <Filter size={13} />
+          {/* Loại coupon */}
+          <div className={styles.segmented}>
+            {[
+              { v: 'ALL',       label: 'Tất cả' },
+              { v: 'GLOBAL',    label: 'Toàn cục' },
+              { v: 'DEPARTURE', label: 'Theo tour' },
+            ].map(o => (
+              <button key={o.v}
+                className={filterType === o.v ? styles.segActive : ''}
+                onClick={() => handleFilterChange(o.v)}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Trạng thái (client-side) */}
+          <div className={styles.segmented}>
+            {[
+              { v: 'all',      label: 'Mọi trạng thái' },
+              { v: 'active',   label: 'Hoạt động' },
+              { v: 'expired',  label: 'Hết hạn' },
+              { v: 'used_up',  label: 'Hết lượt' },
+            ].map(o => (
+              <button key={o.v}
+                className={statusFilter === o.v ? styles.segActive : ''}
+                onClick={() => setStatusFilter(o.v)}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+
+          <select value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }}
+            className={styles.filterSelect}>
+            <option value={10}>10 / trang</option>
+            <option value={20}>20 / trang</option>
+            <option value={50}>50 / trang</option>
+          </select>
+        </div>
+      </section>
+
+      {/* ── BULK BAR ──────────────────────────────────────────── */}
+      {selectedIds.size > 0 && (
+        <section className={styles.bulkBar}>
+          <span><strong>{selectedIds.size}</strong> coupon đã chọn</span>
+          <div>
+            <button className={styles.btnGhost} onClick={() => setSelectedIds(new Set())}>
+              <X size={13} /> Bỏ chọn
+            </button>
+            <button className={styles.btnDanger} onClick={askDeleteSelected}>
+              <Trash2 size={13} /> Xóa đã chọn
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* ── CONTENT ──────────────────────────────────────────── */}
+      {loading ? (
+        <div className={styles.loading}>
+          <div className={styles.spinner} /> <p>Đang tải coupon…</p>
+        </div>
+      ) : displayedCoupons.length === 0 ? (
+        <div className={styles.empty}>
+          <Sparkles size={52} />
+          <h3>Chưa có coupon nào</h3>
+          <p>Tạo coupon đầu tiên để khuyến mại cho khách hàng</p>
+          <button className={styles.btnPrimary} onClick={handleCreate}>
+            <Plus size={15} /> Tạo coupon đầu tiên
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th className={styles.cbCol}>
+                    <input type="checkbox" checked={allSelected}
+                      onChange={toggleSelectAll} aria-label="Chọn tất cả" />
+                  </th>
+                  <th className={styles.sortable} onClick={() => toggleSort('couponCode')}>
+                    Mã coupon <SortIcon col="couponCode" />
+                  </th>
+                  <th>Mô tả</th>
+                  <th className={styles.sortable} onClick={() => toggleSort('discountAmount')}>
+                    Giảm giá <SortIcon col="discountAmount" />
+                  </th>
+                  <th>Loại</th>
+                  <th>Sử dụng</th>
+                  <th className={styles.sortable} onClick={() => toggleSort('endDate')}>
+                    Thời hạn <SortIcon col="endDate" />
+                  </th>
+                  <th>Trạng thái</th>
+                  <th className={styles.actionsCol}>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedCoupons.map((c, idx) => {
+                  const isSel = selectedIds.has(c.couponId);
+                  const st = couponStatus(c);
+                  const dleft = daysLeft(c.endDate);
+                  const usagePct = c.usageLimit
+                    ? Math.min(((c.usageCount || 0) / c.usageLimit) * 100, 100)
+                    : 0;
+                  return (
+                    <tr key={c.couponId}
+                        className={isSel ? styles.rowSel : ''}
+                        style={{ animationDelay: `${Math.min(idx * 0.03, 0.25)}s` }}>
+                      <td className={styles.cbCol}>
+                        <input type="checkbox" checked={isSel}
+                          onChange={() => toggleSelect(c.couponId)}
+                          aria-label={`Chọn ${c.couponCode}`} />
+                      </td>
+                      <td>
+                        <div className={styles.couponInfo}>
+                          <div className={styles.iconBox}>
+                            <Tag size={14} />
+                          </div>
+                          <div>
+                            <div className={styles.codeRow}>
+                              <span className={styles.code}>{c.couponCode}</span>
+                              <button className={styles.copyBtn}
+                                onClick={() => handleCopy(c.couponCode)}
+                                title="Sao chép mã">
+                                {copiedCode === c.couponCode
+                                  ? <CheckCircle2 size={12} />
+                                  : <Copy size={12} />}
+                              </button>
+                            </div>
+                            <div className={styles.idChip}>
+                              <Hash size={9} /> {c.couponId}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.descCell}>
+                          {c.description || <span className={styles.muted}>Không có mô tả</span>}
+                          {c.couponType === 'DEPARTURE' && (
+                            <div className={styles.couponNote}>
+                              <MapPin size={10} /> Áp dụng cho chuyến đi cụ thể
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.amountCell}>
+                          <strong>{formatCurrency(c.discountAmount)}</strong>
+                          {c.minOrderValue ? (
+                            <span className={styles.minOrder}>
+                              Min: {formatCurrency(c.minOrderValue)}
+                            </span>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`${styles.typeBadge} ${c.couponType === 'GLOBAL' ? styles.typeGlobal : styles.typeDeparture}`}>
+                          {c.couponType === 'GLOBAL'
+                            ? <><Globe size={11} /> Toàn cục</>
+                            : <><MapPin size={11} /> Theo tour</>}
+                        </span>
+                      </td>
+                      <td>
+                        <div className={styles.usageCell}>
+                          <div className={styles.usageNums}>
+                            <strong>{c.usageCount || 0}</strong>
+                            <span>/{c.usageLimit || '∞'}</span>
+                          </div>
+                          {c.usageLimit ? (
+                            <div className={styles.usageBar}>
+                              <div className={styles.usageFill}
+                                style={{ width: `${usagePct}%` }}
+                                data-pct={Math.round(usagePct)} />
+                            </div>
+                          ) : (
+                            <div className={styles.usageInfinite}>Không giới hạn</div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.dateCell}>
+                          <div><Calendar size={11} /> {formatDate(c.startDate)}</div>
+                          <div><Calendar size={11} /> {formatDate(c.endDate)}</div>
+                          {dleft !== null && st.key === 'active' && (
+                            <div className={`${styles.countdownChip} ${
+                              dleft <= 3 ? styles.countdownUrgent
+                              : dleft <= 7 ? styles.countdownWarn
+                              : styles.countdownOk
+                            }`}>
+                              <Clock size={10} /> còn {dleft} ngày
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`${styles.status} ${st.cls}`}>
+                          <st.Icon size={11} /> {st.label}
+                        </span>
+                      </td>
+                      <td className={styles.actionsCol}>
+                        <div className={styles.actions}>
+                          <button className={styles.btnEdit} title="Chỉnh sửa"
+                            onClick={() => handleEdit(c)}>
+                            <Edit2 size={14} />
+                          </button>
+                          <button className={styles.btnDelete} title="Xóa"
+                            onClick={() => askDeleteOne(c.couponId)}>
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0} className={styles.pageBtn}>
+                ← Trước
+              </button>
+              <div className={styles.pageNumbers}>
+                {[...Array(Math.min(totalPages, 7))].map((_, i) => {
+                  const pageNum = totalPages <= 7 ? i : Math.max(0, page - 3) + i;
+                  if (pageNum >= totalPages) return null;
+                  return (
+                    <button key={pageNum} onClick={() => setPage(pageNum)}
+                      className={`${styles.pageNumber} ${page === pageNum ? styles.active : ''}`}>
+                      {pageNum + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1} className={styles.pageBtn}>
+                Sau →
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Modal */}
+      <CouponModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleSubmit}
         editingCoupon={editingCoupon}
+      />
+
+      <ConfirmDeleteModal
+        open={confirm.open}
+        title={confirm.ids.length > 1 ? `Xóa ${confirm.ids.length} coupon?` : 'Xóa coupon này?'}
+        message={confirm.ids.length > 1
+          ? `Hành động này sẽ xóa ${confirm.ids.length} coupon và không thể hoàn tác.`
+          : 'Hành động này không thể hoàn tác. Booking đã áp dụng coupon vẫn được giữ nguyên.'}
+        busy={confirm.busy}
+        onCancel={() => setConfirm({ open: false, ids: [], busy: false })}
+        onConfirm={doDelete}
       />
     </div>
   );

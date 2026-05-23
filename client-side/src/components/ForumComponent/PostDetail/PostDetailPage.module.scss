@@ -535,3 +535,15 @@
   font-size: 16px;
   font-weight: 600;
 }
+
+
+/* Highlight comment được navigate tới từ thông báo */
+:global(.highlight-comment) {
+  animation: highlightPulse 2s ease-out;
+}
+
+@keyframes highlightPulse {
+  0%   { background-color: #fef9c3; border-radius: 8px; }
+  60%  { background-color: #fef9c3; border-radius: 8px; }
+  100% { background-color: transparent; }
+}

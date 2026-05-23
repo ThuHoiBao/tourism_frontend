@@ -1,30 +1,49 @@
+// ── Admin theme — slate/navy đồng bộ với ToursPage + TourForm ─────────────
+// Palette: indigo navy primary + slate + đỏ destructive + xanh lá success
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1);   opacity: 0.9; }
+  50%      { transform: scale(1.15); opacity: 0.6; }
+}
+
+// ── Container chung của 1 tab ──────────────────────────────────────────────
 .tabContainer {
   max-width: 1000px;
   margin: 0 auto;
+  animation: fadeSlideUp 0.3s ease both;
 }
 
-// Section
+// ── Section (card chứa form) ───────────────────────────────────────────────
 .section {
-  background: white;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 
   h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0 0 20px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 18px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 
+    // Thanh dọc nhỏ thay cho gradient tím rực rỡ cũ
     &::before {
       content: '';
-      width: 4px;
-      height: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      width: 3px;
+      height: 16px;
+      background: #1e40af;
       border-radius: 2px;
     }
   }
@@ -34,30 +53,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
 
   h3 {
     margin: 0;
-
-    &::before {
-      content: none;
-    }
+    &::before { content: none; }
   }
 }
 
-// Form Elements
+.headerActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// ── Form elements ─────────────────────────────────────────────────────────
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   label {
     display: block;
-    font-size: 14px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
+    color: #475569;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 
     .required {
-      color: #ef4444;
+      color: #b91c1c;
       margin-left: 2px;
     }
   }
@@ -65,952 +91,1359 @@
   input,
   select,
   textarea {
-    width: 97%;
-    padding: 12px 14px;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
-    transition: all 0.2s;
-    background: white;
+    color: #0f172a;
+    background: #ffffff;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+
+    &:hover { border-color: #94a3b8; }
 
     &:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #1e40af;
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
     }
 
-    &::placeholder {
-      color: #9ca3af;
-    }
+    &::placeholder { color: #94a3b8; }
 
     &.error {
-      border-color: #ef4444;
+      border-color: #b91c1c;
+      background: #fef2f2;
 
-      &:focus {
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-      }
+      &:focus { box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12); }
     }
   }
 
   select {
     cursor: pointer;
-    padding-left: 44px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 38px;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   textarea {
+    min-height: 90px;
     resize: vertical;
-    line-height: 1.6;
-    min-height: 100px;
-  }
-}
-
-.inputGroup {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  svg {
-    position: absolute;
-    left: 14px;
-    color: #9ca3af;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  input,
-  select {
-    padding-left: 44px;
+    line-height: 1.5;
   }
 }
 
 .errorText {
   display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  color: #ef4444;
+  font-size: 12px;
+  color: #b91c1c;
+  margin-top: 5px;
   font-weight: 500;
 }
 
 .infoText {
-  display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 4px;
+  font-style: italic;
 }
 
-// Grid Layout
-.row2 {
+// Grid 2-col cho form
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
+
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
 }
 
-// Checkbox
-.checkboxGroup {
-  margin-top: 24px;
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 10px;
-
-  label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    margin: 0;
-    font-weight: 500;
-    color: #374151;
-
-    input[type='checkbox'] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: #667eea;
-    }
-  }
-}
-
-// Buttons
-.btnAdd {
+.row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
+  gap: 14px;
+  flex-wrap: wrap;
 
-  &:hover {
-    background: #5568d3;
-    transform: translateY(-1px);
-  }
+  > .formGroup { flex: 1; min-width: 220px; margin-bottom: 0; }
 }
 
-.btnPrimary {
+.inputGroup {
+  position: relative;
+
+  input { padding-right: 36px; }
+}
+
+// Checkbox group (status, isMain...)
+.checkboxGroup {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
+  gap: 9px;
+  padding: 9px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #0f172a;
+  font-weight: 500;
+  transition: all 0.18s ease;
+
+  &:hover { background: #ffffff; border-color: #94a3b8; }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #1e40af;
+    cursor: pointer;
+  }
+}
+
+// ── Buttons trong tab ─────────────────────────────────────────────────────
+.btnPrimary,
+.btnAdd {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  background: #1e40af;
+  color: #ffffff;
+  border: 1px solid #1e40af;
+  border-radius: 8px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.22);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    background: #1e3a8a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.32);
   }
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 }
 
 .btnDelete {
-  padding: 8px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
 
   &:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: #fef2f2;
+    border-color: #b91c1c;
   }
 }
 
-// Empty State
-.emptyState {
-  text-align: center;
-  padding: 60px 20px;
-  border: 2px dashed #e5e7eb;
-  border-radius: 12px;
+.btnIcon,
+.btnIconDelete {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  transition: all 0.18s ease;
 
-  svg {
-    color: #d1d5db;
-    margin-bottom: 16px;
-  }
+  &:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
+}
+
+.btnIconDelete {
+  border-color: #fecaca;
+  color: #b91c1c;
+
+  &:hover { background: #fef2f2; border-color: #b91c1c; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.emptyState {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 50px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: fadeSlideUp 0.3s ease both;
+
+  > svg { color: #94a3b8; }
 
   p {
-    color: #6b7280;
-    margin: 0 0 20px 0;
+    margin: 0;
+    color: #64748b;
     font-size: 14px;
   }
 }
 
-// Item List (Images, Media)
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-  }
+// ── List items / Day cards ────────────────────────────────────────────────
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.previewBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  background: #f9fafb;
+.itemCard,
+.dayCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  border: 2px dashed #e5e7eb;
   overflow: hidden;
-}
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+  animation: fadeSlideUp 0.3s ease both;
 
-.previewPlaceholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
-  
-  svg {
-    color: #9ca3af;
-    margin-bottom: 12px;
-  }
-  
-  p {
-    color: #6b7280;
-    font-size: 13px;
-    max-width: 200px;
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
   }
 }
 
-.imagePreview {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-height: 400px;
-}
-
-.videoWrapper {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; // 16:9 aspect ratio
-  overflow: hidden;
-  border-radius: 8px;
-  
-  iframe,
-  video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 8px;
-  }
-}
-
-.videoElement {
-  object-fit: contain;
-  background: #000;
-}
-
-.imageInputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.separator {
-  text-align: center;
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 600;
-  margin: 8px 0;
-  position: relative;
-  
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background: #e5e7eb;
-  }
-  
-  &::before {
-    left: 0;
-  }
-  
-  &::after {
-    right: 0;
-  }
-}
-
-.labelWithIcon {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  
-  .inputIcon {
-    color: #6b7280;
-  }
-}
-
-.inputDisabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #f3f4f6;
-}
-
+.dayHeader,
 .cardHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 16px;
-  
-  h4 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-  }
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.btnAction {
-  padding: 6px;
-  background: transparent;
-  border: 1px solid #e5e7eb;
+.dayBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #1e40af;
+  color: #ffffff;
   border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #6b7280;
-  
-  &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
-  }
-  
-  &.starred {
-    color: #fbbf24;
-    background: #fef3c7;
-    border-color: #fbbf24;
-  }
-  
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.22);
+
+  svg { opacity: 0.9; }
 }
 
-// Image Grid Layout
+.dayContent {
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Image grid + cards (GalleryTab) ───────────────────────────────────────
 .imageGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 .imageCard {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
   overflow: hidden;
-  background: white;
-  transition: all 0.2s;
-  
+  transition: all 0.2s ease;
+  animation: fadeSlideUp 0.3s ease both;
+  position: relative;
+
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
     transform: translateY(-2px);
   }
 }
 
 .imageCardHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.imageCardBody {
+  padding: 10px;
+}
+
+.imagePreviewWrapper,
+.imagePreview {
+  width: 100%;
+  height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+  position: relative;
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.imagePlaceholder,
+.previewPlaceholder {
+  width: 100%;
+  height: 150px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    border-color: #1e40af;
+    background: #eff6ff;
+    color: #1e40af;
+  }
+}
+
+.previewBox {
+  width: 100%;
+  height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+  position: relative;
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
 .imageBadge {
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b7280;
-  padding: 4px 10px;
-  background: white;
-  border-radius: 6px;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 9px;
+  background: rgba(30, 64, 175, 0.92);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+
+  // dot nhỏ trước chữ
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    animation: pulseDot 1.6s ease-in-out infinite;
+  }
 }
 
 .imageActions {
   display: flex;
   gap: 6px;
+  margin-top: 10px;
+  justify-content: flex-end;
 }
 
-.btnIcon {
-  padding: 6px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #9ca3af;
+// ── Đôi khi đã có sẵn .modalOverlay/.tabs trong tab (compose) ─────────────
+.modalOverlay,
+.modalContent,
+.modalHeader,
+.modalActions,
+.tab,
+.tabs,
+.tabContent,
+.closeBtn,
+.btnCancel,
+.btnSubmit,
+.saveStatus,
+.saveStatusItem,
+.checkGreen,
+.checkIcon,
+.dotGray,
+.active,
+.spinnerIcon,
+.loadingBox {
+  // No-op placeholder để CSS modules không complain nếu JSX tham chiếu —
+  // các style này đã định nghĩa ở TourForm.module.scss / ToursPage.module.scss
+  // Class trùng tên trong file này chỉ tồn tại để tránh "undefined class".
+}
+
+// ── Itinerary tab (rich features) ─────────────────────────────────────────
+@keyframes itinCardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.itinToolbar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    border-color: #d1d5db;
-    background: #f9fafb;
-  }
-  
-  &.active {
-    color: #fbbf24;
-    background: #fef3c7;
-    border-color: #fbbf24;
-    
-    svg {
-      fill: #fbbf24;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: #1e40af;
+      border-radius: 2px;
     }
   }
 }
 
-.btnIconDelete {
-  padding: 6px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #ef4444;
+.itinTitle {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background: #fee2e2;
-    border-color: #ef4444;
-  }
-}
-
-.imagePreviewWrapper {
-  aspect-ratio: 16 / 9;
-  background: #f3f4f6;
-  overflow: hidden;
-  position: relative;
-}
-
-.imagePreview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.imagePlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
-}
-
-.imageCardBody {
-  padding: 12px;
-}
-
-.headerActions {
-  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.emptyActions {
+.itinStats {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
-.btnSecondary {
-  display: flex;
+.statChip {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: white;
-  color: #3b82f6;
-  border: 2px solid #3b82f6;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  
-  &:hover {
-    background: #eff6ff;
-  }
-  
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  letter-spacing: 0.2px;
 }
 
-// Item list
-.itemList {
+.statOk {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #6ee7b7;
+}
+
+.statWarn {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fcd34d;
+}
+
+.itinActions {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+  align-items: center;
 }
 
-.itemCard {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-  background: white;
-  transition: all 0.2s;
-  
-  &:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.itemContent {
+.itinList {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.itemActions {
+// ── Day card ────────────────────────────────────────────────────────────
+.itinCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: itinCardIn 0.25s ease both;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+              transform 0.18s ease, opacity 0.2s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  }
+}
+
+.itinComplete {
+  // viền trái xanh nhẹ báo "ổn"
+  border-left: 3px solid #047857;
+}
+
+.itinIncomplete {
+  // viền trái amber báo "thiếu thông tin"
+  border-left: 3px solid #f59e0b;
+}
+
+.itinDragging {
+  opacity: 0.5;
+  transform: scale(0.985);
+}
+
+.itinDropTarget {
+  border-color: #1e40af;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.18);
+
+  // Vạch indicator nơi sẽ drop
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 12px;
+    right: 12px;
+    height: 3px;
+    background: #1e40af;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
+  }
+}
+
+.itinHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
-  margin-top: 8px;
+  gap: 12px;
+  padding: 11px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: default;
 }
 
-.checkboxLabel {
+.itinHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itinHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+// Drag handle
+.dragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: #94a3b8;
+  cursor: grab;
+  border-radius: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #475569;
+  }
+
+  &:active { cursor: grabbing; }
+}
+
+// Day badge
+.itinBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  background: #1e40af;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.22);
+  flex-shrink: 0;
+}
+
+// Summary (khi collapse)
+.itinSummary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  font-size: 13px;
+  color: #475569;
+}
+
+.itinSumTitle {
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+
+  em { color: #94a3b8; font-style: italic; font-weight: 400; }
+}
+
+.itinSumMeals {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  padding: 2px 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  svg { color: #94a3b8; }
+}
+
+// Validity dot
+.validDot {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.validOk {
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+}
+
+.validWarn {
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+
+// Content area
+.itinContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: itinCardIn 0.2s ease both;
+}
+
+.itinRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+
+  > .formGroup { margin-bottom: 0; }
+}
+
+// Add row button (cuối list)
+.itinAddRow {
+  margin-top: 6px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  color: #1e40af;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.18s ease;
+  width: 100%;
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #1e40af;
+    border-style: solid;
+  }
+}
+
+// ── Gallery tab (rich features) ───────────────────────────────────────────
+@keyframes lightboxIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+// Drop zone (kéo & thả ảnh)
+.dropZone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13.5px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+
+  > svg { color: #94a3b8; flex-shrink: 0; transition: color 0.2s ease, transform 0.2s ease; }
+
+  > div { flex: 1; line-height: 1.5; }
+
+  strong { color: #0f172a; font-weight: 700; }
+
+  &:hover {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+  }
+}
+
+.dropZoneActive {
+  border-color: #1e40af;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12) inset;
+
+  > svg {
+    color: #1e40af;
+    transform: scale(1.1);
+  }
+
+  strong { color: #1e40af; }
+}
+
+.dropZoneHint {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: #64748b;
+  font-style: italic;
+}
+
+// Image card — bổ sung biến thể "main"
+.imageCardMain {
+  border-color: #047857;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+
+  .imageCardHeader { background: #ecfdf5; }
+}
+
+// Main badge nhỏ ở header card
+.mainBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #047857;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-left: auto;
+
+  svg { color: #fef9c3; }
+}
+
+// Zoom button trên preview ảnh
+.imagePreviewWrapper {
+  position: relative;
+}
+
+.previewZoomBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.65);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.18s ease, background 0.18s ease;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.85);
+    transform: scale(1.05);
+  }
+}
+
+.imageCard:hover .previewZoomBtn {
+  opacity: 1;
+}
+
+// File meta (tên + size)
+.fileMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.fileName {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  color: #475569;
+}
+
+.fileSize {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+// Compact action row in image card
+.imageActionRow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btnGhostSm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+  }
+}
+
+.btnGhostDanger {
+  border-color: #fecaca;
+  color: #b91c1c;
+
+  &:hover {
+    background: #fef2f2;
+    border-color: #b91c1c;
+  }
+}
+
+// Media list (video cards)
+.mediaList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mediaCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  }
+}
+
+.mediaCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mediaCardBody {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+.mediaPreview {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.mediaUrlNote {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  
-  &:hover {
-    background: #f9fafb;
-  }
-  
-  input[type="checkbox"] {
-    display: none;
-  }
-  
-  svg {
-    color: #d1d5db;
-    transition: all 0.2s;
-    
-    &.starred {
-      color: #fbbf24;
-      fill: #fbbf24;
-    }
-  }
-  
+  padding: 12px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  word-break: break-all;
+  text-align: center;
+
   span {
-    font-size: 13px;
-    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.previewPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #94a3b8;
+  width: 100%;
+  height: 100%;
+  font-size: 12.5px;
+
+  p { margin: 0; }
+}
+
+.mediaCardForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  > .formGroup { margin-bottom: 0; }
+}
+
+// ── Lightbox mini xem ảnh ─────────────────────────────────────────────────
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+  animation: lightboxIn 0.2s ease both;
+
+  img {
+    max-width: 92%;
+    max-height: 88vh;
+    border-radius: 8px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    cursor: default;
+    object-fit: contain;
+  }
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.18s ease;
+  backdrop-filter: blur(6px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: rotate(90deg) scale(1.05);
+  }
+}
+
+// ── General info tab (rich features) ──────────────────────────────────────
+@keyframes spin360 { to { transform: rotate(360deg); } }
+
+// Row 2 cột (grid)
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+
+  > .formGroup { margin-bottom: 0; }
+}
+
+// Progress bar trên cùng tab
+.progressBar {
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  animation: itinCardIn 0.3s ease both;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 8px;
+
+  strong { color: #0f172a; font-weight: 700; }
+}
+
+.progressPercent {
+  font-weight: 700;
+  color: #1e40af;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #1e40af, #3b82f6);
+  border-radius: 3px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Section title rich (icon + title + sub)
+.sectionTitleRich {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    // Bỏ thanh nhấn (đã có icon vuông bên trái)
+    &::before { content: none; }
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #64748b;
     font-weight: 500;
   }
 }
 
-
-.imagePreview {
-  margin-top: 12px;
+.sectionIcon {
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  overflow: hidden;
-  
-  img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
+  background: #eff6ff;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #bfdbfe;
 }
 
-// Day Card (Itinerary)
-.dayCard {
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-  }
-
-  .dayHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-
-    .dayBadge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 16px;
-
-      svg {
-        color: rgba(255, 255, 255, 0.9);
-      }
-    }
-
-    .btnDelete {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.25);
-      }
-    }
-  }
-
-  .dayContent {
-    padding: 20px;
-  }
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .section {
-    padding: 20px;
-  }
-
-  .row2 {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .sectionHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-
-    .btnAdd {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  .itemCard {
-    padding: 16px;
-
-    .itemActions {
-      flex-direction: column-reverse;
-      gap: 12px;
-      align-items: stretch;
-
-      .checkboxLabel,
-      .btnDelete {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  }
-
-  .dayCard {
-    .dayHeader {
-      padding: 12px 16px;
-
-      .dayBadge {
-        font-size: 14px;
-      }
-    }
-
-    .dayContent {
-      padding: 16px;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .section {
-    padding: 16px;
-    margin-bottom: 16px;
-
-    h3 {
-      font-size: 16px;
-    }
-  }
-
-  .formGroup {
-    margin-bottom: 16px;
-
-    label {
-      font-size: 13px;
-    }
-
-    input,
-    select,
-    textarea {
-      padding: 10px 12px;
-      font-size: 13px;
-    }
-  }
-
-  .inputGroup {
-    svg {
-      left: 12px;
-      width: 16px;
-      height: 16px;
-    }
-
-    input,
-    select {
-      padding-left: 40px;
-    }
-  }
-
-  .emptyState {
-    padding: 40px 16px;
-
-    svg {
-      width: 40px;
-      height: 40px;
-    }
-  }
-}
-
-
-/* --- CÁC STYLE CHUNG --- */
-
-.sectionHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e0e0e0;
-
-    h3 {
-        margin: 0;
-        font-size: 1.25rem;
-        color: #333;
-    }
-}
-
-.btnAdd {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    transition: background-color 0.3s;
-    &:hover {
-        background-color: #0056b3;
-    }
-}
-
-.itemList {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.itemCard {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1.5rem;
-    background-color: #f9f9f9;
-}
-
-.cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px dashed #ccc;
-    
-    h4 {
-        margin: 0;
-        font-size: 1rem;
-        color: #555;
-    }
-}
-
-.itemActions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btnAction, .btnDelete {
-    background: none;
-    border: none;
-    color: #777;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 4px;
-    transition: all 0.2s;
-    
-    &:hover {
-        background-color: #eee;
-    }
-}
-
-.btnDelete {
-    color: #dc3545;
-    &:hover {
-        background-color: #f8d7da;
-    }
-}
-
-.starred {
-    color: #ffc107;
-    &:hover {
-        background-color: #fff3cd;
-    }
-}
-
-/* --- BỐ CỤC (Grid) --- */
-
-.grid2 {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* 2/3 cho Input, 1/3 cho Preview */
-    gap: 2rem;
-    align-items: flex-start; /* Căn chỉnh các cột trên cùng */
-}
-
-/* --- Input Group & Icon --- */
-.labelWithIcon {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-
-.inputIcon {
-    margin-right: 0.5rem;
-    color: #007bff;
-}
-
-.inputDisabled {
-    background-color: #e9ecef !important;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.infoText {
-    font-size: 0.8rem;
-    color: #28a745;
-    margin-top: 0.25rem;
-}
-
-/* --- Input Image Selector --- */
-
-.imageInputGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0;
-}
-
-.separator {
-    text-align: center;
-    position: relative;
-    font-size: 0.8rem;
-    color: #999;
-    
-    &::before, &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        width: 40%;
-        height: 1px;
-        background: #ddd;
-    }
-    &::before { left: 0; }
-    &::after { right: 0; }
-}
-
-
-/* --- PREVIEW BOX --- */
-
-.previewBox {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    overflow: hidden;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.imagePreview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.previewPlaceholder {
-    text-align: center;
-    color: #999;
-    padding: 1rem;
-    
-    svg {
-        margin-bottom: 0.5rem;
-    }
-}
-
-.videoWrapper {
+// Input wrapper với icon prefix bên trong + check suffix
+.inputWithIcon {
   position: relative;
-  width: 100%;
-  padding-bottom: 56.25%; 
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border-radius: 12px;
-  
-  iframe, video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+
+  &:hover { border-color: #94a3b8; }
+
+  &:focus-within {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+  }
+
+  > input,
+  > select {
+    flex: 1;
+    border: none !important;        // bỏ border, dùng border của wrapper
+    background: transparent !important;
+    padding-left: 38px !important;  // chừa chỗ cho icon prefix
+    padding-right: 12px !important;
+    height: 40px;
+    font-size: 14px;
+    color: #0f172a;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus { box-shadow: none !important; }
+  }
+
+  > select {
+    cursor: pointer;
+    padding-right: 36px !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 14px !important;
   }
 }
 
-
-.videoWrapper iframe,
-.videoWrapper video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.inputIconPrefix {
+  position: absolute;
+  left: 13px;
+  color: #64748b;
+  pointer-events: none;
 }
 
+.inputCheckSuffix {
+  position: absolute;
+  right: 12px;
+  color: #047857;
+}
 
-.modalCode {
-  color: white;
+.inputCheckErr { color: #b91c1c; }
+
+.spinning { animation: spin360 0.8s linear infinite; color: #1e40af; }
+
+// Error / OK wrap state cho inputWithIcon
+.inputErrorWrap {
+  border-color: #b91c1c !important;
+  background: #fef2f2 !important;
+
+  &:focus-within { box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12) !important; }
+}
+
+.inputOkWrap {
+  border-color: #6ee7b7 !important;
+  background: #ecfdf5 !important;
+
+  &:focus-within { box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12) !important; }
+}
+
+// Meta dưới input: helper + character counter
+.inputMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+
+.inputHelper {
+  color: #64748b;
+  font-style: italic;
+
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #1e40af;
+    font-style: normal;
+    font-size: 11px;
+  }
+}
+
+.inputCount {
+  color: #94a3b8;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.inputCountWarn {
+  color: #b45309;
+}
+
+// Error text — đè lên rule chung
+.errorText {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #b91c1c;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+// ── Status toggle row (switch) ────────────────────────────────────────────
+.statusToggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  &:hover { background: #f1f5f9; }
+}
+
+.statusToggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.statusToggleLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  svg { color: #1e40af; }
+}
+
+.statusToggleHint {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+// Switch (toggle)
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+
+  input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #cbd5e1;
+    border-radius: 26px;
+    transition: background 0.25s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+    }
+  }
+
+  input:checked + .slider {
+    background: #047857;
+
+    &::before { transform: translateX(20px); }
+  }
 }
