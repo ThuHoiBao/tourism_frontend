@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Plus, Edit2, Trash2, Eye, EyeOff, Search, FileText, Image as ImageIcon,
   TrendingUp, MessageCircle, Heart, LayoutGrid, Calendar, AlertTriangle,
-  BookOpen, CheckCircle2, PenSquare, MapPin
+  BookOpen, CheckCircle2, PenSquare, MapPin, ArrowLeft, Clock, ShieldOff,
+  ShieldAlert, Info, X
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import CreatePost from '../CreatePost/CreatePost';
@@ -21,6 +22,7 @@ const UserPostsManagement = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [moderationPost, setModerationPost] = useState(null);
   const [stats, setStats] = useState({
     total: 0, published: 0, draft: 0,
     totalViews: 0, totalLikes: 0, totalComments: 0,
@@ -43,13 +45,15 @@ const UserPostsManagement = () => {
     try {
       const userId = user?.userId || user?.userID;
       if (!userId) return;
-      const res = await axios.get(`/forum/posts/user/${userId}`, { params: { page: 0, size: 100 } });
+      const res = await axios.get(`/forum/posts/user/${userId}/manage`, { params: { page: 0, size: 100 } });
       const postsData = res.data?.data?.content || res.data?.content || [];
       setPosts(postsData);
       setStats({
         total: postsData.length,
         published: postsData.filter(p => p.status === 'PUBLISHED').length,
         draft: postsData.filter(p => p.status === 'DRAFT').length,
+        hidden: postsData.filter(p => p.status === 'HIDDEN').length,
+        pending: postsData.filter(p => p.status === 'PENDING_REVIEW').length,
         totalViews: postsData.reduce((s, p) => s + (p.viewCount || 0), 0),
         totalLikes: postsData.reduce((s, p) => s + (p.likeCount || 0), 0),
         totalComments: postsData.reduce((s, p) => s + (p.commentCount || 0), 0),
@@ -96,9 +100,11 @@ const UserPostsManagement = () => {
   ];
 
   const FILTER_TABS = [
-    { value: 'all',       label: 'Tất cả',       icon: LayoutGrid   },
-    { value: 'published', label: 'Đã xuất bản',  icon: Eye          },
-    { value: 'draft',     label: 'Bản nháp',     icon: FileText     },
+    { value: 'all',            label: 'Tất cả',       icon: LayoutGrid   },
+    { value: 'published',      label: 'Đã xuất bản',  icon: Eye          },
+    { value: 'draft',          label: 'Bản nháp',     icon: FileText     },
+    { value: 'pending_review', label: 'Chờ duyệt',    icon: Clock        },
+    { value: 'hidden',         label: 'Vi phạm',      icon: ShieldOff    },
   ];
 
   const filteredPosts = posts.filter(p => {
@@ -125,9 +131,14 @@ const UserPostsManagement = () => {
             </div>
             <h1 className={styles.heroTitle}>Quản lý bài viết</h1>
             <p className={styles.heroSubtitle}>Theo dõi và quản lý tất cả bài viết của bạn</p>
-            <button className={styles.heroCreateBtn} onClick={() => setShowCreateModal(true)}>
-              <Plus size={16} /> Viết bài mới
-            </button>
+            <div className={styles.heroBtnGroup}>
+              <button className={styles.heroCreateBtn} onClick={() => setShowCreateModal(true)}>
+                <Plus size={16} /> Viết bài mới
+              </button>
+              <button className={styles.heroBackBtn} onClick={() => navigate('/forum')}>
+                <ArrowLeft size={16} /> Về Forum
+              </button>
+            </div>
           </div>
 
           {/* right side: slider + floating cards */}
@@ -268,11 +279,12 @@ const UserPostsManagement = () => {
                         ? <img src={post.thumbnailUrl} alt={post.title} />
                         : <div className={styles.thumbnailPlaceholder}><ImageIcon size={28} /></div>
                       }
-                      <span className={`${styles.statusBadge} ${post.status === 'PUBLISHED' ? styles.published : styles.draft}`}>
-                        {post.status === 'PUBLISHED'
-                          ? <><Eye size={10} /> Xuất bản</>
-                          : <><FileText size={10} /> Nháp</>
-                        }
+                      <span className={`${styles.statusBadge} ${styles['status_' + (post.status || 'DRAFT')]}`}>
+                        {post.status === 'PUBLISHED'    && <><Eye size={10} /> Xuất bản</>}
+                        {post.status === 'DRAFT'        && <><FileText size={10} /> Nháp</>}
+                        {post.status === 'HIDDEN'       && <><ShieldOff size={10} /> Vi phạm</>}
+                        {post.status === 'PENDING_REVIEW' && <><Clock size={10} /> Chờ duyệt</>}
+                        {!['PUBLISHED','DRAFT','HIDDEN','PENDING_REVIEW'].includes(post.status) && <><FileText size={10} /> {post.status}</>}
                       </span>
                     </div>
 
@@ -296,6 +308,14 @@ const UserPostsManagement = () => {
                       </div>
 
                       <div className={styles.postActions}>
+                        {(post.status === 'HIDDEN' || post.status === 'PENDING_REVIEW') && (
+                          <button
+                            className={`${styles.actionBtn} ${styles.btnReason}`}
+                            onClick={() => setModerationPost(post)}
+                          >
+                            <ShieldAlert size={12} /> Lý do
+                          </button>
+                        )}
                         <button className={`${styles.actionBtn} ${styles.btnView}`}
                           onClick={() => window.open(`/forum/post/${post.postID}`, '_blank')}>
                           <Eye size={12} /> Xem
@@ -326,6 +346,97 @@ const UserPostsManagement = () => {
           )}
         </div>
       </div>
+
+      {/* ── Moderation reason modal ── */}
+      {moderationPost && (
+        <div className={styles.modalOverlay} onClick={() => setModerationPost(null)}>
+          <div className={styles.modReasonModal} onClick={e => e.stopPropagation()}>
+            <div className={`${styles.modReasonHeader} ${moderationPost.status === 'HIDDEN' ? styles.modReasonRed : styles.modReasonPurple}`}>
+              <div className={styles.modReasonIconBig}>
+                {moderationPost.status === 'HIDDEN'
+                  ? <ShieldAlert size={28} />
+                  : <Clock size={28} />}
+              </div>
+              <div className={styles.modReasonHeaderText}>
+                <h3 className={styles.modReasonTitle}>
+                  {moderationPost.status === 'HIDDEN'
+                    ? 'Bài viết vi phạm tiêu chuẩn'
+                    : 'Bài viết đang chờ duyệt'}
+                </h3>
+                <p className={styles.modReasonSub}>
+                  {moderationPost.status === 'HIDDEN'
+                    ? 'Đã bị AI ẩn khỏi forum'
+                    : 'Quản trị viên đang xem xét'}
+                </p>
+              </div>
+              <button className={styles.modReasonClose} onClick={() => setModerationPost(null)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.modReasonBody}>
+              <div className={styles.modReasonPostTitle}>
+                <FileText size={13} /> {moderationPost.title}
+              </div>
+
+              <div className={styles.modReasonBox}>
+                <div className={styles.modReasonBoxLabel}>
+                  <AlertTriangle size={12} /> Lý do từ AI
+                </div>
+                <div className={styles.modReasonBoxText}>
+                  {moderationPost.moderationReason || 'Không có lý do chi tiết'}
+                </div>
+                {typeof moderationPost.moderationScore === 'number' && (
+                  <div className={styles.modReasonScoreRow}>
+                    <span className={styles.modReasonScoreLabel}>Điểm vi phạm:</span>
+                    <div className={styles.modReasonScoreBar}>
+                      <div
+                        className={`${styles.modReasonScoreFill} ${
+                          moderationPost.status === 'HIDDEN'
+                            ? styles.modReasonScoreRed
+                            : styles.modReasonScorePurple
+                        }`}
+                        style={{ width: `${Math.min(100, (moderationPost.moderationScore || 0) * 100)}%` }}
+                      />
+                    </div>
+                    <span className={styles.modReasonScoreValue}>
+                      {((moderationPost.moderationScore || 0) * 100).toFixed(0)}/100
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.modReasonTip}>
+                <Info size={13} />
+                <div>
+                  {moderationPost.status === 'HIDDEN' ? (
+                    <>Bạn có thể <strong>Sửa</strong> bài và đăng lại — hệ thống sẽ kiểm tra lại tự động.</>
+                  ) : (
+                    <>Bài sẽ tự xuất bản nếu admin duyệt, hoặc bị từ chối nếu không đạt tiêu chuẩn.</>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modReasonFooter}>
+              {moderationPost.status === 'HIDDEN' && (
+                <button
+                  className={styles.modReasonBtnEdit}
+                  onClick={() => {
+                    setModerationPost(null);
+                    navigate(`/forum/post/${moderationPost.postID}/edit`);
+                  }}
+                >
+                  <Edit2 size={13} /> Sửa bài
+                </button>
+              )}
+              <button className={styles.modReasonBtnClose} onClick={() => setModerationPost(null)}>
+                Đã hiểu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Delete confirm modal ── */}
       {showDeleteModal && (
