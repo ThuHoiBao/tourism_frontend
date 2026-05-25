@@ -2,12 +2,14 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import styles from './BookingsPage.module.scss';
 import { FaCalendarCheck, FaSearch, FaRedoAlt, FaChevronLeft, FaChevronRight, FaCalendarAlt, FaChevronDown, FaCheck } from 'react-icons/fa';
+import { ShoppingBag, CheckCircle, XCircle, RefreshCw, Clock, AlertCircle, AlertTriangle, Star } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import useAdminBookings from '../../../../hook/useAdminBookings.ts';
 import useWebSocket from '../../../../hook/useWebSocket.ts';
 import BookingItem from './BookingItem';
+import { searchBookingsForAdminApi } from '../../../../services/booking/booking';
 
 const statusOptions = [
     { key: null, label: 'Tất cả trạng thái' },
@@ -119,7 +121,7 @@ const BookingsPage = () => {
     const searchDTO = useMemo(() => ({
         bookingCode: bookingCode.trim() === '' ? null : bookingCode,
         bookingStatus: bookingStatus,
-        bookingDate: bookingDate ? new Date(bookingDate.setHours(0,0,0,0)).toISOString().split('.')[0] : null,
+        bookingDate: bookingDate ? `${bookingDate.getFullYear()}-${String(bookingDate.getMonth()+1).padStart(2,'0')}-${String(bookingDate.getDate()).padStart(2,'0')}T00:00:00` : null,
     }), [bookingCode, bookingStatus, bookingDate]);
     
     const pageable = useMemo(() => ({
@@ -130,6 +132,37 @@ const BookingsPage = () => {
     }), [currentPage]);
 
     const { bookings, loading, error, totalPages, totalElements, refetch, silentRefetch, updateBookingInList } = useAdminBookings(searchDTO, pageable);
+
+    const [bookingStats, setBookingStats] = useState(null);
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const [total, paid, cancelled, pendingRefund, reviewed, pendingPayment, pendingConfirmation, overduePayment] = await Promise.all([
+                    searchBookingsForAdminApi({}, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'PAID' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'CANCELLED' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_REFUND' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'REVIEWED' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_PAYMENT' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_CONFIRMATION' }, { page: 0, size: 1 }),
+                    searchBookingsForAdminApi({ bookingStatus: 'OVERDUE_PAYMENT' }, { page: 0, size: 1 }),
+                ]);
+                setBookingStats({
+                    total: total.totalElements,
+                    paid: paid.totalElements,
+                    cancelled: cancelled.totalElements,
+                    pendingRefund: pendingRefund.totalElements,
+                    reviewed: reviewed.totalElements,
+                    pendingPayment: pendingPayment.totalElements,
+                    pendingConfirmation: pendingConfirmation.totalElements,
+                    overduePayment: overduePayment.totalElements,
+                });
+            } catch (e) {
+                console.error('Failed to fetch booking stats', e);
+            }
+        };
+        fetchStats();
+    }, []);
 
     // ✨ WEBSOCKET: Lắng nghe cập nhật từ backend
     // 1. Patch ngay booking đó trong list (không loading flash)
@@ -176,8 +209,37 @@ const BookingsPage = () => {
         <div className={styles.pageContainer}>
             <h1 className={styles.pageTitle}>
                 <FaCalendarCheck className={styles.icon} /> Quản Lý Bookings
+                {totalElements > 0 && (
+                    <span className={styles.titleMeta}>{totalElements} booking</span>
+                )}
             </h1>
             
+            {/* Stats Cards */}
+            {bookingStats && (
+                <div className={styles.statsGrid}>
+                    {[
+                        { title: 'TỔNG BOOKINGS',   value: bookingStats.total,               Icon: ShoppingBag,   color: '#1f6fb2', bg: '#e0f2fe' },
+                        { title: 'ĐÃ THANH TOÁN',   value: bookingStats.paid,                Icon: CheckCircle,   color: '#16a34a', bg: '#dcfce7' },
+                        { title: 'ĐÃ HỦY',          value: bookingStats.cancelled,           Icon: XCircle,       color: '#dc2626', bg: '#fee2e2' },
+                        { title: 'CHỜ HOÀN TIỀN',   value: bookingStats.pendingRefund,       Icon: RefreshCw,     color: '#d97706', bg: '#fef3c7' },
+                        { title: 'CHỜ THANH TOÁN',  value: bookingStats.pendingPayment,      Icon: Clock,         color: '#ea580c', bg: '#fff7ed' },
+                        { title: 'CHỜ XÁC NHẬN',    value: bookingStats.pendingConfirmation, Icon: AlertCircle,   color: '#0891b2', bg: '#cffafe' },
+                        { title: 'QUÁ HẠN TT',      value: bookingStats.overduePayment,      Icon: AlertTriangle, color: '#ef4444', bg: '#ffe4e6' },
+                        { title: 'ĐÃ ĐÁNH GIÁ',     value: bookingStats.reviewed,            Icon: Star,          color: '#7c3aed', bg: '#f3e8ff' },
+                    ].map(({ title, value, Icon, color, bg }) => (
+                        <div key={title} className={styles.statCard}>
+                            <div className={styles.iconWrapper} style={{ backgroundColor: bg, color }}>
+                                <Icon size={18} />
+                            </div>
+                            <div className={styles.cardBody}>
+                                <h3 className={styles.cardTitle}>{title}</h3>
+                                <p className={styles.cardValue}>{value ?? '—'}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             {/* Filter Bar */}
             <div className={styles.filterBar}>
                 <div className={`${styles.filterItem} ${styles.searchItem}`}>

@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './UsersPage.module.scss';
 import { FaUsers, FaSearch, FaRedoAlt } from 'react-icons/fa';
+import { Users, UserCheck, UserX, UserPlus } from 'lucide-react';
 import useAdminUsers from '../../../../hook/useAdminUsers.ts';
 import useWebSocket from '../../../../hook/useWebSocket.ts';
 import UsersItem from './UsersItem';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { api } from '../../../../services/api';
 
 const UsersPage = () => {
     const location = useLocation();
@@ -35,6 +37,25 @@ const UsersPage = () => {
     });
 
     const {users, loading, totalPages, totalElements, refetch, updateUserInList } = useAdminUsers(activeSearch, currentPage, pageSize);
+
+    const [userStats, setUserStats] = useState({ total: 0, active: 0, locked: 0, newThisMonth: 0 });
+    useEffect(() => {
+        const fetchUserStats = async () => {
+            try {
+                const res = await api.get('/admin/users/stats');
+                const data = res.data;
+                setUserStats({
+                    total: data.totalUsers ?? 0,
+                    active: data.activeUsers ?? 0,
+                    locked: data.lockedUsers ?? 0,
+                    newThisMonth: data.newUsersThisMonth ?? 0,
+                });
+            } catch (e) {
+                console.error('Failed to fetch user stats', e);
+            }
+        };
+        fetchUserStats();
+    }, []);
 
     useWebSocket({
         topic: '/topic/user-activity',
@@ -125,6 +146,26 @@ const UsersPage = () => {
                         <p className={styles.subtitle}>Tổng người dùng: {totalElements}</p>
                     </div>
                 </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className={styles.statsGrid}>
+                {[
+                    { title: 'TỔNG NGƯỜI DÙNG', value: userStats.total,        Icon: Users,     color: '#1f6fb2', bg: '#e0f2fe' },
+                    { title: 'HOẠT ĐỘNG',       value: userStats.active,       Icon: UserCheck, color: '#16a34a', bg: '#dcfce7' },
+                    { title: 'BỊ KHÓA',         value: userStats.locked,       Icon: UserX,     color: '#dc2626', bg: '#fee2e2' },
+                    { title: 'MỚI THÁNG NÀY',   value: userStats.newThisMonth, Icon: UserPlus,  color: '#d97706', bg: '#fef3c7' },
+                ].map(({ title, value, Icon, color, bg }) => (
+                    <div key={title} className={styles.statCard}>
+                        <div className={styles.iconWrapper} style={{ backgroundColor: bg, color }}>
+                            <Icon size={18} />
+                        </div>
+                        <div className={styles.cardBody}>
+                            <h3 className={styles.cardTitle}>{title}</h3>
+                            <p className={styles.cardValue}>{value}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Search Bar */}

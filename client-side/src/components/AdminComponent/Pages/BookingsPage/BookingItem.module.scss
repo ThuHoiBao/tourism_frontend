@@ -1,31 +1,45 @@
 // src/components/AdminComponent/Pages/BookingsPage/BookingItem.module.scss
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-$primary-blue: #2c70f8;
-$success-color: #52c41a;
-$danger-color: #ff4d4f;
-$text-default: #333;
-$border-color: #e0e0e0;
-$hover-color: #f7fafc;
+$primary: #1f6fb2;
+$primary-soft: #e0f2fe;
+$primary-hover: #f0f9ff;
+$success-color: #10b981;
+$danger-color: #f43f5e;
+$text-h: #0f172a;
+$text-body: #334155;
+$text-sub: #64748b;
+$text-muted: #94a3b8;
+$border-light: #eef2f7;
+$border: #dbe4ef;
+$radius-sm: 7px;
+
+// Legacy aliases
+$primary-blue: $primary;
+$border-color: $border;
+$hover-color: $primary-hover;
 
 .bookingItem {
-    border-bottom: 1px solid $border-color;
-    transition: background-color 0.2s;
-    
-    &:hover {
-        background-color: $hover-color;
-    }
+    transition: background 0.15s;
+
+    &:hover { background: $primary-hover; }
+    &:last-child td { border-bottom: none; }
 
     td {
-        padding: 15px 10px;
+        padding: 13px 12px;
         vertical-align: middle;
-        font-size: 14px;
-        color: $text-default;
+        font-size: 13.5px;
+        font-family: 'Inter', -apple-system, sans-serif;
+        color: $text-body;
+        border-bottom: 1px solid $border-light;
     }
 }
 
 .bookingCode {
-    font-weight: 600;
-    color: $primary-blue;
+    font-weight: 700;
+    color: $primary;
+    letter-spacing: 0.01em;
+    font-size: 13px;
 }
 
 .tourInfo {
@@ -34,34 +48,40 @@ $hover-color: #f7fafc;
     gap: 10px;
 
     .tourImage {
-        width: 60px;
-        height: 40px;
+        width: 58px;
+        height: 38px;
         object-fit: cover;
-        border-radius: 4px;
+        border-radius: 6px;
         flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .tourName {
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 13.5px;
         margin: 0;
-        line-height: 1.3;
+        line-height: 1.35;
+        color: $text-h;
     }
 
     .tourCode {
-        font-size: 12px;
-        color: #666;
-        margin: 0;
+        font-size: 11.5px;
+        color: $text-muted;
+        margin: 2px 0 0;
+        font-weight: 400;
     }
 }
 
 // --- Status Badges ---
 .statusBadge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
     font-weight: 600;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
 // --- Coin Refund Mini Badge ---
@@ -69,11 +89,11 @@ $hover-color: #f7fafc;
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 0.7rem;
-    padding: 2px 7px;
-    border-radius: 10px;
-    margin-top: 4px;
-    font-weight: 500;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 5px;
+    font-weight: 600;
     white-space: nowrap;
 }
 
@@ -82,108 +102,124 @@ $hover-color: #f7fafc;
 .coin_FAILED    { background: #fee2e2; color: #991b1b; }
 
 .statusPending {
-    background-color: #fffbe6;
-    color: #faad14;
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
 }
 
 .statusProcessing {
-    background-color: #e6f7ff;
-    color: #1890ff;
+    background: $primary-soft;
+    color: $primary;
+    border: 1px solid #bae6fd;
 }
 
 .statusCompleted {
-    background-color: #f6ffed;
-    color: #52c41a;
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
 }
 
 .statusRejected {
-    background-color: #fff1f0;
-    color: #ff4d4f;
+    background: #fff1f2;
+    color: #f43f5e;
+    border: 1px solid #fecdd3;
 }
 
 .statusOnHold {
-    background-color: #f0f5ff;
-    color: #722ed1;
+    background: #f5f3ff;
+    color: #7c3aed;
+    border: 1px solid #ddd6fe;
 }
 
 .statusReviewed {
-    background-color: #e6fffa;
-    color: #389e0d;
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
 }
 
 .statusRefund {
-    background-color: #fff0f6;
-    color: #eb2f96;
+    background: #fdf4ff;
+    color: #a21caf;
+    border: 1px solid #f0abfc;
 }
 
 // --- Action Icons ---
 .actionIcons {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     justify-content: center;
+    flex-wrap: nowrap;
 
     .actionBtn {
-        background: white;
-        border: 1px solid $border-color;
-        color: #666;
-        padding: 6px 8px;
-        border-radius: 4px;
+        background: transparent;
+        border: 1.5px solid $border;
+        color: $text-sub;
+        width: 32px;
+        height: 32px;
+        border-radius: $radius-sm;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.18s;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 13px;
+        flex-shrink: 0;
 
         &:hover {
-            border-color: $primary-blue;
-            color: $primary-blue;
-            background-color: #e6f0ff;
-            transform: translateY(-2px);
+            border-color: $primary;
+            color: $primary;
+            background: $primary-soft;
+            box-shadow: 0 2px 8px rgba($primary, 0.2);
         }
     }
 
     .btnSuccess {
         color: $success-color;
-        border-color: $success-color;
+        border-color: rgba($success-color, 0.5);
+        background: rgba($success-color, 0.05);
 
         &:hover {
-            background-color: #f6ffed;
-            border-color: darken($success-color, 10%);
-            color: darken($success-color, 10%);
+            background: #dcfce7;
+            border-color: $success-color;
+            color: darken($success-color, 8%);
+            box-shadow: 0 2px 8px rgba($success-color, 0.2);
         }
     }
 
     .btnDanger {
         color: $danger-color;
-        border-color: $danger-color;
+        border-color: rgba($danger-color, 0.4);
+        background: rgba($danger-color, 0.04);
 
         &:hover {
-            background-color: #fff1f0;
-            border-color: darken($danger-color, 10%);
-            color: darken($danger-color, 10%);
+            background: #fff1f2;
+            border-color: $danger-color;
+            box-shadow: 0 2px 8px rgba($danger-color, 0.2);
         }
     }
 
     .btnRefund {
-        color: #eb2f96;
-        border-color: #eb2f96;
+        color: #a21caf;
+        border-color: rgba(#a21caf, 0.4);
+        background: rgba(#a21caf, 0.04);
 
         &:hover {
-            background-color: #fff0f6;
-            border-color: darken(#eb2f96, 10%);
-            color: darken(#eb2f96, 10%);
+            background: #fdf4ff;
+            border-color: #a21caf;
+            box-shadow: 0 2px 8px rgba(#a21caf, 0.18);
         }
     }
 
     .reviewBtn {
-        color: #ffc107;
-        border-color: #ffc107;
+        color: #d97706;
+        border-color: rgba(#d97706, 0.4);
+        background: rgba(#d97706, 0.04);
 
         &:hover {
-            background-color: #fff9e8;
-            border-color: darken(#ffc107, 10%);
-            color: darken(#ffc107, 10%);
+            background: #fffbeb;
+            border-color: #d97706;
+            color: darken(#d97706, 8%);
+            box-shadow: 0 2px 8px rgba(#d97706, 0.18);
         }
     }
 }
