@@ -1,214 +1,320 @@
-/* Màu sắc */
-$footer-bg: #212529; // Màu nền tối
-$text-color: #ffffff; // Màu chữ trắng
-$link-hover: #007bff; // Màu link khi hover (xanh dương)
-$partner-button-bg: #495057; // Nút hợp tác
+/* ── Footer — Light, bold, compact ─────────────────────────── */
 
 .footer {
-    background-color: $footer-bg;
-    color: $text-color;
-    padding: 40px 0 20px 0;
-    font-size: 0.9rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+  color: #1e293b;
+  padding: 56px 0 24px;
+  font-size: 14.5px;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid #e2e8f0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #6366f1, #ec4899, #f59e0b);
+  }
 }
 
 .footerContainer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 5%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-/* Phần trên: Logo và 3 cột menu */
+/* ── Top section: Brand + Menu ── */
+
 .topSection {
-    display: flex;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 30px;
-    margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 1.2fr 2.5fr;
+  gap: 56px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid #e2e8f0;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
 }
 
-/* ------------------ Cột Logo & Thanh Toán ------------------ */
 .logoColumn {
-    flex-basis: 25%; // Chiếm 1/4
-    padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brandHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.brandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 15px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.certs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-.certImage {
-    width: 60px; // Điều chỉnh kích thước ảnh chứng nhận
-    height: auto;
-}
-
-.partnerButton {
-    background-color: $partner-button-bg;
-    color: $text-color;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    margin-bottom: 20px;
-    transition: background-color 0.2s;
-    
-    &:hover {
-        background-color: darken($partner-button-bg, 10%);
-    }
+.brandTagline {
+  font-size: 15px;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  max-width: 320px;
 }
 
-.paymentTitle {
-    font-weight: bold;
-    margin-bottom: 10px;
+/* Hotline box nổi bật */
+.hotlineBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #fff;
+  border: 1.5px solid #dbeafe;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+  align-self: flex-start;
 }
 
-.paymentLogos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.paymentLogoPlaceholder {
-    // Đây là placeholder, bạn nên dùng <img> thật
-    width: 60px;
-    height: 30px;
-    background-color: #555;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    font-weight: bold;
+.hotlineIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  flex-shrink: 0;
 }
 
+.hotlineLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
 
-/* ------------------ Cột Menu Liên kết ------------------ */
+.hotlineNumber {
+  font-size: 19px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  margin-top: 2px;
+}
+
+/* ── Link columns (3 cột) ── */
+
 .linkColumns {
-    flex-basis: 75%; // Chiếm 3/4 còn lại
-    display: flex;
-    justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+
+  @media (max-width: 760px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
 }
 
 .linkColumn {
-    flex-basis: 33.33%; // Chia đều 3 cột
-    padding: 0 15px;
+  min-width: 0;
 }
 
 .columnTitle {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: $text-color;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  letter-spacing: 0.2px;
+  position: relative;
+  padding-bottom: 10px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 32px;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    border-radius: 2px;
+  }
 }
 
 .menuList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .menuLink {
-    display: flex;
-    align-items: center;
-    color: $text-color;
-    text-decoration: none;
-    padding: 5px 0;
-    transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  text-decoration: none;
+  padding: 5px 0;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 
-    &:hover {
-        color: $link-hover;
-    }
+  &:hover {
+    color: #2563eb;
+    transform: translateX(4px);
+  }
 }
 
 .menuIcon {
-    margin-right: 5px;
-    font-size: 1.1em;
+  font-size: 16px;
+  color: #94a3b8;
+  flex-shrink: 0;
 }
 
+/* ── Middle section: Payment + Social trên 1 hàng ── */
 
-/* ------------------ Phần Dưới (Social & App) ------------------ */
-.bottomSection {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+.middleSection {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 32px;
+  align-items: start;
+  padding: 28px 0;
+  border-bottom: 1px solid #e2e8f0;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
-.socialApps {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.blockTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 14px 0;
+  letter-spacing: 0.2px;
+
+  svg { color: #2563eb; }
 }
 
-.socialMedia {
-    display: flex;
-    flex-direction: column;
-    flex-basis: 50%;
+.paymentBlock {
+  min-width: 0;
 }
 
-.socialLink {
-    display: flex;
-    align-items: center;
-    color: $text-color;
-    text-decoration: none;
-    padding: 5px 0;
-    font-weight: normal;
+.paymentLogos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-    &:hover {
-        color: $link-hover;
-    }
+.paymentCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 48px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+  }
+
+  &:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.25);
+    border-color: #3b82f6;
+
+    img { transform: scale(1.08); }
+  }
+}
+
+/* ── Social ── */
+
+.socialBlock {
+  min-width: 0;
+}
+
+.socialRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.socialIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  color: #64748b;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+
+  &:hover {
+    background: var(--social-color, #2563eb);
+    color: #fff;
+    transform: translateY(-3px);
+    border-color: var(--social-color, #2563eb);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  }
 }
 
 .socialIcon {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-    flex-shrink: 0;
+  font-size: 18px;
 }
 
-.appDownloads {
-    flex-basis: 50%;
-    display: flex;
-    flex-direction: column;
-}
+/* ── Copyright ── */
 
-.appButtonPlaceholder {
-    // Đây là placeholder cho nút App Store/Google Play
-    background-color: #333;
-    color: $text-color;
-    padding: 10px 15px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    text-align: center;
-    width: 150px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    
-    &:hover {
-        background-color: #444;
-    }
-}
-
-
-/* ------------------ Bản Quyền ------------------ */
 .copyright {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #aaa;
-    line-height: 1.5;
-}
-
-.companyInfo {
-    margin-bottom: 5px;
+  text-align: center;
+  padding-top: 20px;
 }
 
 .copyrightText {
-    font-weight: bold;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0;
+  letter-spacing: 0.1px;
+
+  strong { color: #0f172a; font-weight: 800; }
 }
