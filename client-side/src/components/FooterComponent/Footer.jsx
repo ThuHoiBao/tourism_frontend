@@ -1,172 +1,168 @@
 import React from 'react';
 import styles from './Footer.module.scss';
 
-// Import Icons (Giả định bạn đang sử dụng React Icons)
-import { FaFacebookF, FaInstagram, FaYoutube, FaTelegramPlane } from 'react-icons/fa';
-import { GiShipBow } from 'react-icons/gi';
-import { IoIosAirplane } from "react-icons/io";
-import { FaTicketAlt } from "react-icons/fa";
-import { FaRegBuilding } from "react-icons/fa";
-import chanel from '../../assets/images/chanel.png'
-import nike from '../../assets/images/nike.png'
-// Data cấu hình cho 4 cột menu
+import { FaFacebookF, FaInstagram, FaYoutube, FaTelegramPlane, FaTiktok } from 'react-icons/fa';
+import { IoIosAirplane } from 'react-icons/io';
+import { FaTicketAlt, FaRegBuilding } from 'react-icons/fa';
+import { Plane, CreditCard, Phone } from 'lucide-react';
+
+// Import payment logos từ assets
+import visaImg from '../../assets/images/VISA.png';
+import masterCardImg from '../../assets/images/mastercard.png';
+import JCBImg from '../../assets/images/JCB.png';
+import VietCombankImg from '../../assets/images/VietcomBank.png';
+import TechcombankImg from '../../assets/images/TechcomBank.png';
+import MBBankImg from '../../assets/images/MBBank.png';
+import MoMoImg from '../../assets/images/MoMo.png';
+import ZaloPayImg from '../../assets/images/ZaLoPay.png';
+import VNPAYImg from '../../assets/images/VNPAY.png';
+
+// 3 cột menu tinh giản
 const menuColumns = [
-    {
-        title: 'Về Future',
-        items: [
-            { name: 'Cách đặt chỗ', link: '#' },
-            { name: 'Liên hệ chúng tôi', link: '#' },
-            { name: 'Trợ giúp', link: '#' },
-            { name: 'Tuyển dụng', link: '#' },
-            { name: 'Về chúng tôi', link: '#' },
-        ]
-    },
-    {
-        title: 'Sản phẩm',
-        items: [
-            { name: 'Khách sạn', link: '#', icon: FaRegBuilding },
-            { name: 'Vé máy bay', link: '#', icon: IoIosAirplane },
-            { name: 'Vé xe khách', link: '#', icon: FaTicketAlt },
-            { name: 'Đưa đón sân bay', link: '#', icon: IoIosAirplane },
-            { name: 'Cho thuê xe', link: '#' },
-            { name: 'Hoạt động & Vui chơi', link: '#' },
-            { name: 'Du thuyền', link: '#' },
-            { name: 'Biệt thự', link: '#' },
-            { name: 'Căn hộ', link: '#' },
-        ]
-    },
-    {
-        title: 'Khác',
-        items: [
-            { name: 'Future Affiliate', link: '#' },
-            { name: 'Giới thiệu bạn bè', link: '#' },
-            { name: 'Future Blog', link: '#' },
-            { name: 'Chính Sách Quyền Riêng', link: '#' },
-            { name: 'Điều khoản & Điều kiện', link: '#' },
-            { name: 'Đăng ký nơi nghỉ của bạn', link: '#' },
-            { name: 'Đăng ký kinh doanh hoạt động du lịch của bạn', link: '#' },
-            { name: 'Khu vực báo chí', link: '#' },
-            { name: 'Quy chế hoạt động', link: '#' },
-            { name: 'Vulnerability Disclosure Program', link: '#' },
-            { name: 'APAC Travel Insights', link: '#' },
-        ]
-    },
-    {
-        title: 'Hợp tác với Future',
-        items: [
-            { name: 'Về chúng tôi', link: '#' },
-            { name: 'Cho thuê xe', link: '#' },
-            { name: 'Hoạt động & Vui chơi', link: '#' },
-            { name: 'Du thuyền', link: '#' },
-            { name: 'Biệt thự', link: '#' },
-            { name: 'Căn hộ', link: '#' },
-            { name: 'Điều khoản & Điều kiện', link: '#' },
-            { name: 'Đăng ký nơi nghỉ của bạn', link: '#' },
-            { name: 'Đăng ký kinh doanh hoạt động du lịch của bạn', link: '#' },
-            { name: 'Khu vực báo chí', link: '#' },
-        ]
-    },
+  {
+    title: 'Về Future',
+    items: [
+      { name: 'Về chúng tôi', link: '#' },
+      { name: 'Liên hệ', link: '#' },
+      { name: 'Trợ giúp', link: '#' },
+      { name: 'Tuyển dụng', link: '#' },
+    ],
+  },
+  {
+    title: 'Sản phẩm',
+    items: [
+      { name: 'Tour du lịch', link: '#', icon: IoIosAirplane },
+      { name: 'Khách sạn', link: '#', icon: FaRegBuilding },
+      { name: 'Vé máy bay', link: '#', icon: IoIosAirplane },
+      { name: 'Cho thuê xe', link: '#', icon: FaTicketAlt },
+    ],
+  },
+  {
+    title: 'Chính sách',
+    items: [
+      { name: 'Điều khoản sử dụng', link: '#' },
+      { name: 'Chính sách bảo mật', link: '#' },
+      { name: 'Quy chế hoạt động', link: '#' },
+      { name: 'Future Blog', link: '#' },
+    ],
+  },
 ];
 
 const socialMedia = [
-    { name: 'Facebook', icon: FaFacebookF, link: '#' },
-    { name: 'Instagram', icon: FaInstagram, link: '#' },
-    { name: 'Youtube', icon: FaYoutube, link: '#' },
-    { name: 'Telegram', icon: FaTelegramPlane, link: '#' },
+  { name: 'Facebook', icon: FaFacebookF, link: 'https://www.facebook.com/profile.php?id=61590489687138', color: '#1877f2' },
+  { name: 'Instagram', icon: FaInstagram, link: 'https://www.instagram.com/thoai2368/', color: '#e4405f' },
+  { name: 'Youtube', icon: FaYoutube, link: 'https://www.youtube.com/@thoaiuc6257', color: '#ff0000' },
+  { name: 'TikTok', icon: FaTiktok, link: 'https://www.tiktok.com/@thoaiduc69_zen', color: '#000000' },
+  { name: 'Telegram', icon: FaTelegramPlane, link: 'https://t.me/cap_pucci_no', color: '#0088cc' },
+];
+
+const paymentMethods = [
+  { name: 'Visa',        img: visaImg },
+  { name: 'Mastercard',  img: masterCardImg },
+  { name: 'JCB',         img: JCBImg },
+  { name: 'Vietcombank', img: VietCombankImg },
+  { name: 'Techcombank', img: TechcombankImg },
+  { name: 'MBBBank',     img: MBBankImg },
+  { name: 'Momo',        img: MoMoImg },
+  { name: 'ZaloPay',     img: ZaloPayImg },
+  { name: 'VNPay',       img: VNPAYImg },
 ];
 
 const Footer = () => {
-    return (
-        <footer className={styles.footer}>
-            <div className={styles.footerContainer}>
-                
-                <div className={styles.topSection}>
-                    {/* Cột 1: Logo và Đăng ký */}
-                    <div className={styles.logoColumn}>
-                        <div className={styles.logo}>Future</div> 
-                        
-                        {/* ⚠️ Thay thế bằng ảnh thật của logo/chứng nhận của bạn */}
-                        <div className={styles.certs}>
-                            <img src={chanel} alt="chanel" className={styles.certImage} />
-                            <img src={nike} alt="nike" className={styles.certImage} />
-                        </div>
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerContainer}>
 
-                        <button className={styles.partnerButton}>
-                            Hợp tác với Future
-                        </button>
-
-                        <p className={styles.paymentTitle}>Đội tác thanh toán</p>
-                        {/* ⚠️ Thay thế bằng ảnh thật của các thẻ */}
-                        <div className={styles.paymentLogos}>
-                            <div className={styles.paymentLogoPlaceholder}>VISA</div>
-                            <div className={styles.paymentLogoPlaceholder}>MASTER</div>
-                            <div className={styles.paymentLogoPlaceholder}>JCB</div>
-                            <div className={styles.paymentLogoPlaceholder}>AMEX</div>
-                            <div className={styles.paymentLogoPlaceholder}>VPBank</div>
-                        </div>
-                    </div>
-
-                    {/* Cột 2, 3, 4: Menu Liên kết */}
-                    <div className={styles.linkColumns}>
-                        {menuColumns.map((col, index) => (
-                            <div key={index} className={styles.linkColumn}>
-                                <h3 className={styles.columnTitle}>{col.title}</h3>
-                                <ul className={styles.menuList}>
-                                    {col.items.map((item, itemIndex) => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <li key={itemIndex}>
-                                                <a href={item.link} className={styles.menuLink}>
-                                                    {Icon && <Icon className={styles.menuIcon} />}
-                                                    {item.name}
-                                                </a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={styles.bottomSection}>
-                    {/* Theo dõi chúng tôi và Tải ứng dụng */}
-                    <div className={styles.socialApps}>
-                        <div className={styles.socialMedia}>
-                            <h3 className={styles.columnTitle}>Theo dõi chúng tôi trên</h3>
-                            {socialMedia.map((social, index) => {
-                                const Icon = social.icon;
-                                return (
-                                    <a key={index} href={social.link} className={styles.socialLink}>
-                                        <Icon className={styles.socialIcon} />
-                                        {social.name}
-                                    </a>
-                                );
-                            })}
-                        </div>
-                        
-                        <div className={styles.appDownloads}>
-                            <h3 className={styles.columnTitle}>Tải ứng dụng Future</h3>
-                            {/* ⚠️ Thay thế bằng ảnh thật hoặc component nút tải */}
-                            <div className={styles.appButtonPlaceholder}>Google Play</div> 
-                            <div className={styles.appButtonPlaceholder}>App Store</div>
-                        </div>
-                    </div>
-                    
-                    {/* Thông tin công ty và Bản quyền */}
-                    <div className={styles.copyright}>
-                        <p className={styles.companyInfo}>
-                            Công ty TNHH Future Việt Nam. Mã số ĐN: 0313580179. Tòa nhà An Phú, 117-119 Lý Chính Thắng, Phường Xuân Hòa, TP.HCM
-                        </p>
-                        <p className={styles.copyrightText}>
-                            Copyright © 2025 Future. All rights reserved
-                        </p>
-                    </div>
-                </div>
-
+        {/* ── Top: Brand + 3 menu columns ── */}
+        <div className={styles.topSection}>
+          <div className={styles.logoColumn}>
+            <div className={styles.brandHeader}>
+              <div className={styles.brandIcon}><Plane size={22} /></div>
+              <span className={styles.logo}>FUTURE TRAVEL</span>
             </div>
-        </footer>
-    );
+
+            <p className={styles.brandTagline}>
+              Đồng hành cùng bạn trên mọi chuyến đi.
+            </p>
+
+            <div className={styles.hotlineBox}>
+              <div className={styles.hotlineIcon}><Phone size={18} /></div>
+              <div>
+                <div className={styles.hotlineLabel}>Hotline 24/7</div>
+                <div className={styles.hotlineNumber}>1900 1234</div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.linkColumns}>
+            {menuColumns.map((col, index) => (
+              <div key={index} className={styles.linkColumn}>
+                <h3 className={styles.columnTitle}>{col.title}</h3>
+                <ul className={styles.menuList}>
+                  {col.items.map((item, itemIndex) => {
+                    const Icon = item.icon;
+                    return (
+                      <li key={itemIndex}>
+                        <a href={item.link} className={styles.menuLink}>
+                          {Icon && <Icon className={styles.menuIcon} />}
+                          {item.name}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Middle: Payment + Social — 1 hàng ── */}
+        <div className={styles.middleSection}>
+          <div className={styles.paymentBlock}>
+            <h3 className={styles.blockTitle}>
+              <CreditCard size={18} /> Đối tác thanh toán
+            </h3>
+            <div className={styles.paymentLogos}>
+              {paymentMethods.map(b => (
+                <div key={b.name} className={styles.paymentCard} title={b.name}>
+                  <img src={b.img} alt={b.name} loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.socialBlock}>
+            <h3 className={styles.blockTitle}>Kết nối</h3>
+            <div className={styles.socialRow}>
+              {socialMedia.map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={index}
+                    href={social.link}
+                    className={styles.socialIconBtn}
+                    style={{ '--social-color': social.color }}
+                    aria-label={social.name}
+                    target="_blank"
+                  >
+                    <Icon className={styles.socialIcon} />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Copyright ── */}
+        <div className={styles.copyright}>
+          <p className={styles.copyrightText}>
+            © 2025 <strong>Future Travel</strong> · Công ty TNHH Future Việt Nam · MST: 0313580179
+          </p>
+        </div>
+
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;
