@@ -34,9 +34,18 @@ export const authAPI = {
 
     verifyEmail: (token: string) =>
         axiosInstance.get('/auth/verify-email', { params: { token } }),
-    
+
+    verifyOtp: (email: string, otp: string) =>
+        axiosInstance.post('/auth/verify-otp', { email, otp }),
+
     resendVerification: (email: string) =>
         axiosInstance.post('/auth/resend-verification', null, { params: { email } }),
+
+    forgotPassword: (email: string) =>
+        axiosInstance.post('/auth/forgot-password', { email }),
+
+    resetPassword: (email: string, otp: string, newPassword: string) =>
+        axiosInstance.post('/auth/reset-password', { email, otp, newPassword }),
 
     refreshToken: (refreshToken: string) =>
         axiosInstance.post('/auth/refresh-token', { refreshToken }),
