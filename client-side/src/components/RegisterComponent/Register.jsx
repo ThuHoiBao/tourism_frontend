@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Register.module.scss';
 import {
   Mail, Lock, Eye, EyeOff, User, MapPin, CheckCircle, AlertCircle,
@@ -8,6 +8,7 @@ import {
 import { authAPI } from '../../services/auth/auth';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -142,14 +143,8 @@ const Register = () => {
       };
       await authAPI.register(requestData);
       localStorage.setItem('registeredEmail', formData.email);
-      setRegisteredEmail(formData.email);
-      setShowSuccessModal(true);
-      setFormData({
-        fullName: '', email: '', password: '', confirmPassword: '',
-        province: '', district: '', agreeTerms: false
-      });
-      setTouched({});
-      setDistricts([]);
+      // Redirect thẳng sang trang nhập OTP
+      navigate('/verify-email');
     } catch (error) {
       alert(error.response?.data?.message || error.message || 'Đăng ký thất bại. Vui lòng thử lại!');
     } finally {
