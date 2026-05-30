@@ -21,7 +21,15 @@ const PaymentWaitingPage = () => {
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        if (!orderCode) { navigate('/'); return; }
+        // If BOTH orderCode and bookingCode missing → navigate home
+        if (!orderCode && !bookingCode) { navigate('/'); return; }
+
+        // If orderCode missing but bookingCode present → show "no transaction" message
+        if (!orderCode) {
+            setStatus('NO_ORDER_CODE');
+            setMessage('Không tìm thấy mã giao dịch. Vui lòng kiểm tra email hoặc tra cứu đơn bằng mã đặt tour.');
+            return;
+        }
 
         let intervalId, timeoutId, tickerId;
 
@@ -114,16 +122,18 @@ const PaymentWaitingPage = () => {
                     </button>
 
                     <div className={styles.bannerIcon}>
-                        {status === 'PENDING' && <Loader2 className={styles.spin} size={28} />}
-                        {status === 'SUCCESS' && <CheckCircle2 size={28} />}
-                        {status === 'FAILED'  && <XCircle size={28} />}
+                        {status === 'PENDING'      && <Loader2 className={styles.spin} size={28} />}
+                        {status === 'SUCCESS'      && <CheckCircle2 size={28} />}
+                        {status === 'FAILED'       && <XCircle size={28} />}
+                        {status === 'NO_ORDER_CODE' && <Clock size={28} />}
                     </div>
 
                     <div className={styles.bannerText}>
                         <h1>
-                            {status === 'PENDING' && 'Đang chờ thanh toán'}
-                            {status === 'SUCCESS' && 'Thanh toán thành công'}
-                            {status === 'FAILED'  && 'Thanh toán thất bại'}
+                            {status === 'PENDING'       && 'Đang chờ thanh toán'}
+                            {status === 'SUCCESS'       && 'Thanh toán thành công'}
+                            {status === 'FAILED'        && 'Thanh toán thất bại'}
+                            {status === 'NO_ORDER_CODE' && 'Chờ xác nhận thanh toán'}
                         </h1>
                         <p>{message}</p>
                     </div>
@@ -136,8 +146,34 @@ const PaymentWaitingPage = () => {
                     )}
                 </header>
 
-                {/* CONTENT */}
-                <main className={styles.content}>
+                {/* NO_ORDER_CODE: show retry + lookup buttons */}
+                {status === 'NO_ORDER_CODE' && (
+                    <main className={styles.content}>
+                        <div className={styles.infoGrid}>
+                            <div className={styles.infoCard}>
+                                <span className={styles.infoLabel}>Mã đặt tour</span>
+                                <span className={styles.infoValueMono}>{bookingCode || '—'}</span>
+                            </div>
+                        </div>
+                        <div className={styles.actions}>
+                            <button className={styles.retryBtn} onClick={handleRefresh}>
+                                <RotateCw size={16} /> Thử lại
+                            </button>
+                            {bookingCode && (
+                                <button className={styles.homeBtn}
+                                    onClick={() => navigate(`/booking-detail?bookingCode=${bookingCode}`)}>
+                                    📋 Xem chi tiết đơn
+                                </button>
+                            )}
+                            <button className={styles.homeBtn} onClick={handleGoHome}>
+                                <Home size={16} /> Về trang chủ
+                            </button>
+                        </div>
+                    </main>
+                )}
+
+                {/* CONTENT — only shown when we have orderCode */}
+                {status !== 'NO_ORDER_CODE' && <main className={styles.content}>
 
                     {/* Timeline 3 bước */}
                     <ol className={styles.steps}>
@@ -246,7 +282,7 @@ const PaymentWaitingPage = () => {
                             </>
                         )}
                     </div>
-                </main>
+                </main>}
             </div>
         </div>
     );

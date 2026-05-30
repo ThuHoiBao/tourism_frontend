@@ -1,0 +1,116 @@
+.card {
+  background: #fff;
+  border: 1.5px solid #e8f4fd;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 4px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  font-size: 13px;
+}
+
+.header {
+  background: linear-gradient(135deg, #0288d1, #01579b);
+  color: #fff;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.body { padding: 12px 14px; }
+
+.codeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.code {
+  font-size: 15px;
+  font-weight: 800;
+  color: #01579b;
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.tourRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.tourImg {
+  width: 60px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.tourName {
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 2px;
+  font-size: 13px;
+}
+
+.meta {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+}
+
+.paymentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.payItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payLabel {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.payValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.sectionTitle {
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.passenger {
+  color: #555;
+  margin: 2px 0;
+  font-size: 12px;
+}
