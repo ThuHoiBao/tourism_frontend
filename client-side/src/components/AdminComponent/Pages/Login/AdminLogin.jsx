@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminLogin.module.scss';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react';
+import {
+  Mail, Lock, Eye, EyeOff, AlertCircle, Shield, ArrowRight,
+  LayoutDashboard, BarChart3, Users, Settings, ShieldCheck
+} from 'lucide-react';
 import axios from '../../../../utils/axiosCustomize';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -31,55 +31,38 @@ const AdminLogin = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
     let error = '';
-    
-    if (name === 'email') {
-      error = validateEmail(value);
-    } else if (name === 'password') {
-      error = validatePassword(value);
-    }
-    
-    if (error) {
-      setErrors(prev => ({ ...prev, [name]: error }));
-    }
+    if (name === 'email') error = validateEmail(value);
+    else if (name === 'password') error = validatePassword(value);
+    if (error) setErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const handleFocus = () => {
+    if (errors.general) setErrors(prev => ({ ...prev, general: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     const newErrors = {};
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
-    
     if (emailError) newErrors.email = emailError;
     if (passwordError) newErrors.password = passwordError;
-    
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
 
     try {
       setLoading(true);
-      setErrors({}); 
-      
-      console.log('🔐 Admin login attempt:', formData.email);
-      
+      setErrors({});
       const response = await axios.post('/auth/login', {
         email: formData.email,
         password: formData.password
       });
 
-      console.log('Admin login response:', response.data);
-      
       const userRole = response.data.user.role;
       if (userRole !== 'ADMIN' && userRole !== 'STAFF') {
         setErrors({ general: 'Bạn không có quyền truy cập vào hệ thống quản trị' });
@@ -88,153 +71,161 @@ const AdminLogin = () => {
 
       localStorage.setItem('adminAccessToken', response.data.accessToken);
       localStorage.setItem('adminRefreshToken', response.data.refreshToken);
-      
-      const userInfo = {
+      localStorage.setItem('adminUser', JSON.stringify({
         userId: response.data.user.userId,
         fullName: response.data.user.fullName,
         email: response.data.user.email,
         role: response.data.user.role,
         avatar: response.data.user.avatar || null
-      };
-      localStorage.setItem('adminUser', JSON.stringify(userInfo));
+      }));
 
-      console.log('Admin logged in successfully. Role:', userRole);
-      
       navigate('/admin/dashboard', { replace: true });
-      
     } catch (error) {
-      console.error('Admin login error:', error);
-      
       let errorMessage = 'Đã xảy ra lỗi. Vui lòng thử lại!';
-      
       if (error.response) {
         const status = error.response.status;
         const data = error.response.data;
-        
-        console.error('Response error:', { status, data });
-        
-        if (status === 401) {
-          errorMessage = 'Email hoặc mật khẩu không đúng';
-        } else if (status === 403) {
-          errorMessage = 'Bạn không có quyền truy cập vào hệ thống quản trị';
-        } else if (status === 400) {
-          if (data.message?.includes('email')) {
-            errorMessage = 'Vui lòng xác thực email trước khi đăng nhập';
-          } else if (data.message?.includes('khóa')) {
-            errorMessage = 'Tài khoản đã bị khóa';
-          } else {
-            errorMessage = data.message || errorMessage;
-          }
-        } else {
-          errorMessage = data.message || errorMessage;
-        }
-      } else if (error.request) {
-        console.error('Request error:', error.request);
-        errorMessage = 'Không thể kết nối đến server';
-      } else {
-        console.error('Error:', error.message);
-        errorMessage = error.message;
-      }
-      
+        if (status === 401) errorMessage = 'Email hoặc mật khẩu không đúng';
+        else if (status === 403) errorMessage = 'Bạn không có quyền truy cập vào hệ thống quản trị';
+        else if (status === 400) {
+          if (data.message?.includes('email')) errorMessage = 'Vui lòng xác thực email trước khi đăng nhập';
+          else if (data.message?.includes('khóa')) errorMessage = 'Tài khoản đã bị khóa';
+          else errorMessage = data.message || errorMessage;
+        } else errorMessage = data.message || errorMessage;
+      } else if (error.request) errorMessage = 'Không thể kết nối đến server';
+      else errorMessage = error.message;
       setErrors({ general: errorMessage });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !loading) {
-      handleSubmit(e);
-    }
-  };
-
-  const handleFocus = () => {
-    if (errors.general) {
-      setErrors(prev => ({ ...prev, general: '' }));
-    }
-  };
-
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.loginCard}>
-        {/* Left Side - Branding */}
-        <div className={styles.brandingSide}>
-          <div className={styles.brandingContent}>
-            <Shield className={styles.brandIcon} size={64} />
-            <h2>Admin Portal</h2>
-            <p>Hệ thống quản trị nội bộ</p>
-            <div className={styles.features}>
-              <div className={styles.feature}>
-                <div className={styles.dot}></div>
-                <span>Quản lý tour du lịch</span>
+    <div className={styles.page}>
+      <div className={styles.bgShape1} />
+      <div className={styles.bgShape2} />
+
+      <div className={styles.container}>
+        {/* ── Left: Brand panel ── */}
+        <div className={styles.brandSide}>
+          <div className={styles.brandInner}>
+            <div className={styles.brandLogo}>
+              <div className={styles.brandLogoIcon}><Shield size={22} /></div>
+              <span className={styles.brandName}>ADMIN PORTAL</span>
+            </div>
+
+            <div className={styles.adminBadge}>
+              <ShieldCheck size={12} /> Internal System
+            </div>
+
+            <h1 className={styles.brandTitle}>
+              Hệ thống quản trị
+              <br />
+              <span className={styles.brandTitleAccent}>Future Travel</span>
+            </h1>
+            <p className={styles.brandSubtitle}>
+              Quản lý toàn diện tour du lịch, người dùng, đơn đặt và doanh thu trên nền tảng.
+            </p>
+
+            <div className={styles.featureList}>
+              <div className={styles.featureItem}>
+                <div className={styles.featureIcon}><LayoutDashboard size={16} /></div>
+                <div>
+                  <div className={styles.featureTitle}>Dashboard tổng quan</div>
+                  <div className={styles.featureDesc}>Theo dõi KPI, doanh thu, booking realtime</div>
+                </div>
               </div>
-              <div className={styles.feature}>
-                <div className={styles.dot}></div>
-                <span>Quản lý đặt chỗ</span>
+              <div className={styles.featureItem}>
+                <div className={styles.featureIcon}><Users size={16} /></div>
+                <div>
+                  <div className={styles.featureTitle}>Quản lý người dùng</div>
+                  <div className={styles.featureDesc}>Phân quyền, xử lý vi phạm, khóa tài khoản</div>
+                </div>
               </div>
-              <div className={styles.feature}>
-                <div className={styles.dot}></div>
-                <span>Báo cáo thống kê</span>
+              <div className={styles.featureItem}>
+                <div className={styles.featureIcon}><BarChart3 size={16} /></div>
+                <div>
+                  <div className={styles.featureTitle}>Báo cáo thống kê</div>
+                  <div className={styles.featureDesc}>Phân tích doanh thu, tour bán chạy, xu hướng</div>
+                </div>
+              </div>
+              <div className={styles.featureItem}>
+                <div className={styles.featureIcon}><Settings size={16} /></div>
+                <div>
+                  <div className={styles.featureTitle}>Cấu hình hệ thống</div>
+                  <div className={styles.featureDesc}>Tour, voucher, danh mục, mã giảm giá</div>
+                </div>
               </div>
             </div>
+
+            <div className={styles.brandFooter}>
+              <ShieldCheck size={13} />
+              <span>Mọi phiên đăng nhập đều được ghi log và giám sát</span>
+            </div>
           </div>
+
+          <div className={styles.mosaicPlane1} />
+          <div className={styles.mosaicPlane2} />
         </div>
 
-        {/* Right Side - Login Form */}
+        {/* ── Right: Form ── */}
         <div className={styles.formSide}>
-          <div className={styles.formContainer}>
+          <div className={styles.formCard}>
             <div className={styles.formHeader}>
-              <h1>Đăng nhập Admin</h1>
-              <p>Vui lòng đăng nhập để tiếp tục</p>
+              <div className={styles.formHeaderTop}>
+                <div className={styles.shieldBubble}><Shield size={20} /></div>
+                <h2 className={styles.formTitle}>Đăng nhập Admin</h2>
+              </div>
+              <p className={styles.formSubtitle}>
+                Chỉ dành cho quản trị viên có quyền truy cập
+              </p>
             </div>
 
             {errors.general && (
               <div className={styles.errorBox}>
-                <AlertCircle size={20} />
+                <AlertCircle size={16} />
                 <span>{errors.general}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className={styles.form} onKeyPress={handleKeyPress}>
+            <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
-                <label htmlFor="email" className={styles.label}>
-                  Email
-                </label>
-                <div className={styles.inputWrapper}>
-                  <Mail className={styles.icon} size={20} />
+                <label className={styles.label}>Email quản trị</label>
+                <div className={`${styles.inputWrap} ${errors.email ? styles.inputErr : ''}`}>
+                  <Mail size={16} className={styles.inputIcon} />
                   <input
-                    id="email"
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onFocus={handleFocus}
-                    placeholder="admin@example.com"
-                    className={`${styles.input} ${errors.email ? styles.error : ''}`}
+                    placeholder="admin@futuretravel.vn"
+                    className={styles.input}
                     autoComplete="email"
                     disabled={loading}
                   />
                 </div>
-                {errors.email && <p className={styles.errorText}>{errors.email}</p>}
+                {errors.email && (
+                  <span className={styles.errText}>
+                    <AlertCircle size={11} /> {errors.email}
+                  </span>
+                )}
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="password" className={styles.label}>
-                  Mật khẩu
-                </label>
-                <div className={styles.inputWrapper}>
-                  <Lock className={styles.icon} size={20} />
+                <label className={styles.label}>Mật khẩu</label>
+                <div className={`${styles.inputWrap} ${errors.password ? styles.inputErr : ''}`}>
+                  <Lock size={16} className={styles.inputIcon} />
                   <input
-                    id="password"
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onFocus={handleFocus}
-                    placeholder="••••••••"
-                    className={`${styles.input} ${errors.password ? styles.error : ''}`}
+                    placeholder="Nhập mật khẩu admin"
+                    className={styles.input}
                     autoComplete="current-password"
                     disabled={loading}
                   />
@@ -245,36 +236,30 @@ const AdminLogin = () => {
                     tabIndex={-1}
                     disabled={loading}
                   >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {errors.password && <p className={styles.errorText}>{errors.password}</p>}
+                {errors.password && (
+                  <span className={styles.errText}>
+                    <AlertCircle size={11} /> {errors.password}
+                  </span>
+                )}
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={styles.submitBtn}
-              >
+              <button type="submit" disabled={loading} className={styles.submitBtn}>
                 {loading ? (
-                  <span className={styles.loading}>
-                    <div className={styles.spinner}></div>
-                    Đang xử lý...
-                  </span>
+                  <><span className={styles.spinner} /> Đang xác thực...</>
                 ) : (
-                  <>
-                    <Lock size={18} />
-                    Đăng nhập
-                  </>
+                  <><Shield size={16} /> Truy cập hệ thống <ArrowRight size={16} /></>
                 )}
               </button>
             </form>
 
-            <div className={styles.footer}>
-              <p className={styles.notice}>
-                <Shield size={16} />
-                Đây là hệ thống nội bộ. Chỉ dành cho quản trị viên.
-              </p>
+            <div className={styles.warningNote}>
+              <ShieldCheck size={14} />
+              <div>
+                <strong>Đây là hệ thống nội bộ.</strong> Mọi truy cập trái phép sẽ bị ghi log và xử lý theo quy định.
+              </div>
             </div>
           </div>
         </div>

@@ -537,6 +537,13 @@
   margin-top: 1px;
 }
 
+.policyBarRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
 .policyBarBtn {
   display: inline-flex;
   align-items: center;
@@ -558,6 +565,25 @@
     border-color: #1d4ed8;
     transform: translateY(-1px);
   }
+}
+.quotaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  svg { flex-shrink: 0; }
+}
+.quotaBadgeLow {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
 }
 
 /* ── Old policy banner (kept for legacy) ──────────────── */

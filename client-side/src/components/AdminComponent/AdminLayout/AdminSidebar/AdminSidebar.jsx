@@ -11,7 +11,8 @@ import {
     Skull,
     Settings,
     LogOut,
-    Plane
+    Plane,
+    MessagesSquare
 } from 'lucide-react';
 import styles from './AdminSidebar.module.scss';
 import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
@@ -25,6 +26,7 @@ const navItems = [
     { name: 'Quản lý Locations', path: '/admin/locations', icon: MapPin },
     { name: 'Quản lý Branches Policies', path: '/admin/branches-policies', icon: Building2 },
     { name: 'Quản lý Users', path: '/admin/users', icon: Users },
+    { name: 'Quản lý Diễn đàn', path: '/admin/forum', icon: MessagesSquare },
     { name: 'Sự cố xử lý nền', path: '/admin/dead-events', icon: Skull },
 ];
 

@@ -10,7 +10,14 @@ import {
   Calendar,
   ArrowLeft,
   Send,
-  CornerDownRight
+  CornerDownRight,
+  Shield,
+  Info,
+  ShieldAlert,
+  Clock,
+  AlertCircle,
+  Flag,
+  X
 } from 'lucide-react';
 import Avatar from '../../shared/Avatar/Avatar';
 import Badge from '../../shared/Badge/Badge';
@@ -36,6 +43,61 @@ const PostDetailPage = () => {
   const [commentLoading, setCommentLoading] = useState(false);
 
   const [expandedCommentIds, setExpandedCommentIds] = useState(new Set());
+
+  // Modal kết quả kiểm duyệt comment (TOXIC / BORDERLINE) + policy
+  const [commentModResult, setCommentModResult] = useState(null); // { label, reason, score }
+  const [showCommentPolicy, setShowCommentPolicy] = useState(false);
+
+  // Modal thông báo chung (thay alert): { type: 'info'|'error'|'warning', title, message }
+  const [notice, setNotice] = useState(null);
+  const showNotice = (type, title, message) => setNotice({ type, title, message });
+
+  // Modal báo cáo nội dung: { targetType: 'POST'|'COMMENT', targetId }
+  const [reportTarget, setReportTarget] = useState(null);
+  const [reportReason, setReportReason] = useState('SPAM');
+  const [reportDetail, setReportDetail] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+
+  const openReport = (targetType, targetId) => {
+    if (!userId) {
+      showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để báo cáo nội dung.');
+      return;
+    }
+    setReportReason('SPAM');
+    setReportDetail('');
+    setReportTarget({ targetType, targetId });
+  };
+
+  const submitReport = async () => {
+    if (!reportTarget) return;
+    setReportSubmitting(true);
+    try {
+      await axios.post('/forum/posts/report', {
+        targetType: reportTarget.targetType,
+        targetId: reportTarget.targetId,
+        reason: reportReason,
+        detail: reportDetail.trim() || null,
+      }, { params: { reporterId: userId } });
+      setReportTarget(null);
+      showNotice('info', 'Đã gửi báo cáo', 'Cảm ơn bạn. Quản trị viên sẽ xem xét nội dung này.');
+    } catch (err) {
+      const msg = err.response?.data?.message;
+      showNotice('error', 'Không thể gửi báo cáo', msg || 'Vui lòng thử lại sau.');
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
+  // Quota comment còn lại trong ngày
+  const [quota, setQuota] = useState(null); // { remainingComments, maxCommentsPerDay, ... }
+  const fetchQuota = async () => {
+    if (!userId) return;
+    try {
+      const res = await axios.get('/forum/posts/quota', { params: { userId } });
+      setQuota(res.data?.data || null);
+    } catch { /* im lặng, không chặn UX */ }
+  };
+  useEffect(() => { fetchQuota(); /* eslint-disable-next-line */ }, [userId]);
 
   // Scroll đến comment được chỉ định qua URL hash (e.g. #comment-42)
   // Chạy sau khi post load xong + expand comment cha nếu cần
@@ -107,7 +169,7 @@ const PostDetailPage = () => {
 
   const handleLikeToggle = async () => {
     if (!userId) {
-      alert('Vui lòng đăng nhập để thích bài viết');
+      showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để thích bài viết.');
       return;
     }
     try {
@@ -115,14 +177,14 @@ const PostDetailPage = () => {
       setLiked(!liked);
       setLikeCount(liked ? likeCount - 1 : likeCount + 1);
     } catch (err) {
-      alert('Lỗi khi like bài viết');
+      showNotice('error', 'Lỗi', 'Không thể thực hiện thao tác. Vui lòng thử lại.');
     }
   };
 
   const handleAddComment = async () => {
     if (!commentContent.trim()) return;
     if (!userId) {
-      alert('Vui lòng đăng nhập để bình luận');
+      showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để bình luận.');
       return;
     }
     setCommentLoading(true);
@@ -141,8 +203,28 @@ const PostDetailPage = () => {
       setLikeCount(updatedPost.likeCount || 0);
 
       setCommentContent('');
+      fetchQuota(); // cập nhật số lượt còn lại
+
+      // Kiểm tra kết quả AI moderation của comment vừa gửi
+      const label = updatedPost.commentModerationLabel;
+      if (label === 'TOXIC' || label === 'BORDERLINE') {
+        setCommentModResult({
+          label,
+          reason: updatedPost.commentModerationReason || '',
+          score: updatedPost.commentModerationScore || 0,
+        });
+      }
     } catch (err) {
-      alert('Không thể gửi bình luận');
+      // Phân biệt lỗi rate-limit (429) với lỗi khác
+      const status = err.response?.status;
+      const msg = err.response?.data?.message;
+      if (status === 429) {
+        showNotice('warning', 'Thao tác quá nhanh', msg || 'Bạn thao tác quá nhanh. Vui lòng thử lại sau.');
+      } else if (msg) {
+        showNotice('error', 'Không thể gửi bình luận', msg);
+      } else {
+        showNotice('error', 'Lỗi', 'Không thể gửi bình luận. Vui lòng thử lại.');
+      }
     } finally {
       setCommentLoading(false);
     }
@@ -212,7 +294,7 @@ const PostDetailPage = () => {
     const handleSubmitReply = async () => {
       if (!replyText.trim()) return;
       if (!userId) {
-        alert('Vui lòng đăng nhập để trả lời');
+        showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để trả lời.');
         return;
       }
       setSubmittingReply(true);
@@ -242,8 +324,27 @@ const PostDetailPage = () => {
 
         setReplyText('');
         setShowReplyForm(false);
+        fetchQuota();
+
+        // Hiện modal nếu reply bị AI ẩn / chờ duyệt
+        const label = updatedPost.commentModerationLabel;
+        if (label === 'TOXIC' || label === 'BORDERLINE') {
+          setCommentModResult({
+            label,
+            reason: updatedPost.commentModerationReason || '',
+            score: updatedPost.commentModerationScore || 0,
+          });
+        }
       } catch (err) {
-        alert('Không thể gửi trả lời');
+        const status = err.response?.status;
+        const msg = err.response?.data?.message;
+        if (status === 429) {
+          showNotice('warning', 'Thao tác quá nhanh', msg || 'Bạn thao tác quá nhanh. Vui lòng thử lại sau.');
+        } else if (msg) {
+          showNotice('error', 'Không thể gửi trả lời', msg);
+        } else {
+          showNotice('error', 'Lỗi', 'Không thể gửi trả lời. Vui lòng thử lại.');
+        }
       } finally {
         setSubmittingReply(false);
       }
@@ -251,7 +352,7 @@ const PostDetailPage = () => {
 
     const handleLikeComment = async () => {
       if (!userId) {
-        alert('Vui lòng đăng nhập để thích bình luận');
+        showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để thích bình luận.');
         return;
       }
       const prevLiked = localLiked;
@@ -266,7 +367,7 @@ const PostDetailPage = () => {
       } catch (err) {
         setLocalLiked(prevLiked);
         setLocalLikeCount(prevCount);
-        alert('Lỗi like bình luận');
+        showNotice('error', 'Lỗi', 'Không thể thích bình luận. Vui lòng thử lại.');
       }
     };
 
@@ -316,6 +417,7 @@ const PostDetailPage = () => {
               {localLikeCount > 0 && ` (${localLikeCount})`}
             </button>
             <button onClick={handleReplyClick}>Phản hồi</button>
+            <button onClick={() => openReport('COMMENT', comment.commentId)}>Báo cáo</button>
           </div>
 
           {showReplyForm && (
@@ -446,11 +548,46 @@ const PostDetailPage = () => {
                 <Heart size={18} fill={liked ? '#e41e3f' : 'none'} />
                 {liked ? 'Đã thích' : 'Thích'}
               </Button>
+              <Button
+                variant="ghost"
+                size="md"
+                onClick={() => openReport('POST', Number(postId))}
+                className={styles.reportBtn}
+                title="Báo cáo bài viết"
+              >
+                <Flag size={16} /> Báo cáo
+              </Button>
             </div>
           </div>
 
           <div className={styles.commentsSection}>
             <h3>Bình luận ({commentCount || 0})</h3>
+
+            {/* Policy notice cho comment */}
+            <div className={styles.commentPolicyBar}>
+              <div className={styles.commentPolicyLeft}>
+                <Shield size={14} />
+                <span>Bình luận sẽ được AI kiểm duyệt. Tránh ngôn từ tiêu cực để không bị ẩn.</span>
+              </div>
+              <div className={styles.commentPolicyRight}>
+                {quota && (
+                  <span
+                    className={`${styles.quotaBadge} ${quota.remainingComments <= 10 ? styles.quotaBadgeLow : ''}`}
+                    title={`Bạn còn ${quota.remainingComments} lượt bình luận hôm nay`}
+                  >
+                    <MessageCircle size={12} />
+                    Còn {quota.remainingComments}/{quota.maxCommentsPerDay} lượt hôm nay
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className={styles.commentPolicyBtn}
+                  onClick={() => setShowCommentPolicy(true)}
+                >
+                  <Info size={12} /> Xem quy định
+                </button>
+              </div>
+            </div>
 
             <div className={styles.commentForm}>
               <Avatar src={user?.avatar} size="lg" alt={user?.fullName || 'Bạn'} />
@@ -478,6 +615,186 @@ const PostDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Modal: Quy định bình luận ── */}
+      {showCommentPolicy && (
+        <div className={styles.modOverlay} onClick={() => setShowCommentPolicy(false)}>
+          <div className={styles.modCard} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.modHeader} ${styles.modHeaderPolicy}`}>
+              <div className={styles.modIconWrap}><Shield size={26} /></div>
+              <div className={styles.modHeaderText}>
+                <h3 className={styles.modTitle}>Quy định bình luận</h3>
+                <p className={styles.modSubtitle}>AI tự động kiểm duyệt để giữ môi trường lành mạnh</p>
+              </div>
+              <button className={styles.modCloseBtn} onClick={() => setShowCommentPolicy(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className={styles.modBody}>
+              <div className={styles.policyItem}>
+                <span className={`${styles.policyDot} ${styles.dotRed}`} />
+                <div>
+                  <strong>Cấm tuyệt đối</strong>
+                  <p>Ngôn từ thô tục, xúc phạm, kỳ thị, bạo lực, khiêu dâm</p>
+                </div>
+              </div>
+              <div className={styles.policyItem}>
+                <span className={`${styles.policyDot} ${styles.dotAmber}`} />
+                <div>
+                  <strong>Cần xem xét</strong>
+                  <p>Spam, quảng cáo, nội dung gây tranh cãi → chờ admin duyệt</p>
+                </div>
+              </div>
+              <div className={styles.policyItem}>
+                <span className={`${styles.policyDot} ${styles.dotGreen}`} />
+                <div>
+                  <strong>Khuyến khích</strong>
+                  <p>Góp ý xây dựng, chia sẻ kinh nghiệm, hỏi đáp lịch sự</p>
+                </div>
+              </div>
+              <div className={styles.policyFlow}>
+                AI chấm điểm 0–1: <strong>&lt; 0.3</strong> hiện ngay,
+                <strong> 0.3–0.7</strong> chờ duyệt, <strong> ≥ 0.7</strong> bị ẩn.
+              </div>
+            </div>
+            <div className={styles.modFooter}>
+              <button className={styles.modBtn} onClick={() => setShowCommentPolicy(false)}>Đã hiểu</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Kết quả kiểm duyệt comment vừa gửi ── */}
+      {commentModResult && (
+        <div className={styles.modOverlay} onClick={() => setCommentModResult(null)}>
+          <div className={styles.modCard} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.modHeader} ${commentModResult.label === 'TOXIC' ? styles.modHeaderToxic : styles.modHeaderBorderline}`}>
+              <div className={styles.modIconWrap}>
+                {commentModResult.label === 'TOXIC' ? <ShieldAlert size={26} /> : <Clock size={26} />}
+              </div>
+              <div className={styles.modHeaderText}>
+                <h3 className={styles.modTitle}>
+                  {commentModResult.label === 'TOXIC'
+                    ? 'Bình luận đã bị ẩn'
+                    : 'Bình luận đang chờ duyệt'}
+                </h3>
+                <p className={styles.modSubtitle}>
+                  {commentModResult.label === 'TOXIC'
+                    ? 'AI phát hiện nội dung vi phạm tiêu chuẩn cộng đồng'
+                    : 'AI chưa thể xác định rõ — quản trị viên sẽ xem xét'}
+                </p>
+              </div>
+              <button className={styles.modCloseBtn} onClick={() => setCommentModResult(null)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className={styles.modBody}>
+              <div className={styles.modReasonBox}>
+                <div className={styles.modReasonLabel}><AlertCircle size={13} /> Lý do từ AI</div>
+                <div className={styles.modReasonText}>
+                  {commentModResult.reason || 'Không có lý do chi tiết'}
+                </div>
+                <div className={styles.modScoreRow}>
+                  <span className={styles.modScoreLabel}>Điểm vi phạm:</span>
+                  <div className={styles.modScoreBar}>
+                    <div
+                      className={`${styles.modScoreFill} ${commentModResult.label === 'TOXIC' ? styles.fillRed : styles.fillAmber}`}
+                      style={{ width: `${Math.min(100, (commentModResult.score || 0) * 100)}%` }}
+                    />
+                  </div>
+                  <span className={styles.modScoreValue}>
+                    {((commentModResult.score || 0) * 100).toFixed(0)}/100
+                  </span>
+                </div>
+              </div>
+              <div className={styles.modTipBox}>
+                <Info size={13} />
+                <span>
+                  {commentModResult.label === 'TOXIC'
+                    ? 'Vui lòng chỉnh sửa nội dung văn minh hơn và thử lại.'
+                    : 'Bình luận sẽ hiển thị sau khi được quản trị viên phê duyệt.'}
+                </span>
+              </div>
+            </div>
+            <div className={styles.modFooter}>
+              <button className={styles.modBtn} onClick={() => setCommentModResult(null)}>Đã hiểu</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal thông báo chung (thay alert) ── */}
+      {reportTarget && (
+        <div className={styles.modOverlay} onClick={() => !reportSubmitting && setReportTarget(null)}>
+          <div className={styles.noticeCard} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.noticeIcon} ${styles.noticeIconWarning}`}>
+              <Flag size={26} />
+            </div>
+            <h3 className={styles.noticeTitle}>
+              Báo cáo {reportTarget.targetType === 'POST' ? 'bài viết' : 'bình luận'}
+            </h3>
+            <p className={styles.noticeMessage}>Vui lòng chọn lý do báo cáo nội dung này.</p>
+
+            <select
+              className={styles.reportSelect}
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              disabled={reportSubmitting}
+            >
+              <option value="SPAM">Spam / quảng cáo</option>
+              <option value="INAPPROPRIATE">Nội dung không phù hợp</option>
+              <option value="HARASSMENT">Quấy rối / xúc phạm</option>
+              <option value="MISINFORMATION">Thông tin sai lệch</option>
+              <option value="OTHER">Khác</option>
+            </select>
+
+            <textarea
+              className={styles.reportDetail}
+              placeholder="Mô tả thêm (không bắt buộc)..."
+              value={reportDetail}
+              onChange={(e) => setReportDetail(e.target.value)}
+              rows="3"
+              disabled={reportSubmitting}
+            />
+
+            <div className={styles.reportActions}>
+              <button
+                className={styles.reportCancelBtn}
+                onClick={() => setReportTarget(null)}
+                disabled={reportSubmitting}
+              >
+                Hủy
+              </button>
+              <button
+                className={styles.modBtn}
+                onClick={submitReport}
+                disabled={reportSubmitting}
+              >
+                {reportSubmitting ? 'Đang gửi...' : 'Gửi báo cáo'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notice && (
+        <div className={styles.modOverlay} onClick={() => setNotice(null)}>
+          <div className={styles.noticeCard} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.noticeIcon} ${
+              notice.type === 'error' ? styles.noticeIconError
+                : notice.type === 'warning' ? styles.noticeIconWarning
+                : styles.noticeIconInfo
+            }`}>
+              {notice.type === 'error' ? <AlertCircle size={26} />
+                : notice.type === 'warning' ? <Clock size={26} />
+                : <Info size={26} />}
+            </div>
+            <h3 className={styles.noticeTitle}>{notice.title}</h3>
+            <p className={styles.noticeMessage}>{notice.message}</p>
+            <button className={styles.modBtn} onClick={() => setNotice(null)}>Đã hiểu</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   X, Type, Layers, Tag, PenLine, Send, Info, Hash, CheckCircle, Loader,
   ShieldAlert, AlertTriangle, Clock, Shield, Ban, MessageSquareWarning,
-  Megaphone, Eye, Heart
+  Megaphone, Eye, Heart, FileText
 } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import axios from '../../../utils/axiosCustomize';
@@ -21,14 +21,25 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
   const [loadingTags, setLoadingTags] = useState(true);
   const [moderationResult, setModerationResult] = useState(null); // { label, reason, score }
   const [showPolicy, setShowPolicy] = useState(false);
+  const [quota, setQuota] = useState(null); // { remainingPosts, maxPostsPerDay }
 
   useEffect(() => {
     if (isOpen) {
       fetchTags();
+      if (!isEditing) fetchQuota();
       if (isEditing && initialPost) populateFormWithPost(initialPost);
       else resetForm();
     }
   }, [isOpen, isEditing, initialPost]);
+
+  const fetchQuota = async () => {
+    const uid = user?.userId || user?.userID || user?.id;
+    if (!uid) return;
+    try {
+      const res = await axios.get('/forum/posts/quota', { params: { userId: uid } });
+      setQuota(res.data?.data || null);
+    } catch { /* im lặng */ }
+  };
 
   const populateFormWithPost = (post) => {
     setTitle(post.title || '');
@@ -154,13 +165,24 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
               <div className={styles.policyBarSub}>Tránh ngôn từ tiêu cực để không bị ẩn</div>
             </div>
           </div>
-          <button
-            type="button"
-            className={styles.policyBarBtn}
-            onClick={() => setShowPolicy(true)}
-          >
-            <Info size={13} /> Xem chính sách
-          </button>
+          <div className={styles.policyBarRight}>
+            {!isEditing && quota && (
+              <span
+                className={`${styles.quotaBadge} ${quota.remainingPosts <= 2 ? styles.quotaBadgeLow : ''}`}
+                title={`Bạn còn ${quota.remainingPosts} lượt đăng bài hôm nay`}
+              >
+                <FileText size={12} />
+                Còn {quota.remainingPosts}/{quota.maxPostsPerDay} bài hôm nay
+              </span>
+            )}
+            <button
+              type="button"
+              className={styles.policyBarBtn}
+              onClick={() => setShowPolicy(true)}
+            >
+              <Info size={13} /> Xem chính sách
+            </button>
+          </div>
         </div>
 
         <div className={styles.body}>
