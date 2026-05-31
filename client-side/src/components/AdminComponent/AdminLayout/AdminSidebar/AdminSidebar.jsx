@@ -12,7 +12,8 @@ import {
     Landmark,
     Settings,
     LogOut,
-    Plane
+    Plane,
+    MessagesSquare
 } from 'lucide-react';
 import styles from './AdminSidebar.module.scss';
 import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
@@ -28,6 +29,8 @@ const navItems = [
     { name: 'Quản lý Users', path: '/admin/users', icon: Users },
     { name: 'Quản lý Hoàn Điểm', path: '/admin/coin-withdrawals', icon: Landmark },
     { name: 'Quản lý sự cố Bookings', path: '/admin/dead-events', icon: Skull },
+    { name: 'Quản lý Diễn đàn', path: '/admin/forum', icon: MessagesSquare },
+    { name: 'Sự cố xử lý nền', path: '/admin/dead-events', icon: Skull },
 ];
 
 const AdminSidebar = () => {

@@ -1,40 +1,39 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
+/**
+ * Guard cho các route admin.
+ * - Chưa có token / chưa login → redirect sang /admin/login
+ * - Token có nhưng role không phải ADMIN/STAFF → clear localStorage + redirect
+ * - Hợp lệ → render route con
+ */
 const AdminProtectedRoute = () => {
-  // TODO: re-enable auth when AdminAuthController is implemented in iam-service
-  return <Outlet />;
+  const location = useLocation();
+  const adminAccessToken = localStorage.getItem('adminAccessToken');
+  const adminUserStr = localStorage.getItem('adminUser');
 
-  // const adminAccessToken = localStorage.getItem('adminAccessToken');
-  // const adminUserStr = localStorage.getItem('adminUser');
-  
-  // if (!adminAccessToken || !adminUserStr) {
-  //   console.log('No admin credentials found, redirecting to admin login');
-  //   return <Navigate to="/admin/login" replace />;
-  // }
+  if (!adminAccessToken || !adminUserStr) {
+    return <Navigate to="/admin/login" replace state={{ from: location }} />;
+  }
 
-  // try {
-  //   const adminUser = JSON.parse(adminUserStr);
-  //   const userRole = adminUser.role;
+  try {
+    const adminUser = JSON.parse(adminUserStr);
+    const role = adminUser?.role;
 
-  //   if (userRole !== 'ADMIN' && userRole !== 'STAFF') {
-  //     console.log('User is not admin/staff, redirecting to admin login');
-  //     localStorage.removeItem('adminAccessToken');
-  //     localStorage.removeItem('adminRefreshToken');
-  //     localStorage.removeItem('adminUser');
-  //     return <Navigate to="/admin/login" replace />;
-  //   }
+    if (role !== 'ADMIN' && role !== 'STAFF' && role !== 'MODERATOR') {
+      localStorage.removeItem('adminAccessToken');
+      localStorage.removeItem('adminRefreshToken');
+      localStorage.removeItem('adminUser');
+      return <Navigate to="/admin/login" replace />;
+    }
 
-  //   console.log('Admin access granted. Role:', userRole);
-  //   return <Outlet />;
-
-  // } catch (error) {
-  //   console.error('Error parsing admin user data:', error);
-  //   localStorage.removeItem('adminAccessToken');
-  //   localStorage.removeItem('adminRefreshToken');
-  //   localStorage.removeItem('adminUser');
-  //   return <Navigate to="/admin/login" replace />;
-  // }
+    return <Outlet />;
+  } catch (err) {
+    localStorage.removeItem('adminAccessToken');
+    localStorage.removeItem('adminRefreshToken');
+    localStorage.removeItem('adminUser');
+    return <Navigate to="/admin/login" replace />;
+  }
 };
 
 export default AdminProtectedRoute;

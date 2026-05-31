@@ -14,6 +14,7 @@ import PaymentWaitingPage from './components/BookingPaymentComponent/PaymentWait
 import PaymentError from './components/BookingPaymentComponent/PaymentError';
 import Register from './components/RegisterComponent/Register';
 import VerifyEmail from './components/VerifyEmail/VerifyEmail';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Login from './components/Login/Login';
 import AdminComponent from './components/AdminComponent/AdminComponent';
 import CouponManagement from './components/AdminComponent/Pages/CounponsPage/CouponManagement';
@@ -78,6 +79,7 @@ function App() {
               element={<BookingPayment />}
           />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
