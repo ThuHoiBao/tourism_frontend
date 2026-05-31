@@ -8,6 +8,8 @@ import TourCalendar from './TourCalendar/TourCalendar';
 import TourInformation from './TourInformation/TourInformation';
 import TourPolicy from './TourPolicy/TourPolicy';
 import TourItinerary from './TourItinerary/TourItinerary';
+import TourRouteMap from './TourRoute/TourRouteMap';
+import tourRouteApi from '../../services/tour/tourRouteApi';
 import TourReviews from './TourReview/TourReviews';
 import RelatedTours from './RelatedTours/RelatedTours';
 import axios from '../../utils/axiosCustomize'; 
@@ -23,6 +25,11 @@ import { set } from 'date-fns';
   
   const [tourData, setTourData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Combined data (itinerary + map stops + globalIndex) — sync 2 view
+  const [combined, setCombined] = useState(null);
+  // Stop đang focus: { stopId, globalIndex, dayNumber, latitude, longitude } | null
+  const [highlightedStop, setHighlightedStop] = useState(null);
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startImageIndex, setStartImageIndex] = useState(0);
@@ -85,6 +92,8 @@ import { set } from 'date-fns';
 
     if (tourCode) {
       fetchTourData();
+      // Fetch combined (itinerary + map stops + globalIndex) — sync 2 view
+      tourRouteApi.getCombined(tourCode).then(setCombined).catch(() => setCombined(null));
     }
   }, [tourCode]);
 
@@ -284,7 +293,18 @@ import { set } from 'date-fns';
               />
             </div>
             <TourInformation tour={tourData} />
-            <TourItinerary itinerary={tourData.itinerary} />
+            <TourRouteMap
+              tourCode={tourData.tourCode}
+              combined={combined}
+              highlightedStop={highlightedStop}
+              onPinClick={(stop) => setHighlightedStop({ ...stop, _source: 'map' })}
+            />
+            <TourItinerary
+              itinerary={tourData.itinerary}
+              combined={combined}
+              highlightedStop={highlightedStop}
+              onStopClick={(stop) => setHighlightedStop({ ...stop, _source: 'itinerary' })}
+            />
             <TourPolicy policy={tourData.policy} branchContact={tourData.branchContact} />
           </div>
 
@@ -434,7 +454,7 @@ import { set } from 'date-fns';
             </div>
           </div>
 
-        </div> 
+        </div>
         <TourReviews tourCode={tourData.tourCode} />
         <RelatedTours currentTourCode={tourData.tourCode} />
       

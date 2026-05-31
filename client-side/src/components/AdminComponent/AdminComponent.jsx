@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './AdminLayout/AdminLayout';
 import DashboardPage from './Pages/DashboardPage/DashboardPage';
 import ToursPage from './Pages/ToursPage/ToursPage';
+import TourStopsEditor from './Pages/ToursPage/TourStopsEditor/TourStopsEditor';
 import UsersPage from './Pages/UsersPage/UsersPage';
 import BookingsPage from './Pages/BookingsPage/BookingsPage';
 import NotificationsPage from './Pages/NotificationsPage/NotificationsPage';
@@ -37,6 +38,7 @@ const AdminComponent = () => {
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="profile" element={<AdminProfile />} /> 
                     <Route path="tours" element={<ToursPage />} />
+                    <Route path="tours/:tourId/stops" element={<TourStopsEditor />} />
                     <Route path="departures" element={<DepartureList />} />
                     <Route path="users" element={<UsersPage />} />
                     <Route path="bookings" element={<BookingsPage />} />
