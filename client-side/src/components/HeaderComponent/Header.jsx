@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
-import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo } from 'react-icons/fa';
+import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo, FaWallet } from 'react-icons/fa';
 import { IoIosAirplane } from "react-icons/io";
 import { GiShipBow } from "react-icons/gi";
 import { useAuth } from '../../context/AuthContext';
@@ -69,6 +69,12 @@ const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, on
                 return { icon: <FaTimesCircle />, color: '#ef4444', bg: '#fef2f2' };
             case 'PAYMENT_SUCCESS':
                 return { icon: <FaCreditCard />, color: '#3b82f6', bg: '#eff6ff' };
+            case 'COIN_WITHDRAWAL':
+                return { icon: <FaWallet />, color: '#059669', bg: '#ecfdf5' };
+            case 'COIN_WITHDRAWAL_FAILED':
+                return { icon: <FaTimesCircle />, color: '#dc2626', bg: '#fef2f2' };
+            case 'COIN_WITHDRAWAL_MANUAL':
+                return { icon: <FaUndo />, color: '#d97706', bg: '#fff7ed' };
             default:
                 return { icon: <FaExclamationCircle />, color: '#6b7280', bg: '#f3f4f6' };
         }
@@ -162,6 +168,7 @@ const ProfileModal = ({ styles, onClose, user, onLogout }) => {
             <ul className={styles.modalMenu}>
                 <li onClick={() => handleMenuClick('profile')}><FaEdit /> Hồ sơ cá nhân</li>
                 <li onClick={() => handleMenuClick('transaction')}><FaListAlt /> Danh sách giao dịch</li>
+                <li onClick={() => handleMenuClick('withdraw-coins')}><FaWallet /> Rút điểm về ngân hàng</li>
                 <li onClick={() => handleMenuClick('favorites')}><FaInfoCircle /> Chuyến đi yêu thích</li>
                 <li onClick={handleLogoutClick}><FaSignOutAlt /> Đăng xuất</li>
             </ul>
@@ -302,6 +309,9 @@ const Header = () => {
         if (['BOOKING_CONFIRMED', 'BOOKING_CANCELLED', 'BOOKING_PENDING', 'REFUND_REQUESTED', 'REFUND_APPROVED', 'REFUND_REJECTED',
              'BOOKING_REFUND_REQUESTED', 'BOOKING_REFUNDED'].includes(type)) {
             return '/information/transaction';
+        }
+        if (['COIN_WITHDRAWAL', 'COIN_WITHDRAWAL_FAILED', 'COIN_WITHDRAWAL_MANUAL'].includes(type)) {
+            return '/information/withdraw-coins';
         }
         if (['NEW_COUPON', 'COUPON_UPDATED', 'COUPON_EXPIRING'].includes(type)) {
             return '/tours';

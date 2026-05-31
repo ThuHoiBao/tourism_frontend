@@ -36,7 +36,9 @@ const TravelGallery = () => {
         const xPercent = off * 52;
         const rotateY = off * -22;
         const scale = abs === 0 ? 1.0 : 0.72;
-        const brightness = abs === 0 ? 1 : 0.56;
+        // Darken all cards to blend with the banner background.
+        // Keep center card a bit brighter for focus.
+        const brightness = abs === 0 ? 0.7 : 0.3;
 
         return {
             position: 'absolute',

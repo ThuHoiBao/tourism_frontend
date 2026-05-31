@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { ClipboardList, Inbox, Search, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import useBookings from '../../../hook/useBookings.ts';
@@ -38,10 +38,27 @@ const TransactionList = ({ user }) => {
         }
     }, [location.state]);
 
+    const apiStatus = activeStatus === 'OVERDUE_PAYMENT' ? null : activeStatus;
     const { bookings, loading, error, refetch, silentRefetch, updateBookingInList } = useBookings(
         user?.id || user?.userID || -1,
-        activeStatus
+        apiStatus
     );
+
+    const displayBookings = useMemo(() => {
+        return bookings.map((booking) => {
+            const effectiveDeadline = booking?.paymentDeadline || booking?.timeLimit || null;
+            const isPaymentExpired = booking?.bookingStatus === 'PENDING_PAYMENT'
+                && effectiveDeadline
+                && new Date(effectiveDeadline).getTime() <= Date.now();
+
+            return {
+                ...booking,
+                rawBookingStatus: booking?.bookingStatus,
+                bookingStatus: isPaymentExpired ? 'OVERDUE_PAYMENT' : booking?.bookingStatus,
+                paymentDeadline: effectiveDeadline,
+            };
+        });
+    }, [bookings]);
 
     const handleWebSocketMessage = useCallback((event) => {
         console.log('[User WS] Booking update received:', event);
@@ -66,7 +83,8 @@ const TransactionList = ({ user }) => {
         return statusTabs.find(tab => tab.key === key)?.label || 'Tất cả';
     };
 
-    const filteredBookings = bookings.filter(booking => {
+    const filteredBookings = displayBookings.filter(booking => {
+        if (activeStatus && booking.bookingStatus !== activeStatus) return false;
         if (!searchTerm) return true;
         const search = searchTerm.toLowerCase();
         return (
@@ -88,7 +106,7 @@ const TransactionList = ({ user }) => {
                             <p className={styles.eyebrow}>Giao dịch</p>
                             <h2 className={styles.pageTitle}>Giao dịch của tôi</h2>
                             <p className={styles.pageSubtitle}>
-                                Đang hiển thị <strong>{filteredBookings.length}</strong> / {bookings.length} đơn đặt chuyến đi.
+                                Đang hiển thị <strong>{filteredBookings.length}</strong> / {displayBookings.length} đơn đặt chuyến đi.
                             </p>
                         </div>
                     </div>

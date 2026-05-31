@@ -33,6 +33,7 @@ export class BookingResponseDTO {
     private _paymentID: number = -1;
     private _amount: number = 0;
     private _timeLimit: string = ""; // LocalDateTime -> string ISO
+    private _paymentDeadline: string = ""; // Deadline thanh toán chuẩn nghiệp vụ 24h
     private _passengers: BookingPassengerResponseDTO[] = [];
     private _bank: string = "";
     private _accountNumber: string = "";
@@ -75,6 +76,7 @@ export class BookingResponseDTO {
     get paymentID() { return this._paymentID; }
     get amount() { return this._amount; }
     get timeLimit() { return this._timeLimit; }
+    get paymentDeadline() { return this._paymentDeadline; }
     get passengers() { return this._passengers; }
     get bank() { return this._bank; }
     get accountNumber() { return this._accountNumber; }
@@ -122,6 +124,7 @@ export class BookingResponseDTO {
         dto._paymentID = data.paymentID || -1;
         dto._amount = data.amount || 0;
         dto._timeLimit = data.timeLimit || "";
+        dto._paymentDeadline = data.paymentDeadline || data.timeLimit || "";
         dto._bank = data.bank || "";
         dto._accountNumber = data.accountNumber || "";
         dto._accountName = data.accountName || "";
@@ -171,6 +174,7 @@ export class BookingResponseDTO {
             paymentID: this.paymentID,
             amount: this.amount,
             timeLimit: this.timeLimit,
+            paymentDeadline: this.paymentDeadline,
             bank: this.bank,
             accountNumber: this.accountNumber,
             accountName: this.accountName,

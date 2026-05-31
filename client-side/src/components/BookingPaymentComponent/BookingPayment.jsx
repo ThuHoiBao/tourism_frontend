@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from '../../utils/axiosCustomize';
 import styles from './BookingPayment.module.scss';
 import {
@@ -674,6 +675,13 @@ const BookingPayment = () => {
             {isPaymentExpired && bookingData.status === 'PENDING_PAYMENT' && (
               <div className={styles.expiredMessage}>
                 ❌ Thời hạn thanh toán đã hết
+                <button
+                  type="button"
+                  className={styles.btnPayment}
+                  onClick={() => toast.warn('Đơn đã quá hạn thanh toán. Vui lòng tạo booking mới hoặc liên hệ hỗ trợ.')}
+                >
+                  <FaClock /> Thông báo
+                </button>
               </div>
             )}
           </div>

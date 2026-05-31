@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     CalendarDays,
+    Bell,
     Clock3,
     CreditCard,
     Eye,
@@ -24,6 +25,15 @@ const TransactionListItem = ({ booking, refetch }) => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isViewReviewModalOpen, setIsViewReviewModalOpen] = useState(false);
     const [isPaymentLoading] = useState(false);
+    const paymentDeadline = booking?.paymentDeadline || booking?.timeLimit;
+    const isPaymentExpired = useMemo(() => {
+        if (!paymentDeadline) return false;
+        const deadline = new Date(paymentDeadline).getTime();
+        return Number.isFinite(deadline) && deadline <= Date.now();
+    }, [paymentDeadline]);
+    const displayStatus = booking?.bookingStatus === 'PENDING_PAYMENT' && isPaymentExpired
+        ? 'OVERDUE_PAYMENT'
+        : booking?.bookingStatus;
 
     const hasDeparted = useMemo(() => {
         if (!booking?.departureDate) return false;
@@ -103,7 +113,7 @@ const TransactionListItem = ({ booking, refetch }) => {
     };
 
     useEffect(() => {
-        if (booking.bookingStatus !== 'PENDING_PAYMENT' || !booking.timeLimit) {
+        if (displayStatus !== 'PENDING_PAYMENT' || !paymentDeadline) {
             setTimeLeft('');
             return undefined;
         }
@@ -112,7 +122,7 @@ const TransactionListItem = ({ booking, refetch }) => {
 
         const updateCountdown = () => {
             const now = new Date();
-            const limit = new Date(booking.timeLimit);
+            const limit = new Date(paymentDeadline);
             const diff = limit.getTime() - now.getTime();
 
             if (diff <= 0) {
@@ -133,7 +143,7 @@ const TransactionListItem = ({ booking, refetch }) => {
         interval = setInterval(updateCountdown, 1000);
 
         return () => clearInterval(interval);
-    }, [booking.timeLimit, booking.bookingStatus]);
+    }, [paymentDeadline, displayStatus]);
 
     const renderActionArea = () => {
         let primaryButton = null;
@@ -151,7 +161,7 @@ const TransactionListItem = ({ booking, refetch }) => {
             </button>
         );
 
-        switch (booking.bookingStatus) {
+        switch (displayStatus) {
             case 'PENDING_PAYMENT':
                 primaryButton = (
                     <button
@@ -245,6 +255,16 @@ const TransactionListItem = ({ booking, refetch }) => {
                 break;
 
             case 'OVERDUE_PAYMENT':
+                // primaryButton = (
+                //     <button
+                //         key="notify-overdue"
+                //         className={styles.btnSecondary}
+                //         onClick={() => toast.warn('Đơn đã quá hạn thanh toán. Vui lòng tạo booking mới hoặc liên hệ hỗ trợ.')}
+                //         type="button"
+                //     >
+                //         <Bell size={16} /> Thông báo
+                //     </button>
+                // );
                 statusDisplay = (
                     <div className={styles.noticeDanger}>
                         Đơn đã quá hạn thanh toán và được hệ thống hủy tự động.
@@ -268,8 +288,8 @@ const TransactionListItem = ({ booking, refetch }) => {
 
         return (
             <div className={styles.actions}>
-                <span className={`${styles.statusBadge} ${getStatusClass(booking.bookingStatus)}`}>
-                    {getStatusLabel(booking.bookingStatus)}
+                <span className={`${styles.statusBadge} ${getStatusClass(displayStatus)}`}>
+                    {getStatusLabel(displayStatus)}
                 </span>
 
                 <div className={styles.price}>

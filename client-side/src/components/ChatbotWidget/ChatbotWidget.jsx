@@ -1,10 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { X, Send, MoreVertical, History, PlusCircle, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import styles from './ChatbotWidget.module.scss';
 import futureMark from '../../assets/brand/future-mark.svg';
+import AuthContext from '../../context/AuthContext';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mascotVideo from '../../assets/video/PixVerse_V6_Image_Text_540P_Static_camera_lock (2).mp4';
+import BookingConfirmCard from './BookingConfirmCard';
+import OrderDetailCard    from './OrderDetailCard';
+import BookingSuccessCard from './BookingSuccessCard';
 
 // Danh sách câu thông báo chờ đợi thân thiện
 const LOADING_MESSAGES = [
@@ -106,20 +110,204 @@ const ChromaKeyCanvas = ({ src, className }) => {
   );
 };
 
-const ChatbotWidget = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'bot',
-      text: 'Xin chào! 👋\nMình là trợ lý du lịch ảo. Bạn đang muốn tìm tour đi đâu, hay cần tư vấn gì nè?',
-      timestamp: new Date(),
+const STORAGE_MESSAGES_KEY = 'chatbot_messages';
+const STORAGE_SESSION_KEY  = 'chatbot_session_id';
+const STORAGE_THREADS_KEY = 'chatbot_threads_v1';
+const STORAGE_ACTIVE_THREAD_KEY = 'chatbot_active_thread_id';
+
+const createMessageId = () => `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+const DEFAULT_WELCOME_TEXT = 'Xin chào! 👋\nMình là trợ lý du lịch ảo. Bạn đang muốn tìm tour đi đâu, hay cần tư vấn gì nè?';
+
+const createWelcomeMessage = () => ({
+  id: createMessageId(),
+  sender: 'bot',
+  text: DEFAULT_WELCOME_TEXT,
+  timestamp: new Date().toISOString(),
+});
+
+const createSessionId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `session_${crypto.randomUUID()}`;
+  }
+
+  const randomPart = Math.random().toString(36).slice(2, 10);
+  return `session_${Date.now()}_${randomPart}`;
+};
+
+const hasBrokenVietnameseEncoding = (messages) => {
+  if (!Array.isArray(messages)) return false;
+  return messages.some((message) => {
+    const text = `${message?.text || ''}`;
+    return /Ã|Â|Ä|Æ|�/.test(text);
+  });
+};
+
+const localizePassengerEnums = (text) => {
+  if (!text) return text;
+  return String(text)
+    .replace(/\bMALE\b/g, 'Nam')
+    .replace(/\bFEMALE\b/g, 'Nữ')
+    .replace(/\bOTHER\b/g, 'Khác')
+    .replace(/\bADULT\b/g, 'Người lớn')
+    .replace(/\bCHILD\b/g, 'Trẻ em')
+    .replace(/\bTODDLER\b/g, 'Trẻ nhỏ')
+    .replace(/\bINFANT\b/g, 'Em bé');
+};
+
+const normalizeTimestamp = (timestamp) => {
+  if (!timestamp) return new Date().toISOString();
+  const dt = new Date(timestamp);
+  return Number.isNaN(dt.getTime()) ? new Date().toISOString() : dt.toISOString();
+};
+
+const normalizeMessages = (messages) => {
+  if (!Array.isArray(messages)) return [];
+  return messages
+    .filter((message) => message && (message.sender === 'user' || message.sender === 'bot'))
+    .map((message) => ({
+      ...message,
+      id: message.id || createMessageId(),
+      text: `${message.text || ''}`,
+      timestamp: normalizeTimestamp(message.timestamp),
+    }));
+};
+
+const trimThreadTitle = (value) => {
+  const text = `${value || ''}`.trim().replace(/\s+/g, ' ');
+  if (!text) return '';
+  return text.length > 42 ? `${text.slice(0, 42)}...` : text;
+};
+
+const buildThreadTitle = (messages, createdAt) => {
+  const safeMessages = normalizeMessages(messages);
+  const firstUser = safeMessages.find((message) => message.sender === 'user' && `${message.text || ''}`.trim());
+  if (firstUser) {
+    const title = trimThreadTitle(firstUser.text);
+    if (title) return title;
+  }
+
+  const dt = new Date(createdAt || Date.now());
+  return `Cuộc trò chuyện ${dt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
+};
+
+const createThread = ({ sessionId, messages, createdAt, id, title } = {}) => {
+  const now = new Date().toISOString();
+  const safeMessages = normalizeMessages(messages);
+  const threadCreatedAt = normalizeTimestamp(createdAt || now);
+  return {
+    id: id || `thread_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    sessionId: sessionId || createSessionId(),
+    messages: safeMessages.length > 0 ? safeMessages : [createWelcomeMessage()],
+    title: trimThreadTitle(title) || buildThreadTitle(safeMessages, threadCreatedAt),
+    createdAt: threadCreatedAt,
+    updatedAt: normalizeTimestamp(now),
+  };
+};
+
+const sanitizeThreads = (threads) => {
+  if (!Array.isArray(threads)) return [];
+  return threads
+    .map((thread) => {
+      const safeMessages = normalizeMessages(thread?.messages);
+      const createdAt = normalizeTimestamp(thread?.createdAt || thread?.updatedAt || Date.now());
+      const updatedAt = normalizeTimestamp(thread?.updatedAt || createdAt);
+      const title = trimThreadTitle(thread?.title) || buildThreadTitle(safeMessages, createdAt);
+      return {
+        id: thread?.id || `thread_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        sessionId: thread?.sessionId || createSessionId(),
+        messages: safeMessages.length > 0 ? safeMessages : [createWelcomeMessage()],
+        title,
+        createdAt,
+        updatedAt,
+      };
+    })
+    .filter(Boolean);
+};
+
+const sortThreadsByUpdatedAt = (threads) => {
+  return [...threads].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+};
+
+const getInitialThreadState = () => {
+  try {
+    const rawThreads = localStorage.getItem(STORAGE_THREADS_KEY);
+    if (rawThreads) {
+      const parsedThreads = sanitizeThreads(JSON.parse(rawThreads));
+      if (parsedThreads.length > 0) {
+        const savedActiveId = localStorage.getItem(STORAGE_ACTIVE_THREAD_KEY);
+        const activeThreadId = parsedThreads.some((thread) => thread.id === savedActiveId)
+          ? savedActiveId
+          : parsedThreads[0].id;
+        return { threads: parsedThreads, activeThreadId };
+      }
     }
-  ]);
+  } catch (_) {}
+
+  try {
+    const rawMessages = localStorage.getItem(STORAGE_MESSAGES_KEY);
+    const legacyMessages = rawMessages ? normalizeMessages(JSON.parse(rawMessages)) : [];
+    const safeLegacyMessages =
+      legacyMessages.length > 0 && !hasBrokenVietnameseEncoding(legacyMessages)
+        ? legacyMessages
+        : [createWelcomeMessage()];
+
+    const legacySessionId = localStorage.getItem(STORAGE_SESSION_KEY) || createSessionId();
+    const migratedThread = createThread({
+      sessionId: legacySessionId,
+      messages: safeLegacyMessages,
+      title: 'Cuộc trò chuyện hiện tại',
+    });
+
+    localStorage.setItem(STORAGE_THREADS_KEY, JSON.stringify([migratedThread]));
+    localStorage.setItem(STORAGE_ACTIVE_THREAD_KEY, migratedThread.id);
+    localStorage.removeItem(STORAGE_MESSAGES_KEY);
+    localStorage.removeItem(STORAGE_SESSION_KEY);
+
+    return {
+      threads: [migratedThread],
+      activeThreadId: migratedThread.id,
+    };
+  } catch (_) {
+    const fallbackThread = createThread({
+      messages: [createWelcomeMessage()],
+      title: 'Cuộc trò chuyện mới',
+    });
+    return {
+      threads: [fallbackThread],
+      activeThreadId: fallbackThread.id,
+    };
+  }
+};
+
+const formatHistoryTime = (isoTime) => {
+  const dt = new Date(isoTime || Date.now());
+  if (Number.isNaN(dt.getTime())) return '';
+  return dt.toLocaleString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+  });
+};
+
+const ChatbotWidget = () => {
+  const { user } = useContext(AuthContext);
+  const initialThreadStateRef = useRef(null);
+  if (!initialThreadStateRef.current) {
+    initialThreadStateRef.current = getInitialThreadState();
+  }
+  const [isOpen, setIsOpen] = useState(false);
+  const [threads, setThreads] = useState(initialThreadStateRef.current.threads);
+  const [activeThreadId, setActiveThreadId] = useState(initialThreadStateRef.current.activeThreadId);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingThreadId, setLoadingThreadId] = useState(null);
   const [loadingText, setLoadingText] = useState(''); // State lưu câu thông báo loading
-  const [sessionId] = useState(`session_${Date.now()}`);
+  const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
+  const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', onConfirm: null });
+  const [successToast, setSuccessToast] = useState('');
   // Trạng thái hiển thị bong bóng chat (hiện sau 1.2s khi trang load)
   const [bubbleVisible, setBubbleVisible] = useState(false);
   // Index câu chào hiện tại + key để re-trigger wave animation khi đổi câu
@@ -129,11 +317,46 @@ const ChatbotWidget = () => {
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const actionMenuRef = useRef(null);
+  const historyPanelRef = useRef(null);
+  const toastTimerRef = useRef(null);
+
+  const activeThread = threads.find((thread) => thread.id === activeThreadId) || threads[0] || null;
+  const messages = activeThread?.messages || [];
+  const sessionId = activeThread?.sessionId || '';
+  const historyThreads = sortThreadsByUpdatedAt(threads);
+  const showLoading = isLoading && loadingThreadId === activeThreadId;
+
+  // Persist threads to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_THREADS_KEY, JSON.stringify(threads));
+      if (activeThreadId) {
+        localStorage.setItem(STORAGE_ACTIVE_THREAD_KEY, activeThreadId);
+      }
+      localStorage.removeItem(STORAGE_MESSAGES_KEY);
+      localStorage.removeItem(STORAGE_SESSION_KEY);
+    } catch (_) {
+      // Khi chạm giới hạn localStorage, bỏ bớt thread cũ nhất để tránh vỡ widget.
+      if (threads.length <= 1) return;
+      const reduced = sortThreadsByUpdatedAt(threads).slice(0, Math.max(1, threads.length - 1));
+      setThreads(reduced);
+      if (!reduced.some((thread) => thread.id === activeThreadId)) {
+        setActiveThreadId(reduced[0]?.id || null);
+      }
+    }
+  }, [threads, activeThreadId]);
+
+  useEffect(() => {
+    if (!activeThread && threads.length > 0) {
+      setActiveThreadId(threads[0].id);
+    }
+  }, [activeThread, threads]);
 
   // Auto scroll xuống cuối khi có tin nhắn mới hoặc đang loading
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+  }, [messages, showLoading]);
 
   // Auto focus vào input khi mở chat
   useEffect(() => {
@@ -166,21 +389,187 @@ const ChatbotWidget = () => {
     };
   }, [bubbleVisible, greetingKey]); // greetingKey thay đổi → effect chạy lại → chu kỳ tiếp
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isActionMenuOpen && actionMenuRef.current && !actionMenuRef.current.contains(event.target)) {
+        setIsActionMenuOpen(false);
+      }
 
-    const userMessage = {
-      id: Date.now(),
-      sender: 'user',
-      text: inputValue,
-      timestamp: new Date(),
+      if (
+        isHistoryPanelOpen &&
+        historyPanelRef.current &&
+        !historyPanelRef.current.contains(event.target) &&
+        actionMenuRef.current &&
+        !actionMenuRef.current.contains(event.target)
+      ) {
+        setIsHistoryPanelOpen(false);
+      }
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        setIsActionMenuOpen(false);
+        setIsHistoryPanelOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isActionMenuOpen, isHistoryPanelOpen]);
+
+  const updateThreadMessages = (threadId, updater) => {
+    setThreads((prevThreads) => {
+      return prevThreads.map((thread) => {
+        if (thread.id !== threadId) return thread;
+        const nextMessages = updater(normalizeMessages(thread.messages));
+        const nextUpdatedAt = new Date().toISOString();
+        return {
+          ...thread,
+          messages: nextMessages,
+          title: buildThreadTitle(nextMessages, thread.createdAt),
+          updatedAt: nextUpdatedAt,
+        };
+      });
+    });
+  };
+
+  const createNewThread = (title = 'Cuộc trò chuyện mới') => {
+    const thread = createThread({
+      title,
+      messages: [createWelcomeMessage()],
+    });
+    setThreads((prevThreads) => [thread, ...prevThreads]);
+    setActiveThreadId(thread.id);
+    setInputValue('');
+    setIsLoading(false);
+    setLoadingThreadId(null);
+    return thread;
+  };
+
+  const removeThread = (threadIdToDelete) => {
+    setThreads((prevThreads) => {
+      const remaining = prevThreads.filter((thread) => thread.id !== threadIdToDelete);
+      if (remaining.length > 0) {
+        const sorted = sortThreadsByUpdatedAt(remaining);
+        if (activeThreadId === threadIdToDelete) {
+          setActiveThreadId(sorted[0].id);
+        }
+        return remaining;
+      }
+
+      const fallback = createThread({
+        title: 'Cuộc trò chuyện mới',
+        messages: [createWelcomeMessage()],
+      });
+      setActiveThreadId(fallback.id);
+      return [fallback];
+    });
+  };
+
+  const handleSelectThread = (threadId) => {
+    setActiveThreadId(threadId);
+    setIsHistoryPanelOpen(false);
+    setIsActionMenuOpen(false);
+  };
+
+  const showSuccessToast = (message) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setSuccessToast(message);
+    toastTimerRef.current = setTimeout(() => {
+      setSuccessToast('');
+    }, 2200);
+  };
+
+  const openConfirmDialog = ({ title, message, onConfirm }) => {
+    setConfirmDialog({
+      open: true,
+      title,
+      message,
+      onConfirm,
+    });
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({ open: false, title: '', message: '', onConfirm: null });
+  };
+
+  const confirmDialogAction = () => {
+    const action = confirmDialog.onConfirm;
+    closeConfirmDialog();
+    if (typeof action === 'function') {
+      action();
+    }
+  };
+
+  const handleStartNewConversation = () => {
+    createNewThread('Cuộc trò chuyện mới');
+    setIsActionMenuOpen(false);
+    setIsHistoryPanelOpen(false);
+  };
+
+  const handleDeleteCurrentConversation = () => {
+    if (!activeThread) return;
+    const activeTitle = activeThread.title || 'Cuộc trò chuyện hiện tại';
+    openConfirmDialog({
+      title: 'Xóa cuộc trò chuyện?',
+      message: `Bạn sắp xóa vĩnh viễn "${activeTitle}". Hành động này không thể hoàn tác.`,
+      onConfirm: () => {
+        removeThread(activeThread.id);
+        setIsActionMenuOpen(false);
+        setIsHistoryPanelOpen(false);
+        showSuccessToast('Xóa thành công');
+      },
+    });
+  };
+
+  const handleDeleteThreadFromHistory = (event, threadId) => {
+    event.stopPropagation();
+    const targetThread = threads.find((thread) => thread.id === threadId);
+    const targetTitle = targetThread?.title || 'cuộc trò chuyện này';
+    openConfirmDialog({
+      title: 'Xác nhận xóa lịch sử',
+      message: `Xóa vĩnh viễn "${targetTitle}"?`,
+      onConfirm: () => {
+        removeThread(threadId);
+        showSuccessToast('Xóa thành công');
+      },
+    });
+  };
+
+  const handleToggleActionMenu = () => {
+    setIsActionMenuOpen((prev) => !prev);
+  };
+
+  const handleOpenHistoryPanel = () => {
+    setIsHistoryPanelOpen(true);
+    setIsActionMenuOpen(false);
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isLoading || !activeThread) return;
+
+    const targetThreadId = activeThread.id;
+    const targetSessionId = activeThread.sessionId;
+
+    const userMessage = {
+      id: createMessageId(),
+      sender: 'user',
+      text: inputValue,
+      timestamp: new Date().toISOString(),
+    };
+
+    updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, userMessage]);
     setInputValue('');
     
     // Bắt đầu trạng thái Loading
     setIsLoading(true);
+    setLoadingThreadId(targetThreadId);
     // Random câu thông báo
     setLoadingText(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]);
 
@@ -190,33 +579,40 @@ const ChatbotWidget = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage.text,
-          sessionId: sessionId,
-          userId: null,
+          sessionId: targetSessionId,
+          userId: user?.userId || user?.userID || null,
         }),
       });
 
       const data = await response.json();
 
       const botMessage = {
-        id: Date.now() + 1,
+        id: createMessageId(),
         sender: 'bot',
         text: data.reply,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         tourSuggestions: data.tourSuggestions || [],
         quickActions: data.quickActions || [],
+        messageType: data.messageType || 'TEXT',
+        bookingConfirmData: data.bookingConfirmData || null,
+        orderDetail: data.orderDetail || null,
+        bookingCode: data.bookingCode || null,
+        paymentUrl: data.paymentUrl || null,
+        paymentWaitingLink: data.paymentWaitingLink || null,
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
       console.error('Lỗi gửi tin nhắn:', error);
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
+      updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, {
+        id: createMessageId(),
         sender: 'bot',
         text: 'Xin lỗi, hệ thống đang bận một chút. Bạn thử lại sau nhé! 😓',
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       }]);
     } finally {
       setIsLoading(false);
+      setLoadingThreadId(null);
     }
   };
 
@@ -227,9 +623,72 @@ const ChatbotWidget = () => {
     }
   };
 
-  const handleQuickAction = (url) => {
-    if (url) {
-      window.location.href = url;
+  const handleQuickAction = (quickAction) => {
+    const action = typeof quickAction === 'string' ? quickAction : quickAction?.action;
+    const url = typeof quickAction === 'object' ? quickAction?.url : null;
+    if (action === 'CONFIRM_BOOKING') {
+      sendBotMessage('Xác nhận');
+    } else if (action === 'CANCEL') {
+      sendBotMessage('Hủy');
+    } else if (action === 'RESET_SEARCH') {
+      sendBotMessage('Tìm lại tour khác');
+    } else if (action === 'NEW_BOOKING') {
+      sendBotMessage('Đặt tour mới');
+    } else if (action === 'RESUME_BOOKING') {
+      sendBotMessage('tiếp tục đặt tour');
+    } else if (action === 'LOOKUP') {
+      // Focus input để user nhập mã booking
+      inputRef.current?.focus();
+      setInputValue('BK');
+    } else if (action && action.startsWith('LOOKUP_')) {
+      const code = action.replace('LOOKUP_', '');
+      sendBotMessage('tra cứu ' + code);
+    } else if (action === 'VIEW_DEALS') {
+      if (url) window.location.href = url;
+      else sendBotMessage('tour nao dang giam gia');
+    } else if (action === 'VIEW_FAVORITES' || action === 'VIEW_UPCOMING' || action === 'navigate') {
+      if (url) window.location.href = url;
+    } else if (action) {
+      window.location.href = action;
+    }
+  };
+
+  const sendBotMessage = async (text) => {
+    if (!text || isLoading || !activeThread) return;
+    const targetThreadId = activeThread.id;
+    const targetSessionId = activeThread.sessionId;
+    const userMsg = { id: createMessageId(), sender: 'user', text, timestamp: new Date().toISOString() };
+    updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, userMsg]);
+    setIsLoading(true);
+    setLoadingThreadId(targetThreadId);
+    setLoadingText(LOADING_MESSAGES[0]);
+    try {
+      const response = await fetch('http://localhost:8080/api/chatbot/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, sessionId: targetSessionId, userId: user?.userId || user?.userID || null }),
+      });
+      const data = await response.json();
+      updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, {
+        id: createMessageId(), sender: 'bot', text: data.reply, timestamp: new Date().toISOString(),
+        tourSuggestions: data.tourSuggestions || [], quickActions: data.quickActions || [],
+        messageType: data.messageType || 'TEXT',
+        bookingConfirmData: data.bookingConfirmData || null,
+        orderDetail: data.orderDetail || null,
+        bookingCode: data.bookingCode || null,
+        paymentUrl: data.paymentUrl || null,
+        paymentWaitingLink: data.paymentWaitingLink || null,
+      }]);
+    } catch {
+      updateThreadMessages(targetThreadId, (prevMessages) => [...prevMessages, {
+        id: createMessageId(),
+        sender: 'bot',
+        text: 'Xin lỗi, hệ thống đang bận. Thử lại sau nhé!',
+        timestamp: new Date().toISOString(),
+      }]);
+    } finally {
+      setIsLoading(false);
+      setLoadingThreadId(null);
     }
   };
 
@@ -274,14 +733,95 @@ const ChatbotWidget = () => {
               <span className={styles.status}>● Đang hoạt động</span>
             </div>
           </div>
-          <button onClick={() => { setIsOpen(false); setBubbleExiting(false); setBubbleVisible(true); }} className={styles.closeBtn}>
-            <X size={20} />
-          </button>
+          <div className={styles.headerActions} ref={actionMenuRef}>
+            <button
+              onClick={handleToggleActionMenu}
+              className={styles.menuTriggerBtn}
+              type="button"
+              aria-label="Mở menu hành động chat"
+            >
+              <MoreVertical size={18} />
+            </button>
+            {isActionMenuOpen && (
+              <div className={styles.actionMenu}>
+                <button type="button" className={styles.actionMenuItem} onClick={handleOpenHistoryPanel}>
+                  <History size={16} />
+                  Lịch sử trò chuyện
+                </button>
+                <button type="button" className={styles.actionMenuItem} onClick={handleStartNewConversation}>
+                  <PlusCircle size={16} />
+                  Bắt đầu cuộc trò chuyện mới
+                </button>
+                <button type="button" className={`${styles.actionMenuItem} ${styles.destructiveItem}`} onClick={handleDeleteCurrentConversation}>
+                  <Trash2 size={16} />
+                  Xóa lịch sử trò chuyện
+                </button>
+              </div>
+            )}
+            <button onClick={() => { setIsOpen(false); setBubbleExiting(false); setBubbleVisible(true); }} className={styles.closeBtn} type="button">
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
-        {/* Khu vực tin nhắn */}
-        <div className={styles.messagesArea}>
-          {messages.map((message) => (
+        <div className={styles.chatBody}>
+          {isHistoryPanelOpen && (
+            <aside className={styles.historyPanel} ref={historyPanelRef}>
+              <div className={styles.historyHeader}>
+                <span>Lịch sử chat</span>
+                <button
+                  type="button"
+                  className={styles.historyCloseBtn}
+                  onClick={() => setIsHistoryPanelOpen(false)}
+                  aria-label="Đóng lịch sử trò chuyện"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className={styles.historyList}>
+                {historyThreads.map((thread) => {
+                  const lastMessage = thread.messages?.[thread.messages.length - 1];
+                  const preview = trimThreadTitle(lastMessage?.text || 'Chưa có tin nhắn');
+                  return (
+                    <div
+                      key={thread.id}
+                      className={`${styles.historyItem} ${thread.id === activeThreadId ? styles.activeHistoryItem : ''}`}
+                      onClick={() => handleSelectThread(thread.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          handleSelectThread(thread.id);
+                        }
+                      }}
+                    >
+                      <div className={styles.historyItemTop}>
+                        <span className={styles.historyItemTitle}>{thread.title}</span>
+                        <button
+                          type="button"
+                          className={styles.historyDeleteBtn}
+                          onClick={(event) => handleDeleteThreadFromHistory(event, thread.id)}
+                          aria-label="Xóa cuộc trò chuyện"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <span className={styles.historyPreview}>{preview}</span>
+                      <span className={styles.historyTime}>{formatHistoryTime(thread.updatedAt)}</span>
+                    </div>
+                  );
+                })}
+                {historyThreads.length === 0 && (
+                  <div className={styles.emptyHistory}>Chưa có cuộc trò chuyện nào.</div>
+                )}
+              </div>
+            </aside>
+          )}
+
+          {/* Khu vực tin nhắn */}
+          <div className={styles.messagesArea}>
+            {messages.map((message) => (
             <div key={message.id} className={`${styles.messageRow} ${message.sender === 'user' ? styles.userRow : styles.botRow}`}>
               
               {message.sender === 'bot' && (
@@ -301,61 +841,84 @@ const ChatbotWidget = () => {
                       )
                     }}
                   >
-                    {message.text}
+                    {localizePassengerEnums(message.text)}
                   </ReactMarkdown>
                 </div>
-                
-                {/* Gợi ý Tour (Cards) */}
-                {/* {message.tourSuggestions && message.tourSuggestions.length > 0 && (
+
+                {/* BOOKING_CONFIRM card */}
+                {message.messageType === 'BOOKING_CONFIRM' && message.bookingConfirmData && (
+                  <BookingConfirmCard
+                    data={message.bookingConfirmData}
+                    onConfirm={() => sendBotMessage('Xác nhận')}
+                    onCancel={() => sendBotMessage('Hủy')}
+                  />
+                )}
+
+                {/* ORDER_DETAIL card */}
+                {message.messageType === 'ORDER_DETAIL' && message.orderDetail && (
+                  <OrderDetailCard data={message.orderDetail} />
+                )}
+
+                {/* BOOKING_SUCCESS card */}
+                {message.messageType === 'BOOKING_SUCCESS' && (() => {
+                  // Prefer dedicated fields, fall back to parsing text
+                  const code  = message.bookingCode
+                    || (message.text && (message.text.match(/\*\*(BK[A-Za-z0-9]{8})\*\*/) || [])[1]);
+                  const url   = message.paymentUrl
+                    || (message.text && ((message.text.match(/\(https?:\/\/[^)]+payos[^)]*\)/) || [])[0] || '').replace(/[()]/g, ''));
+                  const waitingLink = message.paymentWaitingLink || null;
+                  return code
+                    ? <BookingSuccessCard bookingCode={code} paymentUrl={url} paymentWaitingLink={waitingLink} />
+                    : null;
+                })()}
+
+                {/* Tour suggestion cards */}
+                {message.messageType === 'TOUR_SUGGESTIONS' && message.tourSuggestions && message.tourSuggestions.length > 0 && (
                   <div className={styles.tourGrid}>
-                    {message.tourSuggestions.map((tour) => (
-                      <a key={tour.tourId} href={tour.detailUrl} className={styles.tourCard}>
+                    {message.tourSuggestions.map((tour, idx) => (
+                      <div key={tour.tourId || idx} className={styles.tourCard}>
                         <div className={styles.cardImage}>
-                          <img 
-                            src={tour.imageUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&auto=format&fit=crop&q=60'} 
-                            alt={tour.tourName} 
+                          <img
+                            src={tour.imageUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&auto=format&fit=crop&q=60'}
+                            alt={tour.tourName}
                           />
                         </div>
                         <div className={styles.cardInfo}>
                           <h4>{tour.tourName}</h4>
                           <div className={styles.cardMeta}>
-                            <span className={styles.duration}>
-                              <Calendar size={12}/> {tour.duration}
-                            </span>
-                            <span className={styles.price}>
-                              {tour.minPrice?.toLocaleString('vi-VN')}₫
-                            </span>
+                            {tour.duration && <span className={styles.duration}>⏱️ {tour.duration}</span>}
+                            {tour.minPrice > 0 && <span className={styles.price}>{Number(tour.minPrice).toLocaleString('vi-VN')}₫</span>}
                           </div>
                         </div>
-                      </a>
+                      </div>
                     ))}
                   </div>
-                )} */}
+                )}
 
                 {/* Quick Actions */}
-                {/* {message.quickActions && message.quickActions.length > 0 && (
+                {message.quickActions && message.quickActions.length > 0 && (
                   <div className={styles.quickActions}>
                     {message.quickActions.map((action, idx) => (
-                      <button 
-                        key={idx} 
+                      <button
+                        key={idx}
                         className={styles.actionBtn}
-                        onClick={() => handleQuickAction(action.url)}
+                        onClick={() => handleQuickAction(action)}
                       >
                         {action.label}
                       </button>
                     ))}
                   </div>
-                )} */}
+                )}
                 
                 <span className={styles.timestamp}>
                   {new Date(message.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>
-          ))}
+            ))}
 
-          {/* Hiệu ứng Loading đẹp & Thân thiện */}
-          {isLoading && (
+            {/* Hiệu ứng Loading đẹp & Thân thiện */}
+            {showLoading && (
             <div className={`${styles.messageRow} ${styles.botRow}`}>
               <div className={styles.botAvatar}>
                 <img src={futureMark} alt="" className={styles.brandAvatar} />
@@ -367,10 +930,34 @@ const ChatbotWidget = () => {
                 <span className={styles.loadingText}>{loadingText}</span>
               </div>
             </div>
-          )}
+            )}
           
-          <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} />
+          </div>
         </div>
+
+        {successToast && (
+          <div className={styles.successToast} role="status" aria-live="polite">
+            {successToast}
+          </div>
+        )}
+
+        {confirmDialog.open && (
+          <div className={styles.confirmOverlay} onClick={closeConfirmDialog}>
+            <div className={styles.confirmDialog} onClick={(event) => event.stopPropagation()}>
+              <h4>{confirmDialog.title}</h4>
+              <p>{confirmDialog.message}</p>
+              <div className={styles.confirmActions}>
+                <button type="button" className={styles.confirmCancelBtn} onClick={closeConfirmDialog}>
+                  Hủy
+                </button>
+                <button type="button" className={styles.confirmDeleteBtn} onClick={confirmDialogAction}>
+                  Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Input Area */}
         <div className={styles.inputArea}>
@@ -384,7 +971,7 @@ const ChatbotWidget = () => {
           />
           <button 
             onClick={handleSendMessage} 
-            disabled={!inputValue.trim() || isLoading}
+            disabled={!inputValue.trim() || isLoading || !activeThread}
             className={styles.sendBtn}
           >
             <Send size={18} />

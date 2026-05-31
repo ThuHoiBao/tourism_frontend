@@ -331,6 +331,8 @@ $border-color: #e2e8f0;
         display: block;
         pointer-events: none;
         user-select: none;
+        filter: blur(1.6px);
+        transition: filter 0.35s ease;
     }
 }
 
@@ -341,6 +343,7 @@ $border-color: #e2e8f0;
 }
 
 .coverCardActive img {
+    filter: blur(0);
     animation: kenBurns 7s ease-in-out infinite alternate;
 }
 
