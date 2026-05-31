@@ -205,3 +205,116 @@
   color: #64748b;
   font-style: italic;
 }
+
+/* ── Auto subtitle (chuỗi stop names) ─────────────────────────────────────── */
+.autoSubtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* ── Block điểm dừng trong accordion body ─────────────────────────────────── */
+.stopList {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.stopListTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stopRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.16s;
+  font-family: inherit;
+
+  &:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    transform: translateX(2px);
+  }
+}
+
+.stopRowActive {
+  background: #eff6ff !important;
+  border-color: #1e40af !important;
+  box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.18);
+}
+
+.stopBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e40af;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  text-align: center;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.stopMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  strong {
+    font-size: 13.5px;
+    color: #0f172a;
+    font-weight: 600;
+  }
+}
+
+.stopDesc {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.stopJump {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e40af;
+  white-space: nowrap;
+  opacity: 0.8;
+}

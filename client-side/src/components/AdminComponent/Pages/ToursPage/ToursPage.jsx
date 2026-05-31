@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plus, Search, Edit, Trash2, MapPin, Calendar, ChevronLeft, ChevronRight,
   Image as ImageIcon, Filter, Eye, Download, AlertTriangle, X, CheckCircle2,
@@ -450,6 +451,10 @@ const ToursPage = () => {
                             onClick={() => { setEditingTourId(tour.tourID); setShowTourForm(true); }}>
                             <Edit size={15} />
                           </button>
+                          <Link className={styles.btnView} title="Bản đồ lộ trình"
+                            to={`/admin/tours/${tour.tourID}/stops`}>
+                            <MapPin size={15} />
+                          </Link>
                           <button className={styles.btnDelete} title="Xóa"
                             onClick={() => askDeleteOne(tour.tourID)}>
                             <Trash2 size={15} />

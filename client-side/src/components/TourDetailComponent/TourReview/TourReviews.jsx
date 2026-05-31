@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaRegStar, FaChevronLeft, FaChevronRight, FaImage } from 'react-icons/fa';
 import axios from '../../../utils/axiosCustomize';
+import ReviewSummaryCard from '../ReviewSummary/ReviewSummaryCard';
 import styles from './TourReviews.module.scss';
 
 const TourReviews = ({ tourCode }) => {
@@ -120,6 +121,9 @@ const TourReviews = ({ tourCode }) => {
           </div>
         </div>
       )}
+
+      {/* AI Review Summary — hiển thị dưới khối stats, trên list chi tiết */}
+      <ReviewSummaryCard tourCode={tourCode} />
 
       {/* 3. Reviews List */}
       <div className={styles.reviewsList}>
