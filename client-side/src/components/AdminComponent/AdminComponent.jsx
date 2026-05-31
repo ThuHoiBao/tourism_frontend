@@ -14,6 +14,7 @@ import AdminLogin from './Pages/Login/AdminLogin';
 import AdminProfile from './AdminProfile.jsx/AdminProfile';
 import AdminProtectedRoute from './AdminProtectedRoute';
 import DeadEventsPage from './Pages/DeadEventsPage/DeadEventsPage';
+import CoinWithdrawalsPage from './Pages/CoinWithdrawalsPage/CoinWithdrawalsPage';
 
 const AdminComponent = () => {
     return (
@@ -35,6 +36,7 @@ const AdminComponent = () => {
                     <Route path="branches-policies" element={<BranchPolicyManagement />} />
                     <Route path="notifications" element={<NotificationsPage />} />
                     <Route path="dead-events" element={<DeadEventsPage />} />
+                    <Route path="coin-withdrawals" element={<CoinWithdrawalsPage />} />
                 </Route>
             </Route>
 

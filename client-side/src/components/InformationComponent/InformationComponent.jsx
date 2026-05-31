@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Camera, Heart, ListChecks, Sparkles, Coins } from 'lucide-react';
+import { Camera, Heart, ListChecks, Sparkles, Coins, Landmark } from 'lucide-react';
 import PersonalProfile from './PersonalProfile/PersonalProfile';
 import TransactionList from './TransactionList/TransactionList';
 import FavoriteTours from './FavoriteTours/FavoriteTours';
+import WithdrawCoins from './WithdrawCoins/WithdrawCoins';
 import styles from './InformationComponent.module.scss';
 import AvatarUploadModal from './AvatarUploadModal/AvatarUploadModal';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -29,6 +30,7 @@ const InformationComponent = () => {
         const path = location.pathname;
         if (path.includes('/transaction')) return 'transaction';
         if (path.includes('/favorites')) return 'favorites';
+        if (path.includes('/withdraw-coins')) return 'withdraw-coins';
         return 'transaction';
     }, [location.pathname, tab]);
 
@@ -55,6 +57,8 @@ const InformationComponent = () => {
                 return <TransactionList user={user} />;
             case 'favorites':
                 return <FavoriteTours user={user} />;
+            case 'withdraw-coins':
+                return <WithdrawCoins user={user} />;
             default:
                 return <TransactionList user={user} />;
         }
@@ -145,6 +149,14 @@ const InformationComponent = () => {
                         >
                             <ListChecks size={18} strokeWidth={2.4} />
                             <span>Danh sách giao dịch</span>
+                        </button>
+                        <button
+                            className={`${styles.profileTab} ${activeTab === 'withdraw-coins' ? styles.profileTabActive : ''}`}
+                            onClick={() => handleMenuClick('withdraw-coins')}
+                            type="button"
+                        >
+                            <Landmark size={18} strokeWidth={2.4} />
+                            <span>Rút điểm về ngân hàng</span>
                         </button>
                         <button
                             className={`${styles.profileTab} ${activeTab === 'favorites' ? styles.profileTabActive : ''}`}
