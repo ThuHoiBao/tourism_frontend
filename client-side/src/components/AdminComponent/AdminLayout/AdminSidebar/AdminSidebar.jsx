@@ -13,10 +13,12 @@ import {
     Settings,
     LogOut,
     Plane,
-    MessagesSquare
+    MessagesSquare,
+    Headphones
 } from 'lucide-react';
 import styles from './AdminSidebar.module.scss';
 import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
+import { useConsultationAlertsContext } from '../../../../context/ConsultationAlertsContext';
 
 const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -30,12 +32,13 @@ const navItems = [
     { name: 'Quản lý Hoàn Điểm', path: '/admin/coin-withdrawals', icon: Landmark },
     { name: 'Quản lý sự cố Bookings', path: '/admin/dead-events', icon: Skull },
     { name: 'Quản lý Diễn đàn', path: '/admin/forum', icon: MessagesSquare },
-    { name: 'Sự cố xử lý nền', path: '/admin/dead-events', icon: Skull },
+    { name: 'Yêu cầu tư vấn', path: '/admin/consultations', icon: Headphones },
 ];
 
 const AdminSidebar = () => {
     const location = useLocation();
     const isActive = (path) => location.pathname.startsWith(path);
+    const { pendingCount } = useConsultationAlertsContext();
 
     return (
         <div className={styles.adminSidebar}>
@@ -47,17 +50,23 @@ const AdminSidebar = () => {
 
             <nav>
                 <ul className={styles.menuList}>
-                    {navItems.map(item => (
-                        <li
-                            key={item.path}
-                            className={`${styles.menuItem} ${isActive(item.path) ? styles.menuItemActive : ''}`}
-                        >
-                            <Link to={item.path}>
-                                <item.icon className={styles.menuIcon} size={17} />
-                                <span className={styles.menuLabel}>{item.name}</span>
-                            </Link>
-                        </li>
-                    ))}
+                    {navItems.map(item => {
+                        const isConsult = item.path === '/admin/consultations';
+                        return (
+                            <li
+                                key={item.path}
+                                className={`${styles.menuItem} ${isActive(item.path) ? styles.menuItemActive : ''}`}
+                            >
+                                <Link to={item.path}>
+                                    <item.icon className={styles.menuIcon} size={17} />
+                                    <span className={styles.menuLabel}>{item.name}</span>
+                                    {isConsult && pendingCount > 0 && (
+                                        <span className={styles.navBadge}>{pendingCount > 99 ? '99+' : pendingCount}</span>
+                                    )}
+                                </Link>
+                            </li>
+                        );
+                    })}
                 </ul>
             </nav>
 

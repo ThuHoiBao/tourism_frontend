@@ -17,6 +17,7 @@ import AdminProtectedRoute from './AdminProtectedRoute';
 import DeadEventsPage from './Pages/DeadEventsPage/DeadEventsPage';
 import CoinWithdrawalsPage from './Pages/CoinWithdrawalsPage/CoinWithdrawalsPage';
 import AdminForumDashboard from './Pages/ForumManagement/AdminForumDashboard';
+import ConsultationsPage from './Pages/ConsultationsPage/ConsultationsPage';
 import AdminPostManagement from './Pages/ForumManagement/AdminPostManagement';
 import AdminCommentManagement from './Pages/ForumManagement/AdminCommentManagement';
 import AdminCategoryManagement from './Pages/ForumManagement/AdminCategoryManagement';
@@ -58,6 +59,7 @@ const AdminComponent = () => {
                     <Route path="forum/audit-log" element={<AdminAuditLog />} />
                     <Route path="forum/banned-users" element={<AdminBannedUsers />} />
                     <Route path="forum/reports" element={<AdminReports />} />
+                    <Route path="consultations" element={<ConsultationsPage />} />
                 </Route>
             </Route>
 

@@ -78,8 +78,24 @@
 
   .navIcon {
     cursor: pointer;
-    color: #999;
-    &:hover { color: #333; }
+    color: #2d5a9e;
+    font-size: 22px;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    &:hover {
+      color: #1e3a6f;
+      background: #eef2ff;
+      transform: scale(1.08);
+    }
+  }
+  .navIconDisabled {
+    cursor: not-allowed;
+    color: #cbd5e1;
+    pointer-events: none;
+    &:hover { background: transparent; color: #cbd5e1; }
   }
 }
 
