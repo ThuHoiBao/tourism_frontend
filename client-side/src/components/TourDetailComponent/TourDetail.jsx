@@ -11,6 +11,7 @@ import TourItinerary from './TourItinerary/TourItinerary';
 import TourRouteMap from './TourRoute/TourRouteMap';
 import tourRouteApi from '../../services/tour/tourRouteApi';
 import TourReviews from './TourReview/TourReviews';
+import ConsultationModal from './ConsultationModal/ConsultationModal';
 import RelatedTours from './RelatedTours/RelatedTours';
 import axios from '../../utils/axiosCustomize'; 
 import { FaMapMarkerAlt, FaCalendarAlt, FaClock, FaBarcode, FaPhoneAlt, FaPlay, FaTicketAlt, FaGift, FaPiggyBank, FaCheck } from 'react-icons/fa';
@@ -38,6 +39,9 @@ import { set } from 'date-fns';
   // State mới để quản lý main display
   const [mainMediaType, setMainMediaType] = useState('video'); // 'video' hoặc 'image'
   const [mainImageIndex, setMainImageIndex] = useState(0);
+
+  // Sprint Consultation: modal yêu cầu tư vấn
+  const [showConsultation, setShowConsultation] = useState(false);
 
   const calendarRef = useRef(null);
   const scrollToCalendar = () => {
@@ -314,27 +318,40 @@ import { set } from 'date-fns';
               {/* Khi chưa chọn ngày: hiện box gọn + nút Chọn ngày */}
               {!selectedDeparture ? (
                 <div className={styles.compactPrice}>
-                  <span className={styles.label}>Giá từ:</span>
-                  <div className={styles.compactPriceValue}>
-                    {formatCurrency(priceData.salePrice || priceData.finalPrice).replace('₫', '')}
-                    <span className={styles.currency}>₫</span>
-                    <span className={styles.unit}>/ khách</span>
+                  <div className={styles.compactMetaRow}>
+                    <FaBarcode className={styles.compactMetaIcon} />
+                    <span className={styles.compactMetaLabel}>Mã chương trình:</span>
+                    <span className={styles.compactMetaValue}>{tourData.tourCode}</span>
+                  </div>
+                  <div className={styles.compactMetaRow}>
+                    <FaClock className={styles.compactMetaIcon} />
+                    <span className={styles.compactMetaLabel}>Thời gian:</span>
+                    <span className={styles.compactMetaValue}>{tourData.duration}</span>
                   </div>
 
-                  <div className={styles.compactActions}>
-                    <button
-                      className={styles.compactCallBtn}
-                      onClick={() => window.location.href = 'tel:19002045'}
-                      aria-label="Liên hệ tư vấn"
-                    >
-                      <FaPhoneAlt />
-                    </button>
-                    <button
-                      className={styles.compactPickDateBtn}
-                      onClick={scrollToCalendar}
-                    >
-                      Chọn ngày
-                    </button>
+                  <div className={styles.compactPriceLine}>
+                    <div className={styles.compactPriceLeft}>
+                      <span className={styles.compactPriceLabel}>Giá từ:</span>
+                      <span className={styles.compactPriceValue}>
+                        {formatCurrency(priceData.salePrice || priceData.finalPrice).replace('₫', '')}
+                        <span className={styles.currency}>₫</span>
+                      </span>
+                    </div>
+                    <div className={styles.compactActions}>
+                      <button
+                        className={styles.compactCallBtn}
+                        onClick={() => setShowConsultation(true)}
+                        aria-label="Gửi yêu cầu tư vấn"
+                      >
+                        <FaPhoneAlt />
+                      </button>
+                      <button
+                        className={styles.compactPickDateBtn}
+                        onClick={scrollToCalendar}
+                      >
+                        Chọn ngày
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -460,11 +477,20 @@ import { set } from 'date-fns';
       
 
         {/* Modal Ảnh */}
-        <ImageModal 
+        <ImageModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             images={tourData.images || []}
             startIndex={startImageIndex}
+        />
+
+        {/* Modal Gửi yêu cầu tư vấn */}
+        <ConsultationModal
+            isOpen={showConsultation}
+            onClose={() => setShowConsultation(false)}
+            tourId={tourData.tourID}
+            tourCode={tourData.tourCode}
+            tourName={tourData.tourName}
         />
       </main>
     </div>

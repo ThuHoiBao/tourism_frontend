@@ -3,22 +3,23 @@ import AdminHeader from './AdminHeader/AdminHeader';
 import AdminSidebar from './AdminSidebar/AdminSidebar';
 import AdminFooter from './AdminFooter/AdminFooter';
 import styles from './AdminLayout.module.scss';
-import { Outlet } from 'react-router-dom'; // Dùng Outlet để render các trang con
+import { Outlet } from 'react-router-dom';
+import { ConsultationAlertsProvider } from '../../../context/ConsultationAlertsContext';
 
 const AdminLayout = () => {
     return (
-        <div className={styles.adminLayout}>
-            
-            <AdminHeader />
-            <AdminSidebar />
+        <ConsultationAlertsProvider>
+            <div className={styles.adminLayout}>
+                <AdminHeader />
+                <AdminSidebar />
 
-            <main className={styles.mainContent}>
-                {/* Outlet render nội dung của các route con (Dashboard, Products,...) */}
-                <Outlet /> 
-            </main>
+                <main className={styles.mainContent}>
+                    <Outlet />
+                </main>
 
-            <AdminFooter />
-        </div>
+                <AdminFooter />
+            </div>
+        </ConsultationAlertsProvider>
     );
 };
 
