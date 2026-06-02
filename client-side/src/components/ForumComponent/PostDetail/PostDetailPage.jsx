@@ -17,6 +17,11 @@ import {
   Clock,
   AlertCircle,
   Flag,
+  Share2,
+  Copy,
+  Facebook,
+  UserPlus,
+  UserCheck,
   X
 } from 'lucide-react';
 import Avatar from '../../shared/Avatar/Avatar';
@@ -38,6 +43,13 @@ const PostDetailPage = () => {
 
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+
+  // Sprint A: bookmark
+  const [bookmarked, setBookmarked] = useState(false);
+  // Sprint B: share menu
+  const [shareOpen, setShareOpen] = useState(false);
+  // Sprint C: follow author
+  const [following, setFollowing] = useState(false);
 
   const [commentContent, setCommentContent] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
@@ -160,6 +172,17 @@ const PostDetailPage = () => {
 
       setLiked(postData.isLikedByCurrentUser || false);
       setLikeCount(postData.likeCount || 0);
+
+      // Sprint A + C: fetch bookmark + follow state khi user logged-in
+      if (userId) {
+        axios.get(`/forum/posts/${postId}/bookmark-check`, { params: { userId } })
+          .then(r => setBookmarked(!!r.data?.data?.isBookmarked)).catch(() => {});
+        const authorId = postData.authorId ?? postData.userId;
+        if (authorId && Number(authorId) !== Number(userId)) {
+          axios.get(`/forum/posts/follow/${authorId}/check`, { params: { followerId: userId } })
+            .then(r => setFollowing(!!r.data?.data?.isFollowing)).catch(() => {});
+        }
+      }
     } catch (err) {
       if (!silent) setError('Không thể tải bài viết');
     } finally {
@@ -178,6 +201,76 @@ const PostDetailPage = () => {
       setLikeCount(liked ? likeCount - 1 : likeCount + 1);
     } catch (err) {
       showNotice('error', 'Lỗi', 'Không thể thực hiện thao tác. Vui lòng thử lại.');
+    }
+  };
+
+  // Sprint A: bookmark
+  const handleBookmarkToggle = async () => {
+    if (!userId) {
+      showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để lưu bài viết.');
+      return;
+    }
+    try {
+      const res = await axios.post(`/forum/posts/${postId}/bookmark`, null, { params: { userId } });
+      const isBookmarked = !!res.data?.data?.isBookmarked;
+      setBookmarked(isBookmarked);
+      showNotice('info', isBookmarked ? 'Đã lưu' : 'Đã bỏ lưu',
+        isBookmarked ? 'Bài viết đã được thêm vào "Đã lưu".' : 'Bài viết đã bị xóa khỏi "Đã lưu".');
+    } catch {
+      showNotice('error', 'Lỗi', 'Không thể lưu bài viết. Vui lòng thử lại.');
+    }
+  };
+
+  // Sprint B: share — dùng URL hiện tại của trang để FB / Twitter / ... lấy preview.
+  // Lưu ý: trên localhost FB crawler không truy cập được nên preview sẽ trống.
+  // Khi deploy lên domain public + thêm meta og:title / og:image, preview sẽ tự động đẹp.
+  const handleShare = async (channel) => {
+    const url = window.location.href;   // dùng URL thật của tab thay vì origin
+    const title = post?.title || 'Bài viết hay từ Tourism';
+    try {
+      if (channel === 'copy') {
+        await navigator.clipboard.writeText(url);
+        showNotice('info', 'Đã copy link', 'Bạn có thể dán vào tin nhắn hoặc mạng xã hội.');
+      } else if (channel === 'facebook') {
+        // FB sharer: u=URL; trên localhost preview trống nhưng vẫn share được link
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`,
+          '_blank', 'width=620,height=520'
+        );
+      } else if (channel === 'twitter') {
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+          '_blank', 'width=620,height=520'
+        );
+      } else if (channel === 'telegram') {
+        window.open(
+          `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+          '_blank', 'width=620,height=520'
+        );
+      } else if (channel === 'native' && navigator.share) {
+        await navigator.share({ title, url });
+      }
+      // Fire-and-forget counter
+      axios.post(`/forum/posts/${postId}/share`, null, { params: { channel } }).catch(() => {});
+      setShareOpen(false);
+    } catch {
+      setShareOpen(false);
+    }
+  };
+
+  // Sprint C: follow tác giả
+  const handleFollowToggle = async () => {
+    if (!userId) {
+      showNotice('info', 'Cần đăng nhập', 'Vui lòng đăng nhập để theo dõi tác giả.');
+      return;
+    }
+    const authorId = post?.authorId ?? post?.userId;
+    if (!authorId || Number(authorId) === Number(userId)) return;
+    try {
+      const res = await axios.post(`/forum/posts/follow/${authorId}`, null, { params: { followerId: userId } });
+      setFollowing(!!res.data?.data?.isFollowing);
+    } catch {
+      showNotice('error', 'Lỗi', 'Không thể theo dõi tác giả. Vui lòng thử lại.');
     }
   };
 
@@ -522,6 +615,16 @@ const PostDetailPage = () => {
                    {postDate && format(new Date(postDate), 'dd MMMM yyyy', { locale: vi })}
                 </span>
               </div>
+              {userId && (post?.authorId ?? post?.userId) && Number(post?.authorId ?? post?.userId) !== Number(userId) && (
+                <button
+                  className={`${styles.followBtn} ${following ? styles.followBtnActive : ''}`}
+                  onClick={handleFollowToggle}
+                  title={following ? 'Đang theo dõi' : 'Theo dõi tác giả'}
+                >
+                  {following ? <UserCheck size={14} /> : <UserPlus size={14} />}
+                  {following ? 'Đang theo dõi' : 'Theo dõi'}
+                </button>
+              )}
            </div>
         </div>
 
@@ -548,6 +651,38 @@ const PostDetailPage = () => {
                 <Heart size={18} fill={liked ? '#e41e3f' : 'none'} />
                 {liked ? 'Đã thích' : 'Thích'}
               </Button>
+              <Button
+                variant="ghost"
+                size="md"
+                onClick={handleBookmarkToggle}
+                className={`${styles.reportBtn} ${bookmarked ? styles.bookmarkedBtn : ''}`}
+                title={bookmarked ? 'Đã lưu' : 'Lưu bài viết'}
+              >
+                <Bookmark size={16} fill={bookmarked ? '#0ea5e9' : 'none'} />
+                {bookmarked ? 'Đã lưu' : 'Lưu'}
+              </Button>
+              <div style={{ display: 'inline-block', position: 'relative' }}>
+                <Button
+                  variant="ghost"
+                  size="md"
+                  onClick={() => setShareOpen(o => !o)}
+                  className={styles.reportBtn}
+                  title="Chia sẻ bài viết"
+                >
+                  <Share2 size={16} /> Chia sẻ
+                </Button>
+                {shareOpen && (
+                  <div className={styles.shareMenu}>
+                    <button onClick={() => handleShare('copy')}><Copy size={14} /> Copy link</button>
+                    <button onClick={() => handleShare('facebook')}><Facebook size={14} /> Facebook</button>
+                    <button onClick={() => handleShare('twitter')}><Share2 size={14} /> Twitter / X</button>
+                    <button onClick={() => handleShare('telegram')}><Share2 size={14} /> Telegram</button>
+                    {typeof navigator !== 'undefined' && navigator.share && (
+                      <button onClick={() => handleShare('native')}><Share2 size={14} /> Chia sẻ khác</button>
+                    )}
+                  </div>
+                )}
+              </div>
               <Button
                 variant="ghost"
                 size="md"

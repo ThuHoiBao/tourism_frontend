@@ -75,7 +75,21 @@ const TourCalendar = ({departures, onDepartureSelect, selectedDepartureId}) => {
   // Hàm xử lý khi nhấn chọn tháng
   const handleMonthChange = (monthData) => {
     setCurrentMonth(monthData);
-    setSelectedDateData(null); 
+    setSelectedDateData(null);
+  };
+
+  // Vị trí của tháng hiện tại trong danh sách availableMonths
+  const currentMonthIndex = availableMonths.findIndex(
+    m => m.month === currentMonth.month && m.year === currentMonth.year
+  );
+  const hasPrevMonth = currentMonthIndex > 0;
+  const hasNextMonth = currentMonthIndex >= 0 && currentMonthIndex < availableMonths.length - 1;
+
+  const goPrevMonth = () => {
+    if (hasPrevMonth) handleMonthChange(availableMonths[currentMonthIndex - 1]);
+  };
+  const goNextMonth = () => {
+    if (hasNextMonth) handleMonthChange(availableMonths[currentMonthIndex + 1]);
   };
 
   const handleDateClick = (depInfo) => {
@@ -298,11 +312,21 @@ const renderCalendarDays = () => {
     return (
       <>
         <div className={styles.calendarHeader}>
-          <FaChevronLeft className={styles.navIcon} />
+          <FaChevronLeft
+            className={`${styles.navIcon} ${!hasPrevMonth ? styles.navIconDisabled : ''}`}
+            onClick={goPrevMonth}
+            role="button"
+            aria-label="Tháng trước"
+          />
           <span className={styles.currentMonthTitle}>
               THÁNG {currentMonth.month}/{currentMonth.year}
           </span>
-          <FaChevronRight className={styles.navIcon} />
+          <FaChevronRight
+            className={`${styles.navIcon} ${!hasNextMonth ? styles.navIconDisabled : ''}`}
+            onClick={goNextMonth}
+            role="button"
+            aria-label="Tháng sau"
+          />
         </div>
 
         <div className={styles.weekDays}>

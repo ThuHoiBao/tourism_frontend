@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { MessageSquarePlus, Search, TrendingUp, Clock, Flame, BookOpen, Compass } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MessageSquarePlus, Search, TrendingUp, Clock, Flame, BookOpen, Compass, Bookmark, Users, FileEdit } from 'lucide-react';
 import PostList from './PostList/PostList';
 import CategorySidebar from './CategorySidebar/CategorySidebar';
 import TagCloud from './TagCloud/TagCloud';
@@ -10,10 +11,16 @@ import axios from '../../utils/axiosCustomize';
 import { useAuth } from '../../context/AuthContext';
 import styles from './ForumPage.module.scss';
 
-const FILTER_TABS = [
+const BASE_TABS = [
   { key: 'newest', label: 'Mới nhất', icon: Clock },
   { key: 'trending', label: 'Xu hướng', icon: TrendingUp },
   { key: 'popular', label: 'Nổi bật', icon: Flame },
+];
+
+// Sprint A + C: 2 tab thêm chỉ hiện khi user logged-in
+const AUTH_TABS = [
+  { key: 'following', label: 'Đang theo dõi', icon: Users },
+  { key: 'bookmarks', label: 'Đã lưu', icon: Bookmark },
 ];
 
 const ForumPage = () => {
@@ -54,6 +61,19 @@ const ForumPage = () => {
   const fetchPosts = useCallback(async (pageNum = 0, reset = false) => {
     setLoading(true);
     try {
+      // Sprint A + C: tab bookmarks/following dùng endpoint riêng, không hỗ trợ search/filter category
+      if (sortBy === 'bookmarks' || sortBy === 'following') {
+        if (!userId) {
+          setPosts([]); setHasMore(false); return;
+        }
+        const url = sortBy === 'bookmarks' ? '/forum/posts/bookmarks' : '/forum/posts/feed';
+        const res = await axios.get(url, { params: { userId, page: pageNum, size: 10 } });
+        const data = res.data?.data;
+        const content = data?.content || [];
+        setPosts(prev => reset ? content : [...prev, ...content]);
+        setHasMore(!data?.last);
+        return;
+      }
       const sortMap = { newest: 'createdAt', trending: 'viewCount', popular: 'likeCount' };
       const res = await axios.get('/forum/posts', {
         params: {
@@ -175,7 +195,7 @@ const ForumPage = () => {
               </div>
             )}
             <div className={styles.filterTabs}>
-              {FILTER_TABS.map(({ key, label, icon: Icon }) => (
+              {[...BASE_TABS, ...(userId ? AUTH_TABS : [])].map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
                   className={`${styles.filterTab} ${sortBy === key ? styles.active : ''}`}
@@ -185,6 +205,12 @@ const ForumPage = () => {
                   {label}
                 </button>
               ))}
+              {userId && (
+                <Link to="/forum/my-posts" className={styles.filterTab}>
+                  <FileEdit size={14} />
+                  Bài của tôi
+                </Link>
+              )}
             </div>
           </div>
 

@@ -5,6 +5,7 @@ import styles from './AdminHeader.module.scss';
 import axios from '../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
 import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
+import ConsultationBell from './ConsultationBell';
 
 const AdminHeader = () => {
     const navigate = useNavigate();
@@ -98,6 +99,8 @@ const AdminHeader = () => {
             </div>
 
             <div className={styles.rightSection}>
+                <ConsultationBell />
+
                 <div className={styles.languageSelect}>
                     <Globe className={styles.languageIcon} size={15} />
                     <span>Tiếng Việt</span>

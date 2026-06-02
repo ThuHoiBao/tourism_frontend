@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Eye, Bookmark, Pin, Sparkles, Clock, Hash, Mountain, Plane, Palmtree, Compass, Camera, Map } from 'lucide-react';
+import { Heart, MessageCircle, Eye, Bookmark, Pin, Sparkles, Clock, Hash, Mountain, Plane, Palmtree, Compass, Camera, Map, Share2, Copy, Facebook, UserPlus, Check } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import axios from '../../../utils/axiosCustomize';
 import styles from './PostCard.module.scss';
@@ -14,8 +14,28 @@ const PostCard = ({ post, onRefresh }) => {
   const [bookmarkCount, setBookmarkCount] = useState(post.bookmarkCount || 0);
   const [likeAnimating, setLikeAnimating] = useState(false);
   const [bookmarkAnimating, setBookmarkAnimating] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const userId = user?.userId || user?.userID;
+  const authorId = post.authorId ?? post.userId;
+  const canFollow = !!userId && !!authorId && Number(userId) !== Number(authorId);
+
+  // Fetch follow state khi mount (chỉ nếu có thể follow)
+  useEffect(() => {
+    if (!canFollow) return;
+    axios.get(`/forum/posts/follow/${authorId}/check`, { params: { followerId: userId } })
+      .then(r => setIsFollowing(!!r.data?.data?.isFollowing))
+      .catch(() => {});
+  }, [canFollow, authorId, userId]);
+
+  // Đóng share menu khi click bên ngoài
+  useEffect(() => {
+    if (!shareOpen) return;
+    const close = () => setShareOpen(false);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [shareOpen]);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -58,6 +78,52 @@ const PostCard = ({ post, onRefresh }) => {
     } catch {
       setIsBookmarked(prev);
       setBookmarkCount(c => prev ? c + 1 : c - 1);
+    }
+  };
+
+  const handleShareClick = (e) => {
+    e.stopPropagation();
+    setShareOpen(o => !o);
+  };
+
+  const handleShare = async (e, channel) => {
+    e.stopPropagation();
+    setShareOpen(false);
+    const url = `${window.location.origin}/forum/post/${post.postID}`;
+    const title = post.title || 'Bài viết từ Tourism';
+    try {
+      if (channel === 'copy') {
+        await navigator.clipboard.writeText(url);
+      } else if (channel === 'facebook') {
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`,
+          '_blank', 'width=620,height=520'
+        );
+      } else if (channel === 'twitter') {
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+          '_blank', 'width=620,height=520'
+        );
+      } else if (channel === 'telegram') {
+        window.open(
+          `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+          '_blank', 'width=620,height=520'
+        );
+      }
+      axios.post(`/forum/posts/${post.postID}/share`, null, { params: { channel } }).catch(() => {});
+    } catch {}
+  };
+
+  const handleFollowToggle = async (e) => {
+    e.stopPropagation();
+    if (!canFollow) return;
+    const prev = isFollowing;
+    setIsFollowing(!prev);
+    try {
+      const res = await axios.post(`/forum/posts/follow/${authorId}`, null, { params: { followerId: userId } });
+      setIsFollowing(!!res.data?.data?.isFollowing);
+    } catch {
+      setIsFollowing(prev);
     }
   };
 
@@ -105,11 +171,23 @@ const PostCard = ({ post, onRefresh }) => {
         <div className={styles.body}>
           <div className={styles.header}>
             <div className={styles.authorInfo}>
-              {post.authorAvatar ? (
-                <img src={post.authorAvatar} alt={post.authorName} className={styles.avatar} />
-              ) : (
-                <div className={styles.avatarFallback}>{initials(post.authorName)}</div>
-              )}
+              <div className={styles.avatarWrap}>
+                {post.authorAvatar ? (
+                  <img src={post.authorAvatar} alt={post.authorName} className={styles.avatar} />
+                ) : (
+                  <div className={styles.avatarFallback}>{initials(post.authorName)}</div>
+                )}
+                {canFollow && (
+                  <button
+                    type="button"
+                    className={`${styles.followDot} ${isFollowing ? styles.followDotActive : ''}`}
+                    onClick={handleFollowToggle}
+                    title={isFollowing ? 'Đang theo dõi' : 'Theo dõi tác giả'}
+                  >
+                    {isFollowing ? <Check size={11} strokeWidth={3} /> : <UserPlus size={11} strokeWidth={2.5} />}
+                  </button>
+                )}
+              </div>
               <div className={styles.authorMeta}>
                 <div className={styles.authorName}>{post.authorName || 'Ẩn danh'}</div>
                 <div className={styles.postDate}>
@@ -168,6 +246,24 @@ const PostCard = ({ post, onRefresh }) => {
                 <Bookmark size={15} />
                 {bookmarkCount}
               </button>
+              <div className={styles.shareWrap}>
+                <button
+                  className={styles.stat}
+                  onClick={handleShareClick}
+                  title="Chia sẻ"
+                >
+                  <Share2 size={15} />
+                  {post.shareCount > 0 ? post.shareCount : ''}
+                </button>
+                {shareOpen && (
+                  <div className={styles.shareMenu} onClick={(e) => e.stopPropagation()}>
+                    <button onClick={(e) => handleShare(e, 'copy')}><Copy size={13} /> Copy link</button>
+                    <button onClick={(e) => handleShare(e, 'facebook')}><Facebook size={13} /> Facebook</button>
+                    <button onClick={(e) => handleShare(e, 'twitter')}><Share2 size={13} /> Twitter</button>
+                    <button onClick={(e) => handleShare(e, 'telegram')}><Share2 size={13} /> Telegram</button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

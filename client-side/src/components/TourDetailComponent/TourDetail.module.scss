@@ -167,82 +167,130 @@
 
 // ── Compact price (chưa chọn ngày) ──────────────────────────────────────────
 .compactPrice {
-  padding: 4px 0 8px;
+  padding: 16px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
 
-  .label {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 6px;
-  }
+.compactMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.compactMetaIcon {
+  color: #64748b;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.compactMetaLabel {
+  color: #475569;
+  font-weight: 500;
+}
+
+.compactMetaValue {
+  margin-left: auto;
+  color: #0369a1;
+  font-weight: 700;
+}
+
+.compactPriceLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e7eb;
+  flex-wrap: nowrap;          /* không xuống dòng */
+}
+
+/* Cụm bên trái: nhãn + số tiền */
+.compactPriceLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;               /* cho phép co lại để 2 nút có chỗ */
+  flex: 0 1 auto;
+}
+
+.compactPriceLabel {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .compactPriceValue {
-  font-size: 28px;
+  font-size: 18px;            /* nhỏ lại để vừa 1 hàng */
   font-weight: 800;
-  color: #e31b23;
-  margin-bottom: 18px;
-  line-height: 1.1;
+  color: #0369a1;
+  line-height: 1;
+  white-space: nowrap;
 
   .currency {
-    font-size: 20px;
+    font-size: 13px;
     text-decoration: underline;
     margin-left: 1px;
-  }
-
-  .unit {
-    font-size: 14px;
-    color: #333;
-    font-weight: 500;
-    margin-left: 6px;
+    color: #0369a1;
   }
 }
 
+/* Cụm bên phải: nút phone + Chọn ngày, luôn dính phải */
 .compactActions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;          /* đẩy sát phải */
 }
 
 .compactCallBtn {
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(135deg, #0369a1, #0ea5e9);
   color: #ffffff;
-  font-size: 18px;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(3, 105, 161, 0.35);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(3, 105, 161, 0.3);
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 18px rgba(3, 105, 161, 0.45);
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 10px rgba(3, 105, 161, 0.4);
   }
 }
 
 .compactPickDateBtn {
-  flex: 1;
-  height: 44px;
+  height: 34px;
+  padding: 0 16px;
   border: none;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #e31b23, #c0151c);
+  border-radius: 999px;
+  background: #e31b23;
   color: #ffffff;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 14px rgba(227, 27, 35, 0.35);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(227, 27, 35, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(227, 27, 35, 0.45);
-    background: linear-gradient(135deg, #c0151c, #a01218);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(227, 27, 35, 0.4);
+    background: #c0151c;
   }
 }
 
