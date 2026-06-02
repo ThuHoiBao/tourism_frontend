@@ -143,14 +143,15 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
   position: relative;
+  justify-items: center;          // 3 cột tự căn giữa nội dung từng cột
 
-  // Đường nối ngang xám nhạt phía sau
+  // Đường nối ngang xám nhạt phía sau — kẻ từ icon đầu tới icon cuối
   &::before {
     content: '';
     position: absolute;
-    top: 16px;
-    left: 16%;
-    right: 16%;
+    top: 17px;
+    left: calc(100% / 6);         // 1/6 từ trái = giữa cột 1
+    right: calc(100% / 6);        // 1/6 từ phải = giữa cột 3
     height: 2px;
     background: #e0f2fe;
     border-radius: 2px;
@@ -162,11 +163,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   position: relative;
   z-index: 1;
+  width: 100%;                    // chiếm hết cột để align-items: center có hiệu lực
 
   .stepIcon {
+    padding: 0;
     width: 34px;
     height: 34px;
     border-radius: 50%;

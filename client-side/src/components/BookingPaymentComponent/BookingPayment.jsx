@@ -39,6 +39,7 @@ const BookingPayment = () => {
   const [error, setError] = useState(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('PAYOS');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -146,15 +147,15 @@ const BookingPayment = () => {
     return typeMap[type] || type;
   };
 
-  const handlePayment = async () => {
+  const handlePayment = () => {
     // Validate booking data
     if (!bookingData) {
-      alert('Không tìm thấy thông tin booking');
+      toast.error('Không tìm thấy thông tin booking');
       return;
     }
 
     if (bookingData.remainingAmount <= 0) {
-      alert('Booking đã được thanh toán đầy đủ');
+      toast.info('Booking đã được thanh toán đầy đủ');
       return;
     }
 
@@ -163,21 +164,17 @@ const BookingPayment = () => {
       const deadline = new Date(bookingData.paymentDeadline);
       const now = new Date();
       if (now >= deadline) {
-        alert('Thời hạn thanh toán đã hết. Booking của bạn có thể đã bị hủy.');
+        toast.error('Thời hạn thanh toán đã hết. Booking của bạn có thể đã bị hủy.');
         return;
       }
     }
 
-    // Confirm with user
-    const confirmPayment = window.confirm(
-      `Bạn có chắc muốn thanh toán ${formatCurrency(bookingData.remainingAmount)} cho booking ${bookingData.bookingCode}?`
-    );
-    
-    if (!confirmPayment) {
-      return;
-    }
+    // Mở modal xác nhận thay vì window.confirm
+    setShowConfirmModal(true);
+  };
 
-   try {
+  const proceedPayment = async () => {
+    try {
       setPaymentProcessing(true);
       let apiEndpoint = '';
       let paymentRequest = {};
@@ -687,6 +684,54 @@ const BookingPayment = () => {
           </div>
         </div>
       </main>
+
+      {showConfirmModal && bookingData && (
+        <div className={styles.confirmOverlay} onClick={() => setShowConfirmModal(false)}>
+          <div className={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.confirmHeader}>
+              <div className={styles.confirmIconBox}>
+                <FaCreditCard />
+              </div>
+              <div>
+                <h3>Xác nhận thanh toán</h3>
+                <p>Vui lòng kiểm tra thông tin trước khi thanh toán</p>
+              </div>
+            </div>
+
+            <div className={styles.confirmBody}>
+              <div className={styles.confirmRow}>
+                <span>Mã booking</span>
+                <strong className={styles.confirmCode}>{bookingData.bookingCode}</strong>
+              </div>
+              <div className={styles.confirmRow}>
+                <span>Phương thức</span>
+                <strong>{paymentMethod === 'PAYOS' ? 'PayOS (Quét mã VietQR)' : 'VNPAY / Ngân hàng'}</strong>
+              </div>
+              <div className={`${styles.confirmRow} ${styles.confirmAmount}`}>
+                <span>Số tiền thanh toán</span>
+                <strong>{formatCurrency(bookingData.remainingAmount)}</strong>
+              </div>
+            </div>
+
+            <div className={styles.confirmActions}>
+              <button
+                className={styles.confirmCancel}
+                onClick={() => setShowConfirmModal(false)}
+                disabled={paymentProcessing}
+              >
+                Hủy
+              </button>
+              <button
+                className={styles.confirmOk}
+                onClick={proceedPayment}
+                disabled={paymentProcessing}
+              >
+                {paymentProcessing ? <><FaSpinner className={styles.spin} /> Đang xử lý...</> : 'Xác nhận thanh toán'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
