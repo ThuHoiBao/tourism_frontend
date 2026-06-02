@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Landmark, WalletCards, ArrowRightLeft, ShieldCheck, RefreshCw, Clock3, CircleAlert, BadgeCheck, ChevronsUpDown, X } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Landmark, WalletCards, ArrowRightLeft, ShieldCheck, RefreshCw, Clock3, CircleAlert, BadgeCheck, ChevronsUpDown, X, List, Building2, User, CreditCard, Coins, ChevronRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import styles from './WithdrawCoins.module.scss';
 import {
@@ -7,6 +7,7 @@ import {
     getMyCoinWithdrawalsApi,
 } from '../../../services/coinWithdrawal/coinWithdrawal.ts';
 import { BANK_LIST } from '../TransactionList/TransactionListItem/RefundInfoModal/RefundInfoModal.jsx';
+import useWebSocket from '../../../hook/useWebSocket';
 
 const MIN_WITHDRAWAL = 5;
 const EXCHANGE_RATE = 1000;
@@ -16,7 +17,7 @@ const statusMeta = {
     PROCESSING: { label: 'Đang xử lý', className: styles.statusProcessing },
     COMPLETED: { label: 'Thành công', className: styles.statusCompleted },
     FAILED: { label: 'Thất bại', className: styles.statusFailed },
-    MANUAL: { label: 'Thủ công', className: styles.statusManual },
+    MANUAL: { label: 'Chờ hoàn tiền', className: styles.statusManual },
 };
 
 const initialForm = {
@@ -28,6 +29,18 @@ const initialForm = {
 
 const resolveBank = (code) => BANK_LIST.find((item) => item.code === code || item.shortName === code) || null;
 
+// Hien thi ghi chu than thien theo trang thai (khong hien loi he thong)
+const getFriendlyNote = (item) => {
+    if (item.status === 'COMPLETED') return null; // transferRef da duoc hien
+    if (item.status === 'MANUAL' || item.status === 'PENDING' || item.status === 'PROCESSING') {
+        return 'Yêu cầu đang được admin xử lý. Tiền sẽ được chuyển về tài khoản của bạn trong vòng 24 giờ.';
+    }
+    if (item.status === 'FAILED') {
+        return 'Giao dịch gặp sự cố. Vui lòng liên hệ admin để được hỗ trợ.';
+    }
+    return null;
+};
+
 const WithdrawCoins = ({ user }) => {
     const userData = user?.data || user || {};
     const userId = userData?.id || userData?.userId || userData?.userID;
@@ -38,12 +51,14 @@ const WithdrawCoins = ({ user }) => {
     const [submitting, setSubmitting] = useState(false);
     const [isBankPickerOpen, setIsBankPickerOpen] = useState(false);
     const [form, setForm] = useState(initialForm);
+    const historyRef = useRef(null);
+    const formRef = useRef(null);
 
     const numericCoinAmount = Number(form.coinAmount || 0);
     const moneyAmount = Number.isFinite(numericCoinAmount) ? numericCoinAmount * EXCHANGE_RATE : 0;
 
     const hasPendingWithdrawal = useMemo(
-        () => withdrawals.some((item) => ['PENDING', 'PROCESSING'].includes(item.status)),
+        () => withdrawals.some((item) => ['MANUAL', 'PENDING', 'PROCESSING'].includes(item.status)),
         [withdrawals],
     );
 
@@ -64,6 +79,13 @@ const WithdrawCoins = ({ user }) => {
     useEffect(() => {
         loadWithdrawals();
     }, [loadWithdrawals]);
+
+    // Auto-reload when server pushes a coin withdrawal update via WebSocket
+    useWebSocket({
+        topic: userId ? `/topic/user/${userId}/withdrawals` : null,
+        onMessage: useCallback(() => { loadWithdrawals(); }, [loadWithdrawals]),
+        enabled: !!userId,
+    });
 
     useEffect(() => {
         if (!hasPendingWithdrawal) return undefined;
@@ -100,6 +122,7 @@ const WithdrawCoins = ({ user }) => {
     };
 
     const handleSubmit = async () => {
+        if (submitting) return;
         if (!validate()) return;
 
         setSubmitting(true);
@@ -111,7 +134,7 @@ const WithdrawCoins = ({ user }) => {
                 accountNumber: form.accountNumber.trim(),
                 accountName: form.accountName.trim(),
             });
-            toast.success('Đã tạo yêu cầu rút điểm. Hệ thống đang xử lý tự động.');
+            toast.success('Yêu cầu rút điểm đã được ghi nhận. Tiền sẽ được chuyển về tài khoản ngân hàng của bạn trong vòng 24 giờ.');
             resetForm();
             setLoading(true);
             await loadWithdrawals();
@@ -128,14 +151,30 @@ const WithdrawCoins = ({ user }) => {
                 <div className={styles.headerIntro}>
                     <div className={styles.headerIcon}><Landmark size={22} strokeWidth={2.2} /></div>
                     <div>
-                        <p className={styles.eyebrow}>Rút điểm tự động</p>
+                        <p className={styles.eyebrow}>Quản lý điểm thưởng</p>
                         <h2>Rút điểm về tài khoản ngân hàng</h2>
-                        <p>Hệ thống tự động tạo lệnh chuyển khoản, không cần chờ admin duyệt từng yêu cầu.</p>
+                        <p>Gửi yêu cầu rút điểm, admin sẽ chuyển khoản và hoàn tiền về tài khoản của bạn trong vòng 24 giờ.</p>
                     </div>
                 </div>
-                <button className={styles.refreshBtn} type="button" onClick={() => { setLoading(true); loadWithdrawals(true); }}>
-                    <RefreshCw size={16} /> Làm mới
-                </button>
+                <div className={styles.headerActions}>
+                    <button
+                        type="button"
+                        className={styles.navBtn}
+                        onClick={() => historyRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                        <List size={15} /> Lịch sử giao dịch
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.navBtnActive}
+                        onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                        <Building2 size={15} /> Rút tiền về ngân hàng
+                    </button>
+                    <button className={styles.refreshBtn} type="button" onClick={() => { setLoading(true); loadWithdrawals(true); }}>
+                        <RefreshCw size={16} /> Làm mới
+                    </button>
+                </div>
             </header>
 
             <div className={styles.overviewGrid}>
@@ -162,14 +201,17 @@ const WithdrawCoins = ({ user }) => {
                 </div>
             </div>
 
-            <section className={styles.actionPanel}>
-                <div>
-                    <h3>Bắt đầu rút điểm</h3>
-                    <p>Nhập số điểm muốn đổi và thông tin tài khoản nhận tiền. Lệnh sẽ được xử lý ngay sau khi tạo.</p>
+            <section className={styles.actionPanel} ref={formRef}>
+                <div className={styles.formPanelHeader}>
+                    <div className={styles.formHeaderIcon}><Coins size={20} /></div>
+                    <div>
+                        <h3>Bắt đầu rút điểm</h3>
+                        <p>Nhập thông tin tài khoản nhận tiền và số điểm muốn đổi.</p>
+                    </div>
                 </div>
                 <div className={styles.formGrid}>
                     <label className={styles.fieldGroup}>
-                        <span>Tên chủ tài khoản *</span>
+                        <span><User size={13} /> Tên chủ tài khoản *</span>
                         <input
                             type="text"
                             value={form.accountName}
@@ -178,7 +220,7 @@ const WithdrawCoins = ({ user }) => {
                         />
                     </label>
                     <label className={styles.fieldGroup}>
-                        <span>Số tài khoản *</span>
+                        <span><CreditCard size={13} /> Số tài khoản *</span>
                         <input
                             type="text"
                             value={form.accountNumber}
@@ -187,7 +229,7 @@ const WithdrawCoins = ({ user }) => {
                         />
                     </label>
                     <div className={styles.fieldGroup}>
-                        <span>Ngân hàng hưởng thụ *</span>
+                        <span><Building2 size={13} /> Ngân hàng hưởng thụ *</span>
                         <button
                             type="button"
                             className={styles.bankPickerBtn}
@@ -211,7 +253,7 @@ const WithdrawCoins = ({ user }) => {
                         </button>
                     </div>
                     <label className={styles.fieldGroup}>
-                        <span>Số điểm muốn rút *</span>
+                        <span><Coins size={13} /> Số điểm muốn rút *</span>
                         <input
                             type="number"
                             min={MIN_WITHDRAWAL}
@@ -224,21 +266,22 @@ const WithdrawCoins = ({ user }) => {
                 </div>
 
                 <div className={styles.previewBox}>
-                    <div>
+                    <div className={styles.previewItem}>
                         <span>Số dư hiện có</span>
                         <strong>{balance.toLocaleString('vi-VN')} điểm</strong>
                     </div>
-                    <div>
+                    <div className={styles.previewDivider} />
+                    <div className={styles.previewItem}>
                         <span>Số tiền quy đổi</span>
-                        <strong>{moneyAmount.toLocaleString('vi-VN')} VND</strong>
+                        <strong className={styles.previewAmount}>{moneyAmount.toLocaleString('vi-VN')} VND</strong>
                     </div>
                     <button className={styles.primaryBtn} type="button" onClick={handleSubmit} disabled={submitting}>
-                        <Landmark size={16} /> {submitting ? 'Đang gửi...' : 'Tạo yêu cầu rút điểm'}
+                        <Landmark size={16} /> {submitting ? 'Đang gử i...' : 'Tạo yêu cầu rút điểm'} <ChevronRight size={15} />
                     </button>
                 </div>
             </section>
 
-            <section className={styles.historySection}>
+            <section className={styles.historySection} ref={historyRef}>
                 <div className={styles.sectionHeader}>
                     <div>
                         <p className={styles.eyebrow}>Lịch sử</p>
@@ -257,27 +300,51 @@ const WithdrawCoins = ({ user }) => {
                     <div className={styles.historyList}>
                         {withdrawals.map((item) => {
                             const meta = statusMeta[item.status] || statusMeta.PENDING;
+                            const bank = resolveBank(item.bank);
                             return (
-                                <article key={item.id} className={styles.historyCard}>
-                                    <div className={styles.historyTop}>
-                                        <div>
-                                            <strong>{item.referenceCode}</strong>
-                                            <p>{new Date(item.createdAt).toLocaleString('vi-VN')}</p>
+                                <article key={item.id} className={`${styles.historyCard} ${styles[`historyCard_${item.status}`] || ''}`}>
+                                    <div className={styles.cardAccent} />
+                                    <div className={styles.cardBody}>
+                                        <div className={styles.cardTopRow}>
+                                            <div className={styles.cardRef}>
+                                                <span>{item.referenceCode}</span>
+                                                <small>{new Date(item.createdAt).toLocaleString('vi-VN')}</small>
+                                            </div>
+                                            <span className={`${styles.statusBadge} ${meta.className}`}>{meta.label}</span>
                                         </div>
-                                        <span className={`${styles.statusBadge} ${meta.className}`}>{meta.label}</span>
-                                    </div>
-                                    <div className={styles.historyGrid}>
-                                        <div><span>Điểm</span><strong>{Number(item.coinAmount).toLocaleString('vi-VN')}</strong></div>
-                                        <div><span>Số tiền</span><strong>{Number(item.moneyAmount).toLocaleString('vi-VN')} VND</strong></div>
-                                        <div><span>Ngân hàng</span><strong>{item.bank}</strong></div>
-                                        <div><span>Tài khoản</span><strong>{item.accountNumberMasked}</strong></div>
-                                    </div>
-                                    {(item.note || item.transferRef) && (
-                                        <div className={styles.noteRow}>
-                                            {item.transferRef && <p><BadgeCheck size={14} /> Mã đối soát: {item.transferRef}</p>}
-                                            {item.note && <p><CircleAlert size={14} /> {item.note}</p>}
+                                        <div className={styles.cardAmountRow}>
+                                            <span className={styles.coinAmount}>{Number(item.coinAmount).toLocaleString('vi-VN')} điểm</span>
+                                            <ArrowRightLeft size={14} className={styles.arrowIcon} />
+                                            <span className={styles.moneyAmount}>{Number(item.moneyAmount).toLocaleString('vi-VN')} VND</span>
                                         </div>
-                                    )}
+                                        <div className={styles.cardInfoRow}>
+                                            <div className={styles.infoChip}>
+                                                {bank ? <img src={bank.logo} alt={bank.shortName} className={styles.bankLogoSmall} onError={(e) => { e.currentTarget.style.display='none'; }} /> : null}
+                                                <span>{bank ? bank.shortName : item.bank}</span>
+                                            </div>
+                                            <div className={styles.infoChip}>
+                                                <WalletCards size={13} />
+                                                <span>{item.accountNumberMasked} &bull; {item.accountName}</span>
+                                            </div>
+                                        </div>
+                                        {(() => {
+                                            const friendlyNote = getFriendlyNote(item);
+                                            return (
+                                                <div className={styles.cardFooter}>
+                                                    {item.transferRef && (
+                                                        <p className={styles.footerRef}>
+                                                            <BadgeCheck size={13} /> Mã đối soát: <code>{item.transferRef}</code>
+                                                        </p>
+                                                    )}
+                                                    {friendlyNote && (
+                                                        <p className={`${styles.footerNote} ${item.status === 'COMPLETED' || item.status === 'FAILED' ? styles.footerNoteAlt : ''}`}>
+                                                            <CircleAlert size={13} /> {friendlyNote}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
                                 </article>
                             );
                         })}

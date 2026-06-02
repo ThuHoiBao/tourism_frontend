@@ -76,3 +76,14 @@ export const confirmManualPayoutApi = async (id: number, payload?: ConfirmManual
     const response = await api.post(`/coin-withdrawals/admin/${id}/confirm-manual`, payload ?? {});
     return response.data;
 };
+
+export interface SepayCheckResult {
+    verified: boolean;
+    transactionReference?: string | null;
+    message: string;
+}
+
+export const checkSepayTransactionApi = async (id: number): Promise<SepayCheckResult> => {
+    const response = await api.get(`/coin-withdrawals/admin/${id}/check-sepay`);
+    return response.data;
+};

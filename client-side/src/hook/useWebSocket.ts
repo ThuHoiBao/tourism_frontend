@@ -1,9 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import { resolveWebSocketUrl } from '../utils/websocketUrl';
 
 interface UseWebSocketProps {
-    topic: string | string[]; 
+    topic: string | string[] | null | undefined;
     onMessage: (message: any) => void;
     enabled?: boolean;
 }
@@ -19,8 +20,12 @@ const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) =
 
     const connect = useCallback(() => {
         if (!enabled) return;
+        const topics = (Array.isArray(topic) ? topic : [topic])
+            .filter((value): value is string => Boolean(value));
+        if (topics.length === 0) return;
 
-        const socket = new SockJS('http://localhost:8080/ws');
+        const wsUrl = resolveWebSocketUrl();
+        const socket = new SockJS(wsUrl);
         const client = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000,
@@ -28,9 +33,7 @@ const useWebSocket = ({ topic, onMessage, enabled = true }: UseWebSocketProps) =
             heartbeatOutgoing: 4000,
             
             onConnect: () => {
-                console.log('[WS] Connected');
-                
-                const topics = Array.isArray(topic) ? topic : [topic];
+                console.log('[WS] Connected:', wsUrl, topics);
                 
                 topics.forEach(t => {
                     client.subscribe(t, (message) => {

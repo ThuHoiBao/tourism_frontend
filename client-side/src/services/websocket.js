@@ -1,5 +1,6 @@
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
+import { resolveWebSocketUrl } from '../utils/websocketUrl';
 
 class WebSocketService {
     constructor() {
@@ -16,7 +17,7 @@ class WebSocketService {
             return;
         }
 
-        const socket = new SockJS(`${process.env.REACT_APP_API_URL}/ws`);
+        const socket = new SockJS(resolveWebSocketUrl());
         this.stompClient = Stomp.over(socket);
 
         if (process.env.NODE_ENV === 'production') {

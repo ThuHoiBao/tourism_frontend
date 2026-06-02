@@ -36,6 +36,57 @@
     align-items: flex-start;
 }
 
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.navBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    min-height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--primary-dark);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+        background: var(--surface);
+        border-color: var(--primary);
+    }
+}
+
+.navBtnActive {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    min-height: 38px;
+    border-radius: 8px;
+    border: 1.5px solid var(--primary);
+    background: linear-gradient(135deg, #e0f2fe, #eff6ff);
+    color: var(--primary);
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: box-shadow 0.18s;
+
+    &:hover {
+        box-shadow: 0 2px 8px rgba(34,116,184,0.18);
+    }
+}
+
 .headerIntro {
     display: flex;
     gap: 14px;
@@ -144,52 +195,100 @@
 
 .actionPanel {
     display: grid;
-    gap: 16px;
+    gap: 0;
+    overflow: hidden;
 
     h3 {
-        margin: 0 0 6px;
+        margin: 0 0 4px;
         color: var(--primary-dark);
+        font-size: 1.05rem;
     }
 
     p {
         margin: 0;
         color: var(--muted);
+        font-size: 0.85rem;
     }
+}
+
+.formPanelHeader {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px 14px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 60%, #ffffff 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.formHeaderIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(34,116,184,0.28);
 }
 
 .formGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
+    padding: 20px 22px 4px;
 }
 
 .fieldGroup {
     display: grid;
-    gap: 8px;
+    gap: 7px;
 
     span {
         color: var(--primary-dark);
-        font-size: 0.84rem;
+        font-size: 0.82rem;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        svg {
+            color: var(--primary);
+            opacity: 0.75;
+        }
     }
 
     input {
         height: 46px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
         padding: 0 14px;
         font-size: 0.95rem;
         color: var(--primary-dark);
-        background: #ffffff;
+        background: #fafcff;
+        transition: border-color 0.18s, box-shadow 0.18s;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34,116,184,0.1);
+            background: #ffffff;
+        }
+
+        &::placeholder {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
     }
 }
 
 .bankPickerBtn {
     width: 100%;
-    min-height: 62px;
-    border: 1px solid var(--border);
+    min-height: 64px;
+    border: 1.5px solid var(--border);
     border-radius: 10px;
-    background: #f8fbff;
+    background: #fafcff;
     color: var(--primary-dark);
     display: flex;
     align-items: center;
@@ -197,15 +296,22 @@
     gap: 10px;
     padding: 10px 14px;
     cursor: pointer;
+    transition: border-color 0.18s, box-shadow 0.18s;
+
+    &:hover {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(34,116,184,0.08);
+    }
 
     img {
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         object-fit: contain;
-        border-radius: 8px;
+        border-radius: 10px;
         background: #fff;
         border: 1px solid #e2e8f0;
         flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
 
     div {
@@ -229,30 +335,53 @@
 }
 
 .previewBox {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    align-items: center;
     gap: 12px;
-    padding: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.previewItem {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 120px;
 
     span {
         display: block;
         color: var(--muted);
-        font-size: 0.78rem;
-        margin-bottom: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
     strong {
         color: var(--primary-dark);
-        font-size: 0.98rem;
+        font-size: 1rem;
+        font-weight: 700;
     }
 }
 
+.previewAmount {
+    color: #059669 !important;
+    font-size: 1.1rem !important;
+}
+
+.previewDivider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
 .previewBox .primaryBtn {
-    justify-self: end;
-    align-self: end;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 .sectionHeader {
@@ -282,31 +411,147 @@
 
 .historyList {
     display: grid;
-    gap: 14px;
+    gap: 12px;
 }
 
+/* Redesigned history card */
 .historyCard {
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 16px;
-    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    background: #fff;
+    display: flex;
+    overflow: hidden;
+    transition: box-shadow 0.18s ease;
+
+    &:hover {
+        box-shadow: 0 4px 16px rgba(34, 116, 184, 0.09);
+    }
 }
 
-.historyTop {
+.cardAccent {
+    width: 4px;
+    flex-shrink: 0;
+    background: var(--border);
+    border-radius: 0;
+}
+
+.historyCard_PENDING .cardAccent  { background: #3b82f6; }
+.historyCard_PROCESSING .cardAccent { background: #6366f1; }
+.historyCard_COMPLETED .cardAccent { background: #059669; }
+.historyCard_FAILED .cardAccent   { background: #ef4444; }
+.historyCard_MANUAL .cardAccent   { background: #d97706; }
+
+.cardBody {
+    flex: 1;
+    padding: 14px 16px;
+    min-width: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.cardTopRow {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
+    align-items: flex-start;
+    gap: 8px;
+}
 
-    strong {
+.cardRef {
+    span {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
         color: var(--primary-dark);
+        font-family: monospace;
     }
-
-    p {
-        margin: 5px 0 0;
+    small {
+        display: block;
         color: var(--muted);
-        font-size: 0.84rem;
+        font-size: 0.78rem;
+        margin-top: 2px;
     }
+}
+
+.cardAmountRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.coinAmount {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--primary-dark);
+}
+
+.arrowIcon {
+    color: var(--muted);
+    flex-shrink: 0;
+}
+
+.moneyAmount {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--primary);
+}
+
+.cardInfoRow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.infoChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--primary-dark);
+
+    svg { color: var(--muted); flex-shrink: 0; }
+}
+
+.bankLogoSmall {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 3px;
+}
+
+.cardFooter {
+    display: grid;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.footerRef {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--success);
+
+    code {
+        font-size: 0.78rem;
+        background: #ecfdf5;
+        padding: 1px 6px;
+        border-radius: 4px;
+    }
+}
+
+.footerNote {
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--muted);
 }
 
 .statusBadge {
@@ -322,39 +567,6 @@
 .statusCompleted { background: #ecfdf5; color: var(--success); }
 .statusFailed { background: #fef2f2; color: var(--danger); }
 .statusManual { background: #fff7ed; color: var(--warning); }
-
-.historyGrid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-
-    span {
-        display: block;
-        margin-bottom: 4px;
-        color: var(--muted);
-        font-size: 0.78rem;
-    }
-
-    strong {
-        color: var(--primary-dark);
-        font-size: 0.92rem;
-    }
-}
-
-.noteRow {
-    margin-top: 14px;
-    display: grid;
-    gap: 8px;
-
-    p {
-        margin: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--muted);
-        font-size: 0.84rem;
-    }
-}
 
 .emptyState {
     min-height: 120px;

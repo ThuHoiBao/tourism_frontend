@@ -1,0 +1,36 @@
+{
+  "files": {
+    "main.css": "/static/css/main.48d18f33.css",
+    "main.js": "/static/js/main.7cf3046f.js",
+    "static/media/ryan-le-8-hEg1OuFn8-unsplash.jpg": "/static/media/ryan-le-8-hEg1OuFn8-unsplash.0f662b7b8c40fb16ab42.jpg",
+    "static/media/PixVerse_V6_Image_Text_540P_Static_camera_lock (2).mp4": "/static/media/PixVerse_V6_Image_Text_540P_Static_camera_lock (2).4b3d125d34c909768c67.mp4",
+    "static/media/digitalarbyter-maJ7hJBE654-unsplash.jpg": "/static/media/digitalarbyter-maJ7hJBE654-unsplash.2378b0d50c4781791e11.jpg",
+    "static/media/photo-1675111066042-9baa4c343157.avif": "/static/media/photo-1675111066042-9baa4c343157.a0abf0c7ab77ebd24241.avif",
+    "static/media/travel.png": "/static/media/travel.3281d12fdec3f1ff2dab.png",
+    "static/media/globe.png": "/static/media/globe.cb12cdb593dee097e729.png",
+    "static/media/VietcomBank.png": "/static/media/VietcomBank.55a57f1efb011b644d30.png",
+    "static/media/compass.png": "/static/media/compass.ae248479db09c997afe3.png",
+    "static/media/camera.png": "/static/media/camera.f2f10cd1c74039376a9d.png",
+    "static/media/cancel.png": "/static/media/cancel.839388847e79241bfab7.png",
+    "static/media/premium_photo.avif": "/static/media/premium_photo.5f7f467b5b27592cabed.avif",
+    "static/media/JCB.png": "/static/media/JCB.bd2b50d728a7b5a8196d.png",
+    "static/media/ticket.png": "/static/media/ticket.f58198e13823fdc836e3.png",
+    "static/media/VNPAY.png": "/static/media/VNPAY.ae34ddce013b9d11e2dd.png",
+    "static/media/VISA.png": "/static/media/VISA.0a637fa3470b3baba26d.png",
+    "static/media/TechcomBank.png": "/static/media/TechcomBank.f6a9f51c3babef7c9053.png",
+    "static/media/MBBank.png": "/static/media/MBBank.d6933d311560841a5925.png",
+    "static/media/MoMo.png": "/static/media/MoMo.e98e93329fcbc2dcf3e1.png",
+    "static/media/mastercard.png": "/static/media/mastercard.633c66aa820a20a5f4b1.png",
+    "static/media/ZaLoPay.png": "/static/media/ZaLoPay.77ae249f18f7b7f09b14.png",
+    "static/media/future-logo-dark.svg": "/static/media/future-logo-dark.58d5dbe4187451a0f6ec23b7a390a497.svg",
+    "static/media/future-logo-light.svg": "/static/media/future-logo-light.7b16018a7817a619ae5e0e1163992e0f.svg",
+    "static/media/future-mark.svg": "/static/media/future-mark.9ba126fb18fc9336e6c928488e6f73c3.svg",
+    "index.html": "/index.html",
+    "main.48d18f33.css.map": "/static/css/main.48d18f33.css.map",
+    "main.7cf3046f.js.map": "/static/js/main.7cf3046f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.48d18f33.css",
+    "static/js/main.7cf3046f.js"
+  ]
+}

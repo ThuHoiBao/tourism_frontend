@@ -134,35 +134,36 @@ const BookingsPage = () => {
     const { bookings, loading, error, totalPages, totalElements, refetch, silentRefetch, updateBookingInList } = useAdminBookings(searchDTO, pageable);
 
     const [bookingStats, setBookingStats] = useState(null);
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const [total, paid, cancelled, pendingRefund, reviewed, pendingPayment, pendingConfirmation, overduePayment] = await Promise.all([
-                    searchBookingsForAdminApi({}, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'PAID' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'CANCELLED' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_REFUND' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'REVIEWED' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_PAYMENT' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'PENDING_CONFIRMATION' }, { page: 0, size: 1 }),
-                    searchBookingsForAdminApi({ bookingStatus: 'OVERDUE_PAYMENT' }, { page: 0, size: 1 }),
-                ]);
-                setBookingStats({
-                    total: total.totalElements,
-                    paid: paid.totalElements,
-                    cancelled: cancelled.totalElements,
-                    pendingRefund: pendingRefund.totalElements,
-                    reviewed: reviewed.totalElements,
-                    pendingPayment: pendingPayment.totalElements,
-                    pendingConfirmation: pendingConfirmation.totalElements,
-                    overduePayment: overduePayment.totalElements,
-                });
-            } catch (e) {
-                console.error('Failed to fetch booking stats', e);
-            }
-        };
-        fetchStats();
+    const fetchStats = useCallback(async () => {
+        try {
+            const [total, paid, cancelled, pendingRefund, reviewed, pendingPayment, pendingConfirmation, overduePayment] = await Promise.all([
+                searchBookingsForAdminApi({}, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'PAID' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'CANCELLED' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'PENDING_REFUND' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'REVIEWED' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'PENDING_PAYMENT' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'PENDING_CONFIRMATION' }, { page: 0, size: 1 }),
+                searchBookingsForAdminApi({ bookingStatus: 'OVERDUE_PAYMENT' }, { page: 0, size: 1 }),
+            ]);
+            setBookingStats({
+                total: total.totalElements,
+                paid: paid.totalElements,
+                cancelled: cancelled.totalElements,
+                pendingRefund: pendingRefund.totalElements,
+                reviewed: reviewed.totalElements,
+                pendingPayment: pendingPayment.totalElements,
+                pendingConfirmation: pendingConfirmation.totalElements,
+                overduePayment: overduePayment.totalElements,
+            });
+        } catch (e) {
+            console.error('Failed to fetch booking stats', e);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchStats();
+    }, [fetchStats]);
 
     // ✨ WEBSOCKET: Lắng nghe cập nhật từ backend
     // 1. Patch ngay booking đó trong list (không loading flash)
@@ -179,7 +180,8 @@ const BookingsPage = () => {
             if (Object.keys(patch).length > 0) updateBookingInList(event.bookingID, patch);
         }
         silentRefetch();
-    }, [updateBookingInList, silentRefetch]);
+        fetchStats();
+    }, [updateBookingInList, silentRefetch, fetchStats]);
 
     useWebSocket({
         topic: '/topic/admin/bookings',
