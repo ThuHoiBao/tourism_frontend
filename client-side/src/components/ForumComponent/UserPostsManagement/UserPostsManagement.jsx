@@ -13,6 +13,7 @@ import styles from './UserPostsManagement.module.scss';
 
 const UserPostsManagement = () => {
   const { user } = useAuth();
+  const userId = user?.userId || user?.userID;
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -43,7 +44,6 @@ const UserPostsManagement = () => {
   const fetchUserPosts = async () => {
     setLoading(true);
     try {
-      const userId = user?.userId || user?.userID;
       if (!userId) return;
       const res = await axios.get(`/forum/posts/user/${userId}/manage`, { params: { page: 0, size: 100 } });
       const postsData = res.data?.data?.content || res.data?.content || [];
@@ -67,7 +67,7 @@ const UserPostsManagement = () => {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`/forum/posts/${postId}`);
+      await axios.delete(`/forum/posts/${postId}`, { params: { userId } });
       setShowDeleteModal(false);
       fetchUserPosts();
     } catch {
@@ -78,7 +78,7 @@ const UserPostsManagement = () => {
   const handleToggleStatus = async (postId, currentStatus) => {
     try {
       const newStatus = currentStatus === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
-      await axios.patch(`/forum/posts/${postId}/status`, { status: newStatus });
+      await axios.patch(`/forum/posts/${postId}/status`, { status: newStatus }, { params: { userId } });
       setPosts(posts.map(p => p.postID === postId ? { ...p, status: newStatus } : p));
     } catch {
       alert('Không thể thay đổi trạng thái.');
