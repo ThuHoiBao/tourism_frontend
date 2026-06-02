@@ -18,9 +18,9 @@ const UserStats = () => {
       .then(res => {
         const d = res.data?.data || {};
         setStats({
-          totalPosts: d.totalPosts || 0,
-          totalFollowers: d.followers || 0,
-          totalLikesReceived: d.totalLikes || 0,
+          totalPosts: d.postCount || 0,
+          totalFollowers: d.followerCount || 0,
+          totalLikesReceived: d.likeCount || 0,
           reputationPoints: d.reputation || 0,
         });
       })

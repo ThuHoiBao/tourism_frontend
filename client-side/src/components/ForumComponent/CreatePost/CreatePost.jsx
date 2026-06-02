@@ -101,7 +101,9 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
     setLoading(true);
     try {
       const res = isEditing && initialPost
-        ? await axios.put(`/forum/posts/${initialPost.postID}`, payload)
+        ? await axios.put(`/forum/posts/${initialPost.postID}`, payload, {
+            params: { userId: user?.userId || user?.userID || user?.id }
+          })
         : await axios.post('/forum/posts', payload);
 
       const created = res.data?.data || res.data;
