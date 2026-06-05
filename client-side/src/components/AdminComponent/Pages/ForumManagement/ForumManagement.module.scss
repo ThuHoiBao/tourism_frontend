@@ -727,3 +727,259 @@
 @media (max-width: 600px) {
     .aiAccuracy { grid-template-columns: 1fr; }
 }
+
+/* ── Coin diễn đàn ──────────────────────────────────────────────────────────── */
+.tabBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.coinAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f1f5f9;
+    border: 1px solid #eef2f7;
+    flex-shrink: 0;
+}
+
+.userCell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.coinBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.coinAmount {
+    font-weight: 700;
+    color: #059669;
+    white-space: nowrap;
+}
+
+.reasonCell {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #475569;
+}
+
+.reconcileGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.reconcileItem {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    .reconcileLabel { font-size: 12px; color: #64748b; font-weight: 500; margin-bottom: 6px; }
+    .reconcileValue { font-size: 22px; font-weight: 800; color: #0f172a; }
+}
+
+.balancedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 700;
+}
+.balancedOk { background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; }
+.balancedBad { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+
+.fieldLabel {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    margin: 12px 0 5px;
+    &:first-child { margin-top: 0; }
+}
+
+.fieldInput,
+.fieldSelect,
+.fieldTextarea {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 9px 12px;
+    font-size: 13px;
+    background: #f8fafc;
+    color: #0f172a;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.18s;
+
+    &:focus {
+        border-color: #1a73e8;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+}
+.fieldTextarea { resize: vertical; min-height: 70px; font-family: inherit; }
+
+/* ── Coin: nghi vấn + cấu hình ──────────────────────────────────────────────── */
+.tabDot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 7px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 800;
+    vertical-align: 1px;
+}
+
+.alertNewBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.alertMessage {
+    max-width: 320px;
+    white-space: normal;
+    word-break: break-word;
+    color: #475569;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.killSwitchPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    border: 1.5px solid;
+}
+.killSwitchOn { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+.killSwitchOff { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+.killSwitchInfo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.killSwitchTitle { font-size: 15px; font-weight: 800; }
+.killSwitchDesc { font-size: 12.5px; opacity: 0.85; margin-top: 3px; }
+
+.killSwitchBtnOff,
+.killSwitchBtnOn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) { transform: translateY(-1px); }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+.killSwitchBtnOff {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+.killSwitchBtnOn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+}
+
+.configRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-of-type { border-bottom: none; }
+}
+
+.configLabel {
+    flex: 1;
+    min-width: 220px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.configInput {
+    width: 130px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #f8fafc;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.18s;
+
+    &:focus {
+        border-color: #1a73e8;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+    &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+.overriddenBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 12px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.configNote {
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: #94a3b8;
+}

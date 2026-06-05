@@ -5,6 +5,8 @@ import {
     CheckCircle2, XCircle, RotateCcw, Eye, DollarSign, Loader2, ShieldCheck
 } from 'lucide-react';
 import { FaSearch, FaRedoAlt, FaQrcode } from 'react-icons/fa';
+import { QRCodeCanvas } from 'qrcode.react';
+import { buildVietQRPayload } from '../../../../utils/vietqr';
 import styles from './CoinWithdrawalsPage.module.scss';
 import {
     getCoinWithdrawalDetailApi,
@@ -28,11 +30,26 @@ const resolveBank = (code) => BANK_LIST.find((b) => b.code === code || b.shortNa
 
 const VietQRCode = ({ bank, accountNumber, accountName, amount, referenceCode }) => {
     const addInfo = `RUTDIEM ${referenceCode}`;
-    const url = `https://img.vietqr.io/image/${bank}-${accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(addInfo)}&accountName=${encodeURIComponent(accountName)}`;
+    const bankInfo = resolveBank(bank);
+    const cleanAccount = String(accountNumber || '').replace(/\D/g, ''); // bỏ ký tự che (*) / khoảng trắng
+    // Sinh QR ngay trên client (không gọi img.vietqr.io) — cần BIN ngân hàng.
+    const bin = bankInfo?.bin;
+    const payload = bin && cleanAccount
+        ? buildVietQRPayload(bin, cleanAccount, amount, addInfo)
+        : null;
     return (
         <div className={styles.qrSection}>
             <div className={styles.qrHeader}><FaQrcode className={styles.qrIcon} /><span>Quét để chuyển khoản</span></div>
-            <img src={url} alt="VietQR" className={styles.qrImage} onError={(e) => { e.target.style.display='none'; }} />
+            {payload ? (
+                <div className={styles.qrCanvasWrap}>
+                    <QRCodeCanvas value={payload} size={220} level="M" includeMargin marginSize={2} />
+                </div>
+            ) : (
+                <div className={styles.qrFallback}>
+                    <FaQrcode className={styles.qrFallbackIcon} />
+                    <p>Không sinh được QR cho ngân hàng này. Vui lòng chuyển khoản thủ công theo thông tin bên dưới.</p>
+                </div>
+            )}
             <div className={styles.qrDetails}>
                 <div><span>Ngân hàng</span><strong>{bank}</strong></div>
                 <div><span>Số tài khoản</span><strong>{accountNumber}</strong></div>

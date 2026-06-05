@@ -26,6 +26,7 @@ import AdminTrash from './Pages/ForumManagement/AdminTrash';
 import AdminAuditLog from './Pages/ForumManagement/AdminAuditLog';
 import AdminBannedUsers from './Pages/ForumManagement/AdminBannedUsers';
 import AdminReports from './Pages/ForumManagement/AdminReports';
+import AdminCoinManagement from './Pages/ForumManagement/AdminCoinManagement';
 
 const AdminComponent = () => {
     return (
@@ -59,6 +60,7 @@ const AdminComponent = () => {
                     <Route path="forum/audit-log" element={<AdminAuditLog />} />
                     <Route path="forum/banned-users" element={<AdminBannedUsers />} />
                     <Route path="forum/reports" element={<AdminReports />} />
+                    <Route path="forum/coins" element={<AdminCoinManagement />} />
                     <Route path="consultations" element={<ConsultationsPage />} />
                 </Route>
             </Route>

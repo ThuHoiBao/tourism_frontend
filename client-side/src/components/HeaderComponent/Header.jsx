@@ -4,6 +4,7 @@ import styles from './Header.module.scss';
 import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo, FaWallet } from 'react-icons/fa';
 import { IoIosAirplane } from "react-icons/io";
 import { GiShipBow } from "react-icons/gi";
+import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import axios from '../../utils/axiosCustomize';
 import websocketService from '../../services/websocket';
@@ -69,6 +70,8 @@ const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, on
                 return { icon: <FaTimesCircle />, color: '#ef4444', bg: '#fef2f2' };
             case 'PAYMENT_SUCCESS':
                 return { icon: <FaCreditCard />, color: '#3b82f6', bg: '#eff6ff' };
+            case 'COIN_REWARD':
+                return { icon: <FaCoins />, color: '#d97706', bg: '#fffbeb' };
             case 'COIN_WITHDRAWAL':
                 return { icon: <FaWallet />, color: '#059669', bg: '#ecfdf5' };
             case 'COIN_WITHDRAWAL_FAILED':
@@ -380,8 +383,14 @@ const Header = () => {
                 
                 setNotifications(prev => [notification, ...prev]);
                 setUnreadCount(prev => prev + 1);
-                
+
                 fetchUnreadCount();
+
+                // Coin thưởng từ diễn đàn: hiện toast + báo widget coin refresh dữ liệu
+                if (notification.type === 'COIN_REWARD') {
+                    toast.success(`🎉 ${notification.message}`, { autoClose: 5000 });
+                    window.dispatchEvent(new CustomEvent('forum-coin-reward', { detail: notification }));
+                }
 
                 if ('Notification' in window && Notification.permission === 'granted') {
                     new Notification(notification.title, {
