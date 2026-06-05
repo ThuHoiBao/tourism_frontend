@@ -199,13 +199,18 @@ const PostDetailModal = ({ postId, onClose, onChanged }) => {
                                 <div className={styles.rejectForm}>
                                     <div className={styles.rejectTemplates}>
                                         {['1','7','30','0'].map(d => (
-                                            <button key={d}
-                                                    className={`${styles.rejectTpl} ${banDays === d ? styles.btnDanger : ''}`}
+                                            <button key={d} type="button"
+                                                    className={`${styles.rejectTpl} ${banDays === d ? styles.rejectTplActive : ''}`}
                                                     onClick={() => setBanDays(d)}>
+                                                {banDays === d && <Check size={12} />}
                                                 {d === '0' ? 'Vĩnh viễn' : `${d} ngày`}
                                             </button>
                                         ))}
                                     </div>
+                                    <p className={styles.banHint}>
+                                        Sẽ hạn chế <strong>{banDays === '0' ? 'vĩnh viễn' : `${banDays} ngày`}</strong>:
+                                        tác giả không thể đăng bài, bình luận hay tương tác trong diễn đàn.
+                                    </p>
                                     <input className={styles.editInput} placeholder="Lý do hạn chế (tùy chọn)…"
                                            value={banReason} onChange={(e) => setBanReason(e.target.value)} />
                                     <div className={styles.footerBtns}>

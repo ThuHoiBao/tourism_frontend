@@ -26,6 +26,11 @@ const tourRouteApi = {
     deleteStop: (stopId) =>
         axios.delete(`/admin/tours/stops/${stopId}`)
             .then((r) => r.data),
+
+    /** Reverse geocoding qua backend (Docker có DNS ổn định) → tên địa điểm gợi ý. */
+    reverseGeocode: (lat, lng) =>
+        axios.get(`/admin/tours/geocode/reverse`, { params: { lat, lng } })
+            .then((r) => r.data?.name || ''),
 };
 
 export default tourRouteApi;

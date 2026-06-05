@@ -20,6 +20,11 @@ const PostCard = ({ post, onRefresh }) => {
   const userId = user?.userId || user?.userID;
   const authorId = post.authorId ?? post.userId;
   const canFollow = !!userId && !!authorId && Number(userId) !== Number(authorId);
+  const isOwnPost = !!userId && !!authorId && Number(userId) === Number(authorId);
+
+  // Gợi ý mốc like tiếp theo để nhận coin (chỉ hiện trên bài của chính mình)
+  const LIKE_MILESTONES = [5, 20, 50, 100];
+  const nextMilestone = isOwnPost ? LIKE_MILESTONES.find(m => m > likeCount) : null;
 
   // Fetch follow state khi mount (chỉ nếu có thể follow)
   useEffect(() => {
@@ -266,6 +271,12 @@ const PostCard = ({ post, onRefresh }) => {
               </div>
             </div>
           </div>
+
+          {nextMilestone && (
+            <div className={styles.milestoneHint}>
+              Còn {nextMilestone - likeCount} like nữa để +0.5 coin 🪙
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -101,6 +101,33 @@ const adminForumApi = {
     resolveReport: (reportId, action) =>
         instance.patch(`/admin/forum/reports/${reportId}`, null, { params: { action } }).then(unwrap),
 
+    // ── Coin diễn đàn (thưởng coin) ────────────────────────────────────────────
+    getCoinStats: (days = 30) =>
+        instance.get('/admin/forum/coin/stats', { params: { days } }).then(unwrap),
+    getCoinLogs: (params) => instance.get('/admin/forum/coin/logs', { params }).then(unwrap),
+    getCoinRestrictions: () => instance.get('/admin/forum/coin/restrictions').then(unwrap),
+    restrictCoinUser: (body) => instance.post('/admin/forum/coin/restrict', body).then(unwrap),
+    unrestrictCoinUser: (userId) =>
+        instance.post(`/admin/forum/coin/unrestrict/${userId}`).then(unwrap),
+    revokeCoinLog: (logId, reason) =>
+        instance.post(`/admin/forum/coin/revoke/${logId}`, { reason }).then(unwrap),
+    revokeCoinBulk: (body) => instance.post('/admin/forum/coin/revoke-bulk', body).then(unwrap),
+    getStuckCoinRewards: () => instance.get('/admin/forum/coin/stuck').then(unwrap),
+    republishStuckCoinRewards: () =>
+        instance.post('/admin/forum/coin/stuck/republish').then(unwrap),
+    getCoinReconcile: () => instance.get('/admin/forum/coin/reconcile').then(unwrap),
+
+    // ── Coin: cảnh báo nghi vấn + cấu hình runtime ─────────────────────────────
+    getCoinAlerts: (params) => instance.get('/admin/forum/coin/alerts', { params }).then(unwrap),
+    resolveCoinAlert: (alertId) =>
+        instance.post(`/admin/forum/coin/alerts/${alertId}/resolve`).then(unwrap),
+    scanCoinAlerts: () =>
+        instance.post('/admin/forum/coin/alerts/scan').then((res) => res?.data),
+    getCoinConfig: () => instance.get('/admin/forum/coin/config').then(unwrap),
+    updateCoinConfig: (body) => instance.put('/admin/forum/coin/config', body).then(unwrap),
+    coinKillSwitch: (enabled) =>
+        instance.post('/admin/forum/coin/kill-switch', { enabled }).then(unwrap),
+
     // ── Export CSV (Sprint 5) ──────────────────────────────────────────────────
     exportModerationCsv: ({ from, to } = {}) =>
         instance.get('/admin/forum/export', {

@@ -4,8 +4,9 @@ import {
   Plus, Edit2, Trash2, Eye, EyeOff, Search, FileText, Image as ImageIcon,
   TrendingUp, MessageCircle, Heart, LayoutGrid, Calendar, AlertTriangle,
   BookOpen, CheckCircle2, PenSquare, MapPin, ArrowLeft, Clock, ShieldOff,
-  ShieldAlert, Info, X
+  ShieldAlert, Info, X, Ban
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from '../../../utils/axiosCustomize';
@@ -24,15 +25,36 @@ const UserPostsManagement = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [moderationPost, setModerationPost] = useState(null);
+  const [restriction, setRestriction] = useState(null); // {restricted, permanent, bannedUntil, reason}
   const [stats, setStats] = useState({
     total: 0, published: 0, draft: 0,
     totalViews: 0, totalLikes: 0, totalComments: 0,
   });
 
+  const isRestricted = restriction?.restricted === true;
+
   useEffect(() => {
     fetchUserPosts();
     fetchCategories();
   }, []);
+
+  // Kiểm tra trạng thái hạn chế forum để disable nút tạo bài + hiện banner
+  useEffect(() => {
+    if (!userId) { setRestriction(null); return; }
+    let alive = true;
+    axios.get('/forum/posts/my-restriction', { params: { userId } })
+      .then(res => { if (alive) setRestriction(res.data?.data || null); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [userId]);
+
+  const openCreate = () => {
+    if (isRestricted) {
+      toast.error('Bạn đang bị hạn chế hoạt động trên diễn đàn, không thể đăng bài.');
+      return;
+    }
+    setShowCreateModal(true);
+  };
 
   const fetchCategories = async () => {
     try {
@@ -132,8 +154,14 @@ const UserPostsManagement = () => {
             <h1 className={styles.heroTitle}>Quản lý bài viết</h1>
             <p className={styles.heroSubtitle}>Theo dõi và quản lý tất cả bài viết của bạn</p>
             <div className={styles.heroBtnGroup}>
-              <button className={styles.heroCreateBtn} onClick={() => setShowCreateModal(true)}>
-                <Plus size={16} /> Viết bài mới
+              <button
+                className={`${styles.heroCreateBtn} ${isRestricted ? styles.heroCreateBtnDisabled : ''}`}
+                disabled={isRestricted}
+                title={isRestricted ? 'Bạn đang bị hạn chế, không thể đăng bài' : 'Viết bài mới'}
+                onClick={openCreate}
+              >
+                {isRestricted ? <Ban size={16} /> : <Plus size={16} />}
+                {isRestricted ? 'Bị hạn chế đăng bài' : 'Viết bài mới'}
               </button>
               <button className={styles.heroBackBtn} onClick={() => navigate('/forum')}>
                 <ArrowLeft size={16} /> Về Forum
@@ -212,6 +240,27 @@ const UserPostsManagement = () => {
           </div>
         </div>
 
+        {/* ── Banner hạn chế ── */}
+        {isRestricted && (
+          <div className={styles.banBanner}>
+            <Ban size={22} className={styles.banBannerIcon} />
+            <div className={styles.banBannerText}>
+              <strong>
+                Tài khoản của bạn đang bị hạn chế hoạt động trên diễn đàn
+                {restriction.permanent
+                  ? ' (vĩnh viễn)'
+                  : restriction.bannedUntil
+                    ? ` đến ${new Date(restriction.bannedUntil).toLocaleString('vi-VN')}`
+                    : ''}.
+              </strong>
+              <span>
+                Trong thời gian này bạn không thể đăng bài, bình luận hay tương tác.
+                {restriction.reason ? ` Lý do: ${restriction.reason}` : ''}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* ── Stats strip ── */}
         <div className={styles.statsStrip}>
           {STAT_ITEMS.map(({ label, value, icon: Icon, color, bg }) => (
@@ -263,8 +312,8 @@ const UserPostsManagement = () => {
               <FileText size={56} className={styles.emptyIcon} />
               <h3>Chưa có bài viết nào</h3>
               <p>{searchTerm || filterStatus !== 'all' ? 'Không tìm thấy bài viết phù hợp' : 'Hãy tạo bài viết đầu tiên!'}</p>
-              {!searchTerm && filterStatus === 'all' && (
-                <button className={styles.emptyBtn} onClick={() => setShowCreateModal(true)}>
+              {!searchTerm && filterStatus === 'all' && !isRestricted && (
+                <button className={styles.emptyBtn} onClick={openCreate}>
                   <Plus size={16} /> Tạo bài viết đầu tiên
                 </button>
               )}

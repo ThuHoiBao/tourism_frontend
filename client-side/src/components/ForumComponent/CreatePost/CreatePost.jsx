@@ -109,8 +109,8 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
       const created = res.data?.data || res.data;
       const label = created?.moderationLabel;
 
-      // AI moderation phát hiện vi phạm → hiện modal kết quả thay vì đóng form
-      if (label === 'TOXIC' || label === 'BORDERLINE') {
+      // AI moderation phát hiện vi phạm / off-topic → hiện modal kết quả thay vì đóng form
+      if (label === 'TOXIC' || label === 'BORDERLINE' || label === 'OFF_TOPIC') {
         setModerationResult({
           label,
           reason: created?.moderationReason || '',
@@ -124,8 +124,11 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
       onSuccess?.();
       resetForm();
       if (onClose) onClose();
-    } catch {
-      alert(isEditing ? 'Cập nhật thất bại. Vui lòng thử lại.' : 'Tạo bài viết thất bại. Vui lòng thử lại.');
+    } catch (err) {
+      // Hiện đúng thông báo từ backend (vd: bị hạn chế, đăng quá nhanh...) thay vì câu chung chung
+      const msg = err?.response?.data?.message
+        || (isEditing ? 'Cập nhật thất bại. Vui lòng thử lại.' : 'Tạo bài viết thất bại. Vui lòng thử lại.');
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -379,12 +382,16 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
                 <h3 className={styles.modTitle}>
                   {moderationResult.label === 'TOXIC'
                     ? 'Bài viết vi phạm tiêu chuẩn cộng đồng'
-                    : 'Bài viết đang chờ kiểm duyệt'}
+                    : moderationResult.label === 'OFF_TOPIC'
+                      ? 'Bài viết không liên quan đến du lịch'
+                      : 'Bài viết đang chờ kiểm duyệt'}
                 </h3>
                 <p className={styles.modSubtitle}>
                   {moderationResult.label === 'TOXIC'
                     ? 'AI đã phát hiện nội dung vi phạm — bài bị ẩn khỏi forum'
-                    : 'AI chưa thể xác định rõ — quản trị viên sẽ xem xét sớm'}
+                    : moderationResult.label === 'OFF_TOPIC'
+                      ? 'Diễn đàn chỉ dành cho nội dung du lịch — bài cần admin duyệt trước khi đăng'
+                      : 'AI chưa thể xác định rõ — quản trị viên sẽ xem xét sớm'}
                 </p>
               </div>
               <button className={styles.modCloseBtn} onClick={closeModerationResult}>
@@ -429,6 +436,12 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
                       <li>Chỉnh sửa lại nội dung, loại bỏ ngôn từ tiêu cực</li>
                       <li>Viết lại với giọng văn khách quan, mang tính chia sẻ</li>
                       <li>Vào <strong>Quản lý bài viết</strong> để xem chi tiết và sửa</li>
+                    </>
+                  ) : moderationResult.label === 'OFF_TOPIC' ? (
+                    <>
+                      <li>Viết về chủ đề du lịch: điểm đến, tour, lịch trình, kinh nghiệm, review…</li>
+                      <li>Đợi quản trị viên xem xét nếu bạn cho rằng nội dung phù hợp</li>
+                      <li>Có thể chỉnh sửa hoặc xóa bài trong <strong>Quản lý bài viết</strong></li>
                     </>
                   ) : (
                     <>

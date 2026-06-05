@@ -111,6 +111,20 @@
   }
 }
 
+/* Nút tạo bài khi user bị hạn chế — xám, không bấm được */
+.createBtnDisabled {
+  background: linear-gradient(135deg, #9ca3af, #6b7280) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.85;
+
+  &:hover {
+    background: linear-gradient(135deg, #9ca3af, #6b7280) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
 .searchBtn {
   display: flex;
   align-items: center;
@@ -319,4 +333,35 @@
     color: #0ea5e9;
     background: rgba(255,255,255,0.6);
   }
+}
+
+/* Banner cảnh báo user bị hạn chế forum — span toàn bộ grid, nằm trên cùng */
+.banBanner {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 24px 0 0; /* bù margin âm -24px của mainContainer */
+  margin-top: 40px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fca5a5;
+  border-left: 4px solid #dc2626;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.12);
+}
+
+.banBannerIcon {
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.banBannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  strong { color: #991b1b; font-size: 14.5px; line-height: 1.4; }
+  span   { color: #b91c1c; font-size: 13px; line-height: 1.5; }
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -53,6 +53,12 @@ const makeIcon = (idx, color, active) => L.divIcon({
 
 let tempIdCounter = 0;
 
+// Reverse geocoding qua backend (tour-catalog-service) — backend gọi Nominatim với DNS ổn định.
+// Tránh phụ thuộc DNS của máy client (vd hotspot điện thoại phân giải tên miền chập chờn).
+const reverseGeocode = async (lat, lng) => {
+    return await tourRouteApi.reverseGeocode(lat, lng); // '' hoặc tên
+};
+
 const TourStopsEditor = () => {
     const { tourId } = useParams();
     const [stops, setStops] = useState([]);
@@ -60,6 +66,7 @@ const TourStopsEditor = () => {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [fitTrigger, setFitTrigger] = useState(0);
+    const [geocodingIdx, setGeocodingIdx] = useState(null); // idx đang lấy tên
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -105,6 +112,55 @@ const TourStopsEditor = () => {
         setStops(prev => prev.map((s, i) => i === idx ? { ...s, ...patch } : s));
     };
 
+    // Lấy tên từ toạ độ.
+    //  - force=false (tự động): chỉ điền khi ô tên đang trống, không ghi đè tên admin gõ.
+    //  - force=true  (bấm nút): luôn ghi đè bằng tên mới.
+    const autoFillName = useCallback(async (idx, lat, lng, force = false) => {
+        if (lat == null || lng == null) return;
+        if (!force) {
+            let shouldFill = false;
+            setStops(prev => { shouldFill = !prev[idx]?.name?.trim(); return prev; });
+            if (!shouldFill) return;
+        }
+        setGeocodingIdx(idx);
+        try {
+            const name = await reverseGeocode(lat, lng);
+            if (name) {
+                setStops(prev => prev.map((s, i) => {
+                    if (i !== idx) return s;
+                    // tự động: chỉ điền nếu vẫn trống; bấm nút: luôn ghi đè.
+                    if (!force && s.name?.trim()) return s;
+                    return { ...s, name };
+                }));
+            } else if (force) {
+                toast.info('Không tìm thấy tên cho toạ độ này');
+            }
+        } catch {
+            if (force) toast.error('Không lấy được tên (kiểm tra kết nối)');
+        } finally {
+            setGeocodingIdx(cur => (cur === idx ? null : cur));
+        }
+    }, []);
+
+    // Auto-fill tên khi GÕ TAY lat/lng — debounce 1s sau khi ngừng gõ, tránh gọi API mỗi ký tự.
+    // Nhớ các "lat,lng" đã geocode để không gọi lặp lại.
+    const geocodedKeys = useRef(new Set());
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            stops.forEach((s, idx) => {
+                if (s.latitude == null || s.longitude == null) return;
+                if (s.name?.trim()) return; // đã có tên → bỏ qua
+                if (s.latitude < -90 || s.latitude > 90) return;
+                if (s.longitude < -180 || s.longitude > 180) return;
+                const key = `${s.latitude},${s.longitude}`;
+                if (geocodedKeys.current.has(key)) return;
+                geocodedKeys.current.add(key);
+                autoFillName(idx, s.latitude, s.longitude);
+            });
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [stops, autoFillName]);
+
     const removeStop = (idx) => {
         setStops(prev => prev.filter((_, i) => i !== idx).map((s, i) => ({ ...s, stopOrder: i + 1 })));
         if (activeIdx === idx) setActiveIdx(null);
@@ -116,10 +172,10 @@ const TourStopsEditor = () => {
             toast.info('Hãy bấm vào 1 thẻ trong cột trái trước, rồi click bản đồ');
             return;
         }
-        updateStop(activeIdx, {
-            latitude: Math.round(lat * 1000000) / 1000000,
-            longitude: Math.round(lng * 1000000) / 1000000,
-        });
+        const rLat = Math.round(lat * 1000000) / 1000000;
+        const rLng = Math.round(lng * 1000000) / 1000000;
+        updateStop(activeIdx, { latitude: rLat, longitude: rLng });
+        autoFillName(activeIdx, rLat, rLng);
     };
 
     const handlePasteCoords = (e, idx) => {
@@ -127,10 +183,10 @@ const TourStopsEditor = () => {
         const match = text.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
         if (match) {
             e.preventDefault();
-            updateStop(idx, {
-                latitude: parseFloat(match[1]),
-                longitude: parseFloat(match[2]),
-            });
+            const lat = parseFloat(match[1]);
+            const lng = parseFloat(match[2]);
+            updateStop(idx, { latitude: lat, longitude: lng });
+            autoFillName(idx, lat, lng);
             toast.success('Đã gán toạ độ');
         }
     };
@@ -200,6 +256,7 @@ const TourStopsEditor = () => {
                 <p className={styles.subtitle}>
                     Bấm vào 1 thẻ điểm dừng → click vị trí trên bản đồ để gán toạ độ.
                     Hoặc paste cặp số "lat, lng" copy từ Google Maps vào ô Lat.
+                    Sau khi có đủ Lat & Lng, tên tự điền sau ~1 giây (nếu ô tên còn trống) — hoặc bấm nút <strong>Lấy tên</strong> để lấy/đổi tên ngay.
                 </p>
             </div>
 
@@ -232,9 +289,21 @@ const TourStopsEditor = () => {
                                             </span>
                                             <input className={styles.inputName}
                                                 value={s.name}
-                                                placeholder="Tên điểm dừng (vd: Vịnh Hạ Long)"
+                                                placeholder={geocodingIdx === idx ? 'Đang lấy tên địa điểm…' : 'Tên điểm dừng (vd: Vịnh Hạ Long)'}
                                                 onClick={(e) => e.stopPropagation()}
                                                 onChange={(e) => updateStop(idx, { name: e.target.value })} />
+                                            {hasCoord && (
+                                                <button className={styles.btnGeo}
+                                                    title="Lấy tên địa điểm từ toạ độ"
+                                                    disabled={geocodingIdx === idx}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        autoFillName(idx, s.latitude, s.longitude, true);
+                                                    }}>
+                                                    <MapPin size={13} className={geocodingIdx === idx ? styles.geoSpin : ''} />
+                                                    <span>{geocodingIdx === idx ? 'Đang lấy…' : 'Lấy tên'}</span>
+                                                </button>
+                                            )}
                                             <button className={styles.btnDel}
                                                 title="Xóa điểm này"
                                                 onClick={(e) => { e.stopPropagation(); removeStop(idx); }}>

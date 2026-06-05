@@ -444,3 +444,16 @@
     &:hover { background: #f1f5f9; }
   }
 }
+
+/* ── Gợi ý mốc like nhận coin (bài của chính mình) ────────── */
+.milestoneHint {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px dashed #fde68a;
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-block;
+  align-self: flex-start;
+}
