@@ -1,0 +1,481 @@
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fillGrow {
+  from { width: 0; }
+}
+
+.wrapper {
+  position: relative; // mỏ neo cho popover "Cách kiếm coin"
+}
+
+.widget {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: 1.5px solid #fde68a;
+  animation: slideInRight 0.4s ease both;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-bottom: 1px solid #fde68a;
+}
+
+.headerTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.headerIcon { color: #f59e0b; }
+
+.helpBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #b45309;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid #fcd34d;
+  border-radius: 20px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #ffffff;
+    color: #92400e;
+    box-shadow: 0 2px 6px rgba(245,158,11,0.25);
+  }
+}
+
+.progressSection {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.progressLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #4b5563;
+  margin-bottom: 6px;
+
+  strong { color: #111827; }
+}
+
+.progressPercent {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.progressTrack {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  animation: fillGrow 0.8s ease both;
+}
+
+.totalRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+
+  svg { color: #10b981; }
+  strong { color: #059669; }
+}
+
+// ── Streak (chuỗi hoạt động hằng ngày) ───────────────────────────────────────
+
+.streakSection {
+  padding: 10px 14px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.streakLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 7px;
+
+  strong { color: #ea580c; }
+}
+
+.streakTarget {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.streakTrack {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.streakDot {
+  flex: 1;
+  height: 8px;
+  border-radius: 5px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.streakDotActive {
+  background: linear-gradient(90deg, #f97316, #fbbf24);
+  border-color: #fdba74;
+  box-shadow: 0 1px 3px rgba(249, 115, 22, 0.35);
+}
+
+.streakHint {
+  margin-top: 7px;
+  font-size: 11px;
+  color: #9a3412;
+  background: #fff7ed;
+  border: 1px dashed #fed7aa;
+  border-radius: 7px;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.recentList {
+  padding: 10px 14px 12px;
+}
+
+.recentTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dashed #f3f4f6;
+
+  &:last-child { border-bottom: none; }
+}
+
+.recentReason {
+  font-size: 12px;
+  color: #4b5563;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.recentAmount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+  flex-shrink: 0;
+
+  &.pending { color: #d97706; }
+  &.cancelled {
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+}
+
+.viewAllBtn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px dashed #fcd34d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fef3c7;
+    color: #92400e;
+  }
+}
+
+// ── Popover "Cách kiếm coin" (neo ngay dưới nút trong widget) ────────────────
+
+@keyframes popoverIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popover {
+  position: absolute;
+  top: 42px;          // ngay dưới hàng header của widget
+  right: 6px;         // canh theo nút "Cách kiếm coin?"
+  width: 292px;
+  max-width: calc(100vw - 32px);
+  background: #ffffff;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.16), 0 2px 8px rgba(245,158,11,0.12);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  animation: popoverIn 0.18s ease both;
+}
+
+.popoverArrow {
+  position: absolute;
+  top: -6px;
+  right: 28px;
+  width: 11px;
+  height: 11px;
+  background: #b45309; // trùng màu header gradient phía dưới mũi tên
+  border-left: 1px solid #fde68a;
+  border-top: 1px solid #fde68a;
+  transform: rotate(45deg);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 60%, #f59e0b 100%);
+  color: #ffffff;
+  border-radius: 11px 11px 0 0;
+}
+
+.modalTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover { background: rgba(255,255,255,0.32); }
+}
+
+.modalBody {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.policyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.policyItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 9px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: 11.5px;
+  color: #374151;
+  line-height: 1.45;
+}
+
+.policyIcon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg { width: 13px; height: 13px; }
+}
+
+.policyText {
+  flex: 1;
+
+  strong { color: #b45309; }
+}
+
+.modalFooter {
+  padding: 8px 10px 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.footerNote {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 7px 9px;
+  border: 1px dashed #e5e7eb;
+}
+
+// ── Popover lịch sử thưởng (hiện đầy đủ nội dung, không cắt chữ) ─────────────
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historyItem {
+  padding: 7px 9px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.historyTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.historyAmount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+
+  &.pending { color: #d97706; }
+  &.cancelled {
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+}
+
+.historyTime {
+  font-size: 10.5px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.historyReason {
+  font-size: 11.5px;
+  color: #374151;
+  line-height: 1.45;
+  // Hiện toàn bộ chữ, tự xuống dòng — không cắt
+  white-space: normal;
+  word-break: break-word;
+}
+
+.historyStatus {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+
+  &.pending {
+    color: #b45309;
+    background: #fef3c7;
+  }
+  &.cancelled {
+    color: #6b7280;
+    background: #f3f4f6;
+    text-decoration: none;
+  }
+}
+
+.historyEmpty {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.historyCount {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-left: 2px;
+}
+
+.loadMoreBtn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px dashed #fcd34d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}

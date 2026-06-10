@@ -9,7 +9,6 @@ import TourBooking from './components/TourBookingComponent/TourBooking';
 import TourDetail from './components/TourDetailComponent/TourDetail';
 import BookingPayment from './components/BookingPaymentComponent/BookingPayment';
 import PaymentFailed from './components/BookingPaymentComponent/PaymentFailed';
-import PaymentSuccess from './components/BookingPaymentComponent/PaymentSuccess';
 import PaymentWaitingPage from './components/BookingPaymentComponent/PaymentWaitingPage ';
 import PaymentError from './components/BookingPaymentComponent/PaymentError';
 import Register from './components/RegisterComponent/Register';
@@ -81,7 +80,6 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/google/callback" element={<GoogleCallback />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
           <Route path="/payment-error" element={<PaymentError />} />

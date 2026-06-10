@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Confetti from 'react-confetti';
 import {
     CheckCircle2, Clock, XCircle, Loader2, Smartphone,
     ScanLine, BadgeCheck, RotateCw, Home, ArrowLeft,
@@ -44,9 +45,7 @@ const PaymentWaitingPage = () => {
                     clearInterval(intervalId);
                     clearTimeout(timeoutId);
                     clearInterval(tickerId);
-                    setTimeout(() => {
-                        navigate(`/payment-success?bookingCode=${bookingCode}`);
-                    }, 1800);
+                    // Ở lại trang này hiển thị success + confetti (không redirect sang /payment-success)
                 } else if (data.status === 'CANCELLED' || data.status === 'FAILED' || data.code === '99') {
                     setStatus('FAILED');
                     setMessage('Thanh toán thất bại hoặc đã bị hủy');
@@ -113,6 +112,17 @@ const PaymentWaitingPage = () => {
 
     return (
         <div className={styles.container}>
+            {status === 'SUCCESS' && (
+                <Confetti
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                    numberOfPieces={400}
+                    recycle={false}
+                    gravity={0.25}
+                    tweenDuration={8000}
+                    style={{ position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none' }}
+                />
+            )}
             <div className={styles.shell}>
 
                 {/* HEADER: status banner */}

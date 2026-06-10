@@ -84,6 +84,26 @@
     &:hover { background: #fee2e2; color: #dc2626; }
 }
 
+.btnGeo {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    cursor: pointer;
+    padding: 4px 9px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    &:hover { background: #dbeafe; }
+    &:disabled { cursor: default; opacity: 0.6; }
+}
+
+.geoSpin { animation: geoSpin 0.9s linear infinite; }
+@keyframes geoSpin { to { transform: rotate(360deg); } }
+
 /* Layout */
 .body {
     display: grid;

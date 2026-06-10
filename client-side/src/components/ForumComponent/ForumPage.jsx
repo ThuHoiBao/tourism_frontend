@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquarePlus, Search, TrendingUp, Clock, Flame, BookOpen, Compass, Bookmark, Users, FileEdit } from 'lucide-react';
+import { MessageSquarePlus, Search, TrendingUp, Clock, Flame, BookOpen, Compass, Bookmark, Users, FileEdit, Ban } from 'lucide-react';
+import { toast } from 'react-toastify';
 import PostList from './PostList/PostList';
 import CategorySidebar from './CategorySidebar/CategorySidebar';
 import TagCloud from './TagCloud/TagCloud';
 import TrendingPosts from './TrendingPosts/TrendingPosts';
 import UserStats from './UserStats/UserStats';
+import CoinRewardWidget from './CoinReward/CoinRewardWidget';
 import CreatePost from './CreatePost/CreatePost';
 import axios from '../../utils/axiosCustomize';
 import { useAuth } from '../../context/AuthContext';
@@ -37,10 +39,23 @@ const ForumPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [restriction, setRestriction] = useState(null); // {restricted, permanent, bannedUntil, reason}
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Kiểm tra trạng thái hạn chế forum của user (hiện banner cảnh báo nếu bị cấm)
+  useEffect(() => {
+    if (!userId) { setRestriction(null); return; }
+    let alive = true;
+    axios.get('/forum/posts/my-restriction', { params: { userId } })
+      .then(res => { if (alive) setRestriction(res.data?.data || null); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [userId]);
+
+  const isRestricted = restriction?.restricted === true;
 
   useEffect(() => {
     setPage(0);
@@ -125,6 +140,7 @@ const ForumPage = () => {
   const rightSidebar = (
     <>
       <UserStats />
+      {userId && <CoinRewardWidget />}
       <TrendingPosts />
     </>
   );
@@ -140,9 +156,17 @@ const ForumPage = () => {
           <h1 className={styles.heroTitle}>Cộng đồng Du lịch</h1>
           <p className={styles.heroSubtitle}>Chia sẻ trải nghiệm, khám phá điểm đến mới cùng hàng nghìn người yêu du lịch</p>
           <div className={styles.heroActions}>
-            <button className={styles.createBtn} onClick={() => setShowCreateModal(true)}>
-              <MessageSquarePlus size={18} />
-              Viết bài mới
+            <button
+              className={`${styles.createBtn} ${isRestricted ? styles.createBtnDisabled : ''}`}
+              disabled={isRestricted}
+              title={isRestricted ? 'Bạn đang bị hạn chế, không thể đăng bài' : 'Viết bài mới'}
+              onClick={() => {
+                if (isRestricted) return;
+                setShowCreateModal(true);
+              }}
+            >
+              {isRestricted ? <Ban size={18} /> : <MessageSquarePlus size={18} />}
+              {isRestricted ? 'Bị hạn chế đăng bài' : 'Viết bài mới'}
             </button>
             <button className={styles.searchBtn} onClick={() => setShowSearch(s => !s)}>
               <Search size={18} />
@@ -178,6 +202,26 @@ const ForumPage = () => {
       </div>
 
       <div className={styles.mainContainer}>
+        {isRestricted && (
+          <div className={styles.banBanner}>
+            <Ban size={22} className={styles.banBannerIcon} />
+            <div className={styles.banBannerText}>
+              <strong>
+                Tài khoản của bạn đang bị hạn chế hoạt động trên diễn đàn
+                {restriction.permanent
+                  ? ' (vĩnh viễn)'
+                  : restriction.bannedUntil
+                    ? ` đến ${new Date(restriction.bannedUntil).toLocaleString('vi-VN')}`
+                    : ''}.
+              </strong>
+              <span>
+                Trong thời gian này bạn không thể đăng bài, bình luận hay tương tác.
+                {restriction.reason ? ` Lý do: ${restriction.reason}` : ''}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className={styles.leftSidebar}>{leftSidebar}</div>
 
         <div className={styles.mainContent}>

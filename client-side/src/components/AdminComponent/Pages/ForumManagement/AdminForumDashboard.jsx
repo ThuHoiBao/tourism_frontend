@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FileText, Clock, EyeOff, MessageSquare, FileEdit, ShieldCheck, Trash2, History, Flag, UserX, Download, AlertTriangle, Brain } from 'lucide-react';
+import { FileText, Clock, EyeOff, MessageSquare, FileEdit, ShieldCheck, Trash2, History, Flag, UserX, Download, AlertTriangle, Brain, Coins } from 'lucide-react';
 import { isAdmin } from '../../../../services/forum/adminRole';
 import adminForumApi from '../../../../services/forum/adminForumApi';
 import StatusBadge from './shared/StatusBadge';
@@ -94,6 +94,9 @@ const AdminForumDashboard = () => {
                     </Link>
                     <Link to="/admin/forum/reports" className={styles.resetBtn}>
                         <Flag size={15} /> Báo cáo
+                    </Link>
+                    <Link to="/admin/forum/coins" className={styles.resetBtn}>
+                        <Coins size={15} /> Coin diễn đàn
                     </Link>
                     {isAdmin() && (
                         <Link to="/admin/forum/banned-users" className={styles.resetBtn}>
