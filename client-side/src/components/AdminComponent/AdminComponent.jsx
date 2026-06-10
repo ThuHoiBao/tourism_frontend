@@ -26,6 +26,7 @@ import AdminTrash from './Pages/ForumManagement/AdminTrash';
 import AdminAuditLog from './Pages/ForumManagement/AdminAuditLog';
 import AdminBannedUsers from './Pages/ForumManagement/AdminBannedUsers';
 import AdminReports from './Pages/ForumManagement/AdminReports';
+import ChatbotSyncPage from './Pages/ChatbotSyncPage/ChatbotSyncPage';
 import AdminCoinManagement from './Pages/ForumManagement/AdminCoinManagement';
 
 const AdminComponent = () => {
@@ -38,6 +39,7 @@ const AdminComponent = () => {
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     
                     <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="chatbot-sync" element={<ChatbotSyncPage />} />
                     <Route path="profile" element={<AdminProfile />} /> 
                     <Route path="tours" element={<ToursPage />} />
                     <Route path="tours/:tourId/stops" element={<TourStopsEditor />} />

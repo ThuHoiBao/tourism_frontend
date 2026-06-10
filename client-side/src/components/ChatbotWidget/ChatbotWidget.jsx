@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { X, Send, MoreVertical, History, PlusCircle, Trash2 } from 'lucide-react';
+import { X, Send, MoreVertical, History, PlusCircle, Trash2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import styles from './ChatbotWidget.module.scss';
 import futureMark from '../../assets/brand/future-mark.svg';
@@ -643,9 +643,14 @@ const ChatbotWidget = () => {
     } else if (action && action.startsWith('LOOKUP_')) {
       const code = action.replace('LOOKUP_', '');
       sendBotMessage('tra cứu ' + code);
+    } else if (action && action.startsWith('BOOK_TOUR_')) {
+      const index = action.replace('BOOK_TOUR_', '');
+      sendBotMessage('dat tour ' + index);
     } else if (action === 'VIEW_DEALS') {
       if (url) window.location.href = url;
       else sendBotMessage('tour nao dang giam gia');
+    } else if (action === 'CALL_SUPPORT') {
+      if (url) window.location.href = url;
     } else if (action === 'VIEW_FAVORITES' || action === 'VIEW_UPCOMING' || action === 'navigate') {
       if (url) window.location.href = url;
     } else if (action) {
@@ -875,8 +880,14 @@ const ChatbotWidget = () => {
                 {/* Tour suggestion cards */}
                 {message.messageType === 'TOUR_SUGGESTIONS' && message.tourSuggestions && message.tourSuggestions.length > 0 && (
                   <div className={styles.tourGrid}>
-                    {message.tourSuggestions.map((tour, idx) => (
-                      <div key={tour.tourId || idx} className={styles.tourCard}>
+                    {message.tourSuggestions.map((tour, idx) => {
+                      const detailUrl = tour.detailUrl || (tour.tourCode ? `/tour/${tour.tourCode}` : null);
+                      return (
+                      <div
+                        key={tour.tourId || idx}
+                        className={styles.tourCard}
+                        title={detailUrl ? `Xem chi tiết ${tour.tourName}` : tour.tourName}
+                      >
                         <div className={styles.cardImage}>
                           <img
                             src={tour.imageUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&auto=format&fit=crop&q=60'}
@@ -889,9 +900,19 @@ const ChatbotWidget = () => {
                             {tour.duration && <span className={styles.duration}>⏱️ {tour.duration}</span>}
                             {tour.minPrice > 0 && <span className={styles.price}>{Number(tour.minPrice).toLocaleString('vi-VN')}₫</span>}
                           </div>
+                          <div className={styles.cardActions}>
+                          {detailUrl && (
+                            <button type="button" className={styles.cardDetailLink} onClick={() => { window.location.href = detailUrl; }}>
+                              Xem chi tiết <ExternalLink size={12} />
+                            </button>
+                          )}
+                            <button type="button" className={styles.cardBookBtn} onClick={() => sendBotMessage(`dat tour ${idx + 1}`)}>
+                              Đặt tour
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 )}
 

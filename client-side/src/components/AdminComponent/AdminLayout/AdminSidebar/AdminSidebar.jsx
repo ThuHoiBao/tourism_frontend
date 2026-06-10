@@ -14,7 +14,8 @@ import {
     LogOut,
     Plane,
     MessagesSquare,
-    Headphones
+    Headphones,
+    Bot
 } from 'lucide-react';
 import styles from './AdminSidebar.module.scss';
 import futureLogoDark from '../../../../assets/brand/future-logo-dark.svg';
@@ -22,6 +23,7 @@ import { useConsultationAlertsContext } from '../../../../context/ConsultationAl
 
 const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Đồng bộ Chatbot', path: '/admin/chatbot-sync', icon: Bot },
     { name: 'Quản lý Tours', path: '/admin/tours', icon: Map },
     { name: 'Quản lý Departure', path: '/admin/departures', icon: Plane },
     { name: 'Quản lý Bookings', path: '/admin/bookings', icon: CalendarCheck2 },
