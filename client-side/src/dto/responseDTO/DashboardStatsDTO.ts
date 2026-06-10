@@ -70,6 +70,12 @@ export interface AIAnalysis {
     insights: Insight[];
     predictions: Prediction[];
     recommendations: Recommendation[];
+    periodFrom?: string;
+    periodTo?: string;
+    mode?: string;
+    generatedAt?: string;
+    verificationSummary?: string;
+    aiEvidenceDashboard?: AiEvidenceDashboard;
 }
 
 export interface Insight {
@@ -77,6 +83,9 @@ export interface Insight {
     description: string;
     type: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
     priority: number;
+    usedMetricKeys?: string[];
+    verificationStatus?: 'VERIFIED' | 'LIMITED' | 'UNVERIFIED';
+    confidenceReason?: string;
 }
 
 export interface Prediction {
@@ -84,6 +93,9 @@ export interface Prediction {
     prediction: string;
     confidence: number;
     timeframe: string;
+    usedMetricKeys?: string[];
+    verificationStatus?: 'VERIFIED' | 'LIMITED' | 'UNVERIFIED';
+    confidenceReason?: string;
 }
 
 export interface Recommendation {
@@ -91,6 +103,34 @@ export interface Recommendation {
     description: string;
     action: string;
     impact: number;
+    usedMetricKeys?: string[];
+    verificationStatus?: 'VERIFIED' | 'LIMITED' | 'UNVERIFIED';
+    confidenceReason?: string;
+}
+
+export interface AiEvidenceDashboard {
+    groups: AiEvidenceGroup[];
+}
+
+export interface AiEvidenceGroup {
+    groupKey: string;
+    groupLabel: string;
+    metrics: AiEvidenceMetric[];
+}
+
+export interface AiEvidenceMetric {
+    metricKey: string;
+    label: string;
+    currentValue: string;
+    previousValue: string;
+    changeValue: string;
+    changePercent?: number;
+    formula: string;
+    sourceService: string;
+    sourceEndpoint: string;
+    usedByAiItems: string[];
+    dataQuality: 'VERIFIED' | 'LIMITED' | 'FALLBACK';
+    note: string;
 }
 
 export interface ChartsData {
@@ -140,4 +180,33 @@ export interface TourPerformance {
     bookings: number;
     revenue: number;
     rating: number;
+}
+
+export interface VectorSyncRunDTO {
+    id: number;
+    triggerType: string;
+    status: string;
+    startedAt?: string;
+    finishedAt?: string;
+    durationMs?: number;
+    tourDocs?: number;
+    locationDocs?: number;
+    reviewDocs?: number;
+    couponDocs?: number;
+    totalDocs?: number;
+    eventCount?: number;
+    entityTypes?: string;
+    errorMessage?: string;
+}
+
+export interface VectorSyncSummaryDTO {
+    from: string;
+    to: string;
+    todaySyncCount: number;
+    successCount: number;
+    failedCount: number;
+    pendingEventCount: number;
+    syncRunning: boolean;
+    lastRun?: VectorSyncRunDTO | null;
+    recentRuns: VectorSyncRunDTO[];
 }
