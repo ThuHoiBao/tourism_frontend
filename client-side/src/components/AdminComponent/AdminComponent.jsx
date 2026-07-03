@@ -28,6 +28,7 @@ import AdminBannedUsers from './Pages/ForumManagement/AdminBannedUsers';
 import AdminReports from './Pages/ForumManagement/AdminReports';
 import ChatbotSyncPage from './Pages/ChatbotSyncPage/ChatbotSyncPage';
 import AdminCoinManagement from './Pages/ForumManagement/AdminCoinManagement';
+import AdminGreenFund from './Pages/GreenFund/AdminGreenFund';
 
 const AdminComponent = () => {
     return (
@@ -63,6 +64,7 @@ const AdminComponent = () => {
                     <Route path="forum/banned-users" element={<AdminBannedUsers />} />
                     <Route path="forum/reports" element={<AdminReports />} />
                     <Route path="forum/coins" element={<AdminCoinManagement />} />
+                    <Route path="green-fund" element={<AdminGreenFund />} />
                     <Route path="consultations" element={<ConsultationsPage />} />
                 </Route>
             </Route>

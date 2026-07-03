@@ -682,6 +682,55 @@
     }
 }
 
+.greenFundBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid #a7f3d0;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+}
+
+.greenFundText {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+        font-size: 0.95rem;
+        color: #065f46;
+    }
+
+    span {
+        font-size: 0.82rem;
+        color: #047857;
+    }
+}
+
+.greenFundBtn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    min-height: 38px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #047857, #10b981);
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.18s ease, transform 0.18s ease;
+
+    &:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+    }
+}
+
 @media (max-width: 720px) {
     .pageHeader,
     .sectionHeader,
@@ -704,5 +753,11 @@
     .previewBox .primaryBtn {
         width: 100%;
         justify-self: stretch;
+    }
+
+    .greenFundBanner {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
     }
 }

@@ -18,7 +18,7 @@ import ReviewComponent from '../ReviewComponent/ReviewComponent';
 import ViewReviewModal from '../ViewReviewModal/ViewReviewModal';
 import styles from './TransactionListItem.module.scss';
 
-const TransactionListItem = ({ booking, refetch }) => {
+const TransactionListItem = ({ booking, refetch, greenFundPercent = null }) => {
     const [timeLeft, setTimeLeft] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
@@ -291,6 +291,12 @@ const TransactionListItem = ({ booking, refetch }) => {
                 <span className={`${styles.statusBadge} ${getStatusClass(displayStatus)}`}>
                     {getStatusLabel(displayStatus)}
                 </span>
+
+                {displayStatus === 'PAID' && greenFundPercent != null && (
+                    <span className={styles.greenFundNote}>
+                        🌱 Chuyến đi này đã góp {greenFundPercent}% vào Quỹ Trồng Cây Xanh
+                    </span>
+                )}
 
                 <div className={styles.price}>
                     {formatPrice(booking.totalPrice)}

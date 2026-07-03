@@ -15,6 +15,7 @@ import {
     Plane,
     MessagesSquare,
     Headphones,
+    TreePine,
     Bot
 } from 'lucide-react';
 import styles from './AdminSidebar.module.scss';
@@ -34,6 +35,7 @@ const navItems = [
     { name: 'Quản lý Hoàn Điểm', path: '/admin/coin-withdrawals', icon: Landmark },
     { name: 'Quản lý sự cố Bookings', path: '/admin/dead-events', icon: Skull },
     { name: 'Quản lý Diễn đàn', path: '/admin/forum', icon: MessagesSquare },
+    { name: 'Quỹ Xanh', path: '/admin/green-fund', icon: TreePine },
     { name: 'Yêu cầu tư vấn', path: '/admin/consultations', icon: Headphones },
 ];
 

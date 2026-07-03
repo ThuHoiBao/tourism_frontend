@@ -213,7 +213,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateUser,
         refreshAccessToken,
-        checkAuth
+        checkAuth,
+        fetchProfile
     };
 
     return (

@@ -7,6 +7,7 @@ import {
     getMyCoinWithdrawalsApi,
 } from '../../../services/coinWithdrawal/coinWithdrawal.ts';
 import { BANK_LIST } from '../TransactionList/TransactionListItem/RefundInfoModal/RefundInfoModal.jsx';
+import GreenFundDonateModal from '../../GreenFundComponent/GreenFundDonateModal';
 import useWebSocket from '../../../hook/useWebSocket';
 
 const MIN_WITHDRAWAL = 5;
@@ -50,6 +51,7 @@ const WithdrawCoins = ({ user }) => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [isBankPickerOpen, setIsBankPickerOpen] = useState(false);
+    const [isGreenFundOpen, setIsGreenFundOpen] = useState(false);
     const [form, setForm] = useState(initialForm);
     const historyRef = useRef(null);
     const formRef = useRef(null);
@@ -199,6 +201,16 @@ const WithdrawCoins = ({ user }) => {
                         <strong>Tối thiểu 5 điểm</strong>
                     </div>
                 </div>
+            </div>
+
+            <div className={styles.greenFundBanner}>
+                <div className={styles.greenFundText}>
+                    <strong>🌳 Quỹ Trồng Cây Xanh</strong>
+                    <span>Dùng coin của bạn để trồng cây tại các điểm du lịch — 1 coin = 1 cây xanh.</span>
+                </div>
+                <button type="button" className={styles.greenFundBtn} onClick={() => setIsGreenFundOpen(true)}>
+                    Dùng coin góp trồng cây 🌳
+                </button>
             </div>
 
             <section className={styles.actionPanel} ref={formRef}>
@@ -387,6 +399,11 @@ const WithdrawCoins = ({ user }) => {
                     </div>
                 </div>
             )}
+
+            <GreenFundDonateModal
+                isOpen={isGreenFundOpen}
+                onClose={() => setIsGreenFundOpen(false)}
+            />
         </div>
     );
 };
