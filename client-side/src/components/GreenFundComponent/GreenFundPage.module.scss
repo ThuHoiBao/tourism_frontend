@@ -1,0 +1,677 @@
+// ── Quỹ Trồng Cây Xanh — trang public /green-fund ────────────────────────────
+$forest-dark: #166534;
+$forest: #16a34a;
+$forest-light: #86efac;
+$forest-bg: #f0fdf4;
+
+.page {
+    background: linear-gradient(180deg, $forest-bg 0%, #ffffff 30%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+}
+
+.loadingState {
+    text-align: center;
+    padding: 80px 0;
+    color: $forest-dark;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+// ── 1. HERO ───────────────────────────────────────────────────────────────
+.hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, $forest-dark 0%, $forest 55%, $forest-light 130%);
+    padding: 130px 20px 90px;
+    text-align: center;
+    color: #fff;
+}
+
+.heroTitle {
+    margin: 0 0 14px;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-shadow: 0 3px 16px rgba(0, 0, 0, 0.25);
+    animation: fadeUp 0.7s ease both;
+}
+
+.heroSubtitle {
+    margin: 0 0 44px;
+    font-size: clamp(16px, 2.4vw, 21px);
+    color: #dcfce7;
+    font-weight: 500;
+    animation: fadeUp 0.7s 0.12s ease both;
+}
+
+.heroStats {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s 0.22s ease both;
+}
+
+.heroStat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 24px 38px;
+    min-width: 200px;
+}
+
+.heroStatIcon { color: $forest-light; }
+
+.heroStatValue {
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.heroStatLabel {
+    font-size: 14px;
+    color: #dcfce7;
+}
+
+.heroCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: $forest-dark;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 40px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: fadeUp 0.7s 0.32s ease both;
+
+    &:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+    }
+}
+
+// Lá bay trang trí
+.floatLeaf {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.65;
+    pointer-events: none;
+    animation: floatLeaf 9s ease-in-out infinite;
+}
+
+.leaf1 { top: 14%; left: 8%; animation-delay: 0s; }
+.leaf2 { top: 28%; right: 10%; font-size: 38px; animation-delay: 1.6s; }
+.leaf3 { bottom: 22%; left: 16%; font-size: 24px; animation-delay: 3.2s; }
+.leaf4 { top: 12%; right: 26%; font-size: 26px; animation-delay: 4.5s; }
+.leaf5 { bottom: 16%; right: 20%; animation-delay: 2.4s; }
+
+@keyframes floatLeaf {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    30% { transform: translateY(-22px) rotate(12deg); }
+    60% { transform: translateY(10px) rotate(-10deg); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+// ── Section chung ─────────────────────────────────────────────────────────
+.section {
+    background: #fff;
+    border: 1px solid #dcfce7;
+    border-radius: 20px;
+    padding: 34px 34px 38px;
+    margin-top: 36px;
+    box-shadow: 0 4px 22px rgba(22, 101, 52, 0.06);
+}
+
+.sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 22px;
+    font-size: 23px;
+    font-weight: 700;
+    color: $forest-dark;
+
+    svg { color: $forest; }
+
+    .sectionHead & { margin-bottom: 0; }
+}
+
+.emptyText {
+    text-align: center;
+    color: #6b7280;
+    padding: 26px 0;
+    margin: 0;
+    font-size: 15px;
+}
+
+// ── 2. GOAL PROGRESS ──────────────────────────────────────────────────────
+.goalCard {
+    margin-top: -46px; // card chồng nhẹ lên hero
+    position: relative;
+    z-index: 2;
+}
+
+.goalLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: $forest-dark;
+
+    svg { color: $forest; }
+}
+
+.progressTrack {
+    height: 26px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    border: 1px solid $forest-light;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, $forest-dark, $forest 60%, #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    animation: growBar 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes growBar {
+    from { max-width: 0; }
+    to { max-width: 100%; }
+}
+
+.goalCount {
+    margin: 14px 0 4px;
+    font-size: 19px;
+    font-weight: 700;
+    color: $forest-dark;
+}
+
+.goalCaption {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+// ── 3. MY CONTRIBUTION ────────────────────────────────────────────────────
+.myCard {
+    background: linear-gradient(135deg, $forest-bg, #ffffff 65%);
+}
+
+.myBody {
+    display: flex;
+    gap: 34px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.myTreeBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: #fff;
+    border: 1px solid $forest-light;
+    border-radius: 16px;
+    padding: 22px 38px;
+}
+
+.myTreeCount {
+    font-size: 44px;
+    font-weight: 800;
+    color: $forest;
+    line-height: 1;
+}
+
+.myTreeLabel {
+    font-size: 15px;
+    font-weight: 600;
+    color: $forest-dark;
+}
+
+.myVnd {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.myBadgeBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.myBadgeIcon { font-size: 44px; line-height: 1; }
+
+.myBadgeName {
+    font-size: 19px;
+    font-weight: 700;
+    color: $forest-dark;
+}
+
+.myBadgeNone {
+    font-size: 15px;
+    color: #6b7280;
+}
+
+.myNextBadge {
+    font-size: 14px;
+    color: #475569;
+    background: #ecfdf5;
+    border: 1px dashed $forest-light;
+    border-radius: 10px;
+    padding: 8px 14px;
+
+    strong { color: $forest-dark; }
+}
+
+.myActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.certBtn,
+.shareBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.certBtn {
+    background: linear-gradient(135deg, $forest-dark, $forest);
+    color: #fff;
+    border: none;
+
+    &:hover { filter: brightness(1.08); transform: translateY(-1px); }
+}
+
+.shareBtn {
+    background: #fff;
+    color: $forest-dark;
+    border: 1.5px solid $forest;
+
+    &:hover { background: $forest-bg; }
+}
+
+// ── 4. LEADERBOARD ────────────────────────────────────────────────────────
+.lbTabs {
+    display: inline-flex;
+    background: #ecfdf5;
+    border: 1px solid $forest-light;
+    border-radius: 999px;
+    padding: 4px;
+}
+
+.lbTab {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $forest-dark;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lbTabActive {
+    background: $forest;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+}
+
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+}
+
+.podiumCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: $forest-bg;
+    border: 1px solid $forest-light;
+    border-radius: 16px;
+    padding: 22px 26px;
+    min-width: 180px;
+    transition: transform 0.25s ease;
+
+    &:hover { transform: translateY(-4px); }
+}
+
+.podiumFirst {
+    background: linear-gradient(160deg, #fefce8, $forest-bg);
+    border-color: #fde047;
+    padding: 30px 32px;
+    box-shadow: 0 8px 24px rgba(202, 138, 4, 0.14);
+
+    .podiumMedal { font-size: 42px; }
+    .podiumTrees { font-size: 19px; }
+}
+
+.podiumMedal { font-size: 34px; line-height: 1; }
+
+.podiumName {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+}
+
+.podiumBadgeIcon { margin-right: 5px; }
+
+.podiumTrees {
+    font-size: 17px;
+    font-weight: 800;
+    color: $forest;
+}
+
+.podiumMeta {
+    font-size: 12.5px;
+    color: #6b7280;
+}
+
+.lbTableWrap { overflow-x: auto; }
+
+.lbTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+
+    th {
+        text-align: left;
+        padding: 10px 14px;
+        color: #6b7280;
+        font-size: 12.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: $forest-bg; }
+}
+
+.lbRank { font-weight: 700; color: #6b7280; }
+.lbBadgeIcon { margin-right: 6px; }
+.lbTrees { font-weight: 700; color: $forest; }
+
+// ── 5. BATCHES ────────────────────────────────────────────────────────────
+.batchGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+.batchCard {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(22, 101, 52, 0.14);
+    }
+}
+
+.batchImage {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    display: block;
+}
+
+.batchImageFallback {
+    width: 100%;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    background: linear-gradient(135deg, $forest-dark, $forest 65%, $forest-light);
+}
+
+.batchBody { padding: 16px 18px 18px; }
+
+.batchLocation {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: $forest-dark;
+
+    svg { color: $forest; flex-shrink: 0; }
+}
+
+.batchMeta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 13.5px;
+    color: #6b7280;
+
+    svg { flex-shrink: 0; }
+}
+
+.batchTrees {
+    margin-left: auto;
+    font-weight: 700;
+    color: $forest;
+}
+
+.batchNote {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+// ── 6. RECENT FEED ────────────────────────────────────────────────────────
+.feedList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.feedItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 6px;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child { border-bottom: none; }
+}
+
+.feedIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $forest-bg;
+    border: 1px solid $forest-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+.feedText {
+    flex: 1;
+    font-size: 14.5px;
+    color: #334155;
+
+    strong { color: #1e293b; }
+}
+
+.feedTrees {
+    color: $forest;
+    font-weight: 700;
+}
+
+.feedSource { color: #6b7280; }
+
+.feedTime {
+    font-size: 12.5px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+// ── 7. HOW IT WORKS ───────────────────────────────────────────────────────
+.stepsRow {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.stepCard {
+    flex: 1;
+    min-width: 220px;
+    max-width: 300px;
+    position: relative;
+    background: $forest-bg;
+    border: 1px solid $forest-light;
+    border-radius: 16px;
+    padding: 26px 22px 22px;
+    text-align: center;
+
+    h3 {
+        margin: 10px 0 8px;
+        font-size: 16.5px;
+        font-weight: 700;
+        color: $forest-dark;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13.5px;
+        color: #475569;
+        line-height: 1.55;
+    }
+}
+
+.stepNumber {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $forest;
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(22, 163, 74, 0.4);
+}
+
+.stepEmoji {
+    font-size: 36px;
+    display: block;
+}
+
+.stepArrow {
+    align-self: center;
+    font-size: 26px;
+    color: $forest;
+    font-weight: 700;
+
+    @media (max-width: 800px) { display: none; }
+}
+
+// ── CTA cuối trang ────────────────────────────────────────────────────────
+.bottomCta {
+    text-align: center;
+    margin-top: 48px;
+
+    p {
+        font-size: 18px;
+        font-weight: 600;
+        color: $forest-dark;
+        margin: 0 0 18px;
+    }
+
+    .heroCta {
+        background: linear-gradient(135deg, $forest-dark, $forest);
+        color: #fff;
+        animation: none;
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+    .hero { padding: 110px 16px 70px; }
+    .heroStat { min-width: 150px; padding: 18px 22px; flex: 1; }
+    .section { padding: 24px 18px 28px; }
+    .goalCard { margin-top: -30px; }
+    .myBody { gap: 20px; }
+}

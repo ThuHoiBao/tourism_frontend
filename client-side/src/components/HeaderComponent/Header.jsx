@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
-import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo, FaWallet } from 'react-icons/fa';
+import { FaPhoneAlt, FaCoins, FaEdit, FaListAlt, FaBell, FaInfoCircle, FaSignOutAlt, FaHeart, FaComment, FaReply, FaUserPlus, FaTicketAlt, FaCheckCircle, FaTimesCircle, FaCreditCard, FaExclamationCircle, FaUndo, FaWallet, FaTree } from 'react-icons/fa';
 import { IoIosAirplane } from "react-icons/io";
 import { GiShipBow } from "react-icons/gi";
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import axios from '../../utils/axiosCustomize';
 import websocketService from '../../services/websocket';
+import GreenFundDonateModal from '../GreenFundComponent/GreenFundDonateModal';
 import futureLogoLight from '../../assets/brand/future-logo-light.svg';
 import futureLogoDark from '../../assets/brand/future-logo-dark.svg';
 
@@ -144,7 +145,7 @@ const NotificationDropdown = ({ styles, onClose, notifications, onMarkAsRead, on
     );
 };
 
-const ProfileModal = ({ styles, onClose, user, onLogout }) => {
+const ProfileModal = ({ styles, onClose, user, onLogout, onOpenGreenFund }) => {
     const navigate = useNavigate();
     const fullName = user?.fullName || 'Khách hàng';
     const coinBalance = user?.coinBalance || 0;
@@ -172,6 +173,7 @@ const ProfileModal = ({ styles, onClose, user, onLogout }) => {
                 <li onClick={() => handleMenuClick('profile')}><FaEdit /> Hồ sơ cá nhân</li>
                 <li onClick={() => handleMenuClick('transaction')}><FaListAlt /> Danh sách giao dịch</li>
                 <li onClick={() => handleMenuClick('withdraw-coins')}><FaWallet /> Rút điểm về ngân hàng</li>
+                <li onClick={() => { onClose(); onOpenGreenFund(); }}><FaTree /> Góp trồng cây 🌳</li>
                 <li onClick={() => handleMenuClick('favorites')}><FaInfoCircle /> Chuyến đi yêu thích</li>
                 <li onClick={handleLogoutClick}><FaSignOutAlt /> Đăng xuất</li>
             </ul>
@@ -186,6 +188,7 @@ const Header = () => {
     const location = useLocation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isGreenFundOpen, setIsGreenFundOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -519,6 +522,7 @@ const Header = () => {
                 <Link to="/" className={getNavLinkClass('/')}>Trang chủ</Link>
                 <Link to="/tours" className={getNavLinkClass('/tours')}>Chuyến đi</Link>
                 <Link to="/forum" className={getNavLinkClass('/forum')}>Diễn đàn</Link>
+                <Link to="/green-fund" className={getNavLinkClass('/green-fund')}>Quỹ Xanh 🌳</Link>
 
                 <Link to="/flights" className={getNavLinkClass('/flights')}><IoIosAirplane /> Vé máy bay</Link>
                 <Link to="/entertainment" className={getNavLinkClass('/entertainment')}>Vui chơi giải trí</Link>
@@ -572,8 +576,14 @@ const Header = () => {
                                 onClose={() => setIsModalOpen(false)}
                                 user={user}
                                 onLogout={handleLogout}
+                                onOpenGreenFund={() => setIsGreenFundOpen(true)}
                             />
                         )}
+
+                        <GreenFundDonateModal
+                            isOpen={isGreenFundOpen}
+                            onClose={() => setIsGreenFundOpen(false)}
+                        />
                     </div>
                 ) : (
                     <div className={styles.authContainer}>

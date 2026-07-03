@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { LogIn, FileText, Users, Heart, Trophy, Sparkles, Settings, UserCheck } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import axios from '../../../utils/axiosCustomize';
+import { getMyGreenFundApi } from '../../../services/greenFund.ts';
 import styles from './UserStats.module.scss';
 
 const UserStats = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ totalPosts: 0, totalFollowers: 0, totalLikesReceived: 0, reputationPoints: 0 });
+  const [greenBadge, setGreenBadge] = useState(null);
 
   const userId = user?.userId || user?.userID;
 
@@ -24,6 +26,14 @@ const UserStats = () => {
           reputationPoints: d.reputation || 0,
         });
       })
+      .catch(() => {});
+  }, [userId]);
+
+  // Danh hiệu Quỹ Xanh (nếu có) — lỗi thì bỏ qua, không làm hỏng sidebar
+  useEffect(() => {
+    if (!userId) return;
+    getMyGreenFundApi(userId)
+      .then((data) => setGreenBadge(data?.badge || null))
       .catch(() => {});
   }, [userId]);
 
@@ -60,6 +70,11 @@ const UserStats = () => {
           <div className={styles.onlineDot} />
         </div>
         <h3 className={styles.userName}>{user.fullName || user.username}</h3>
+        {greenBadge && (
+          <span className={styles.greenBadge} title={`Danh hiệu Quỹ Xanh: ${greenBadge.name}`}>
+            {greenBadge.icon} {greenBadge.name}
+          </span>
+        )}
         <span className={styles.userRole}><Sparkles size={11} /> Thành viên tích cực</span>
       </div>
 

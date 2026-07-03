@@ -25,6 +25,7 @@ import ForumPage from './components/ForumComponent/ForumPage';
 import PostDetailPage from './components/ForumComponent/PostDetail/PostDetailPage';
 import UserPostsManagement from './components/ForumComponent/UserPostsManagement/UserPostsManagement';
 import EditPost from './components/ForumComponent/EditPost/EditPost';
+import GreenFundPage from './components/GreenFundComponent/GreenFundPage';
 // // Các trang giả định
 // const HotelPage = () => <div>Trang Khách sạn</div>; 
 // const FlightsPage = () => <div>Trang Vé máy bay</div>; 
@@ -88,6 +89,8 @@ function App() {
           <Route path="/forum/post/:postId" element={<PostDetailPage />} />
           <Route path="/forum/my-posts" element={<UserPostsManagement />} />
           <Route path="/forum/post/:postId/edit" element={<EditPost />} />
+
+          <Route path="/green-fund" element={<GreenFundPage />} />
 
           <Route path="/register" element={<Register />} />
            <Route 

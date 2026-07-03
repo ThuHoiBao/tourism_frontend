@@ -23,6 +23,7 @@ const menuColumns = [
     title: 'Về Future',
     items: [
       { name: 'Về chúng tôi', link: '#' },
+      { name: 'Quỹ Xanh 🌳', link: '/green-fund' },
       { name: 'Liên hệ', link: '#' },
       { name: 'Trợ giúp', link: '#' },
       { name: 'Tuyển dụng', link: '#' },

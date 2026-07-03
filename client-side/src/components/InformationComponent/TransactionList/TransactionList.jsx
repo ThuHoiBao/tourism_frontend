@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import useBookings from '../../../hook/useBookings.ts';
 import useWebSocket from '../../../hook/useWebSocket.ts';
 import TransactionListItem from './TransactionListItem/TransactionListItem';
+import { getGreenFundSummaryApi } from '../../../services/greenFund.ts';
 import styles from './TransactionList.module.scss';
 
 const statusTabs = [
@@ -23,6 +24,18 @@ const TransactionList = ({ user }) => {
     const [activeStatus, setActiveStatus] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [highlightedCode, setHighlightedCode] = useState(null);
+    const [greenFundPercent, setGreenFundPercent] = useState(null);
+
+    // Lấy % đóng góp Quỹ Xanh một lần để hiện ghi chú trên booking đã thanh toán
+    useEffect(() => {
+        getGreenFundSummaryApi()
+            .then((summary) => {
+                if (summary?.enabled && summary?.bookingContributionPercent > 0) {
+                    setGreenFundPercent(summary.bookingContributionPercent);
+                }
+            })
+            .catch(() => { /* im lặng */ });
+    }, []);
 
     // Auto-fill search khi navigate từ thông báo booking
     useEffect(() => {
@@ -178,6 +191,7 @@ const TransactionList = ({ user }) => {
                             key={booking.bookingID}
                             booking={booking}
                             refetch={refetch}
+                            greenFundPercent={greenFundPercent}
                         />
                     ))}
                 </div>
