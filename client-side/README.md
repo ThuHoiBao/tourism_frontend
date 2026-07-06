@@ -1,70 +1,138 @@
-# Getting Started with Create React App
+# 🧭 Future Travel — Frontend (ReactJS)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Giao diện người dùng cho nền tảng đặt tour du lịch **Future Travel**, xây dựng bằng **ReactJS (Create React App)**. Ứng dụng gồm hai phần: **trang người dùng** (khám phá & đặt tour, diễn đàn, trợ lý ảo) và **trang quản trị (Admin)** (quản lý tour, lịch khởi hành, coupon, dashboard, đơn đặt...).
 
-## Available Scripts
+Backend là hệ thống **Spring Boot microservices**, frontend gọi API qua **API Gateway** tại `http://localhost:8080/api`.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📋 Mục lục
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
+- [Yêu cầu](#-yêu-cầu)
+- [Cài đặt & chạy](#-cài-đặt--chạy)
+- [Kết nối backend](#-kết-nối-backend)
+- [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
+- [Tính năng chính](#-tính-năng-chính)
+- [Build production](#-build-production)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🧰 Công nghệ sử dụng
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Nhóm | Công nghệ |
+|---|---|
+| Core | React 18, Create React App (react-scripts), TypeScript + JavaScript |
+| Định tuyến | React Router v7 |
+| State | Redux Toolkit, React Redux |
+| Gọi API | Axios (interceptor gắn JWT tự động) |
+| UI | Ant Design, React Bootstrap, SCSS/Sass, Lucide & FontAwesome icons |
+| Realtime | STOMP.js + SockJS / socket.io (thông báo, chat) |
+| Bản đồ | Leaflet + React-Leaflet |
+| Biểu đồ | Recharts |
+| Soạn thảo | React-Quill (rich text) |
+| Khác | react-toastify, swiper, react-select, fuse.js (tìm kiếm) |
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## ✅ Yêu cầu
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Công cụ | Phiên bản |
+|---|---|
+| Node.js | 18+ (khuyến nghị LTS) |
+| npm | 9+ |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🚀 Cài đặt & chạy
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+# Vào thư mục source
+cd client-side
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Cài dependencies
+npm install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Chạy ở chế độ phát triển (mặc định cổng 3000)
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Mở trình duyệt: **http://localhost:3000**
 
-## Learn More
+> Đảm bảo backend đã chạy (ít nhất API Gateway `:8080`) trước khi thao tác các chức năng cần dữ liệu.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🔗 Kết nối backend
 
-### Code Splitting
+Địa chỉ API được cấu hình trong `src/utils/axiosCustomize.js`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```js
+const BASE_URL = 'http://localhost:8080/api';
+```
 
-### Analyzing the Bundle Size
+- Axios tự động gắn `Authorization: Bearer <token>` từ `localStorage` vào mỗi request.
+- Timeout mặc định 30s (một số request nặng như đồng bộ chatbot được nới riêng).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Biến môi trường (nếu dùng) đặt trong `.env.local` theo chuẩn CRA (tiền tố `REACT_APP_`).
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📁 Cấu trúc thư mục
 
-### Advanced Configuration
+```
+client-side/
+├── public/
+├── src/
+│   ├── components/         # Toàn bộ UI, chia theo tính năng
+│   │   ├── AdminComponent/         # Trang quản trị (tour, lịch KH, coupon, dashboard...)
+│   │   ├── TourBookingComponent/   # Trang đặt tour
+│   │   ├── TourDetailComponent/    # Chi tiết tour
+│   │   ├── ForumComponent/         # Diễn đàn
+│   │   ├── ChatbotWidget/          # Trợ lý ảo
+│   │   ├── homPageComponent/       # Trang chủ
+│   │   └── ...
+│   ├── services/          # Lớp gọi API (auth, tour, booking, dashboard, forum...)
+│   ├── context/           # React Context
+│   ├── hook/              # Custom hooks
+│   ├── dto/               # Kiểu dữ liệu (TypeScript)
+│   ├── utils/             # axiosCustomize, websocket, helpers
+│   ├── assets/            # Ảnh, style dùng chung
+│   └── App.tsx / index.tsx
+└── package.json
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## ✨ Tính năng chính
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Người dùng**
+- Khám phá / tìm kiếm tour, xem chi tiết & lịch khởi hành, bản đồ điểm đến.
+- Đặt tour: chọn hành khách, **áp mã giảm giá** (mã theo lịch khởi hành + mã toàn hệ thống, tự chọn mã giảm nhiều nhất), dùng xu thưởng, thanh toán.
+- Diễn đàn cộng đồng, đánh giá tour, Green Fund.
+- **Trợ lý ảo AI** hỗ trợ tư vấn tour.
+- Thông báo realtime.
 
-### `npm run build` fails to minify
+**Quản trị (Admin)**
+- Quản lý tour, **lịch khởi hành** (giao diện nhóm theo tour dạng accordion, cột "đã đặt" thống kê thật, "giá từ" theo giá người lớn).
+- Quản lý **coupon** (theo lịch khởi hành hoặc toàn hệ thống, gắn nhiều lịch).
+- Dashboard doanh thu, **phân tích bằng AI**, đồng bộ dữ liệu trợ lý ảo.
+- Quản lý đơn đặt, người dùng, diễn đàn, thông báo.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 📦 Build production
+
+```bash
+npm run build
+```
+
+Kết quả nằm trong thư mục `build/` — đã minify và tối ưu, sẵn sàng triển khai lên hosting/CDN hoặc phục vụ qua Nginx.
+
+---
+
+## 🧪 Lệnh khác
+
+```bash
+npm test        # chạy test (interactive watch)
+```
