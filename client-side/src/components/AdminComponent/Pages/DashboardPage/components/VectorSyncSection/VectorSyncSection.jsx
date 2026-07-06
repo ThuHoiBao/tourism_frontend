@@ -14,10 +14,19 @@ const statusLabel = {
 };
 
 const triggerLabel = {
-    MANUAL: 'Thủ công',
-    SCHEDULED: 'Tự động',
-    EVENT_DEBOUNCED: 'Theo thay đổi',
-    CLEAR: 'Clear vector',
+    MANUAL: 'Người dùng bấm cập nhật',
+    SCHEDULED: 'Tự động theo lịch',
+    EVENT_DEBOUNCED: 'Khi có thay đổi dữ liệu',
+    CLEAR: 'Xóa dữ liệu',
+};
+
+// Loại dữ liệu được cập nhật cho trợ lý ảo (hiển thị dễ hiểu thay cho mã kỹ thuật)
+const entityLabel = {
+    ALL: 'Tất cả',
+    TOUR: 'Tour',
+    LOCATION: 'Địa điểm',
+    REVIEW: 'Đánh giá',
+    COUPON: 'Mã giảm giá',
 };
 
 const VectorSyncSection = ({ dateRange, allHistory = false }) => {
@@ -36,7 +45,7 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
             setSummary(data);
             setCurrentPage(1);
         } catch (err) {
-            setError('Không tải được thống kê đồng bộ chatbot');
+            setError('Không tải được dữ liệu của trợ lý ảo. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
@@ -52,21 +61,21 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
             await manualVectorSyncApi();
             await loadSummary();
         } catch (err) {
-            setError('Sync thủ công thất bại');
+            setError('Cập nhật dữ liệu chưa thành công. Vui lòng thử lại sau.');
         } finally {
             setActionLoading(null);
         }
     };
 
     const handleClear = async () => {
-        const confirmed = window.confirm('Xóa toàn bộ vector chatbot? Sau khi clear cần bấm Sync ngay để nạp lại dữ liệu.');
+        const confirmed = window.confirm('Xóa toàn bộ dữ liệu hiện có của trợ lý ảo?\n\nSau khi xóa, hãy bấm "Cập nhật dữ liệu ngay" để nạp lại. Trong lúc chưa nạp lại, trợ lý ảo có thể trả lời thiếu thông tin.');
         if (!confirmed) return;
         try {
             setActionLoading('clear');
             await manualVectorClearApi();
             await loadSummary();
         } catch (err) {
-            setError('Clear vector thất bại');
+            setError('Xóa dữ liệu chưa thành công. Vui lòng thử lại sau.');
         } finally {
             setActionLoading(null);
         }
@@ -87,20 +96,20 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
         <section className={styles.section}>
             <div className={styles.header}>
                 <div>
-                    <h2>Đồng bộ Chatbot</h2>
-                    <p>Pinecone vector sync, Rabbit debounce và thao tác thủ công</p>
+                    <h2>Dữ liệu trợ lý ảo (Chatbot)</h2>
+                    <p>Cập nhật thông tin tour, địa điểm, đánh giá, mã giảm giá... để trợ lý ảo trả lời khách chính xác và mới nhất.</p>
                 </div>
                 <div className={styles.actions}>
-                    <button className={styles.secondaryButton} onClick={loadSummary} disabled={loading || actionLoading}>
+                    <button className={styles.secondaryButton} onClick={loadSummary} disabled={loading || actionLoading} title="Tải lại danh sách">
                         <RefreshCw size={16} />
                     </button>
-                    <button className={styles.primaryButton} onClick={handleSync} disabled={Boolean(actionLoading)}>
+                    <button className={styles.primaryButton} onClick={handleSync} disabled={Boolean(actionLoading)} title="Nạp lại toàn bộ dữ liệu mới nhất cho trợ lý ảo">
                         <Database size={16} />
-                        {actionLoading === 'sync' ? 'Đang sync' : 'Sync ngay'}
+                        {actionLoading === 'sync' ? 'Đang cập nhật...' : 'Cập nhật dữ liệu ngay'}
                     </button>
-                    <button className={styles.dangerButton} onClick={handleClear} disabled={Boolean(actionLoading)}>
+                    <button className={styles.dangerButton} onClick={handleClear} disabled={Boolean(actionLoading)} title="Xóa toàn bộ dữ liệu hiện có của trợ lý ảo">
                         <Trash2 size={16} />
-                        {actionLoading === 'clear' ? 'Đang clear' : 'Clear vector'}
+                        {actionLoading === 'clear' ? 'Đang xóa...' : 'Xóa dữ liệu'}
                     </button>
                 </div>
             </div>
@@ -113,12 +122,12 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
             )}
 
             <div className={styles.statsGrid}>
-                <Metric label={allHistory ? 'Tổng sync' : 'Sync trong kỳ'} value={loading ? '...' : summary?.todaySyncCount ?? 0} />
-                <Metric label="Thành công" value={loading ? '...' : summary?.successCount ?? 0} tone="success" />
-                <Metric label="Thất bại" value={loading ? '...' : summary?.failedCount ?? 0} tone="danger" />
-                <Metric label="Pending events" value={loading ? '...' : summary?.pendingEventCount ?? 0} tone="warning" />
-                <Metric label="Trạng thái" value={summary?.syncRunning ? 'Đang sync' : 'Sẵn sàng'} />
-                <Metric label="Docs lần cuối" value={lastRun?.totalDocs ?? 0} />
+                <Metric label={allHistory ? 'Tổng số lần cập nhật' : 'Số lần cập nhật trong kỳ'} value={loading ? '...' : summary?.todaySyncCount ?? 0} />
+                <Metric label="Cập nhật thành công" value={loading ? '...' : summary?.successCount ?? 0} tone="success" />
+                <Metric label="Cập nhật lỗi" value={loading ? '...' : summary?.failedCount ?? 0} tone="danger" />
+                <Metric label="Thay đổi đang chờ cập nhật" value={loading ? '...' : summary?.pendingEventCount ?? 0} tone="warning" />
+                <Metric label="Tình trạng hiện tại" value={summary?.syncRunning ? 'Đang cập nhật...' : 'Sẵn sàng'} />
+                <Metric label="Số mục dữ liệu (lần gần nhất)" value={lastRun?.totalDocs ?? 0} />
             </div>
 
             <div className={styles.lastRun}>
@@ -128,7 +137,7 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
                     <strong>
                         {lastRun
                             ? `${triggerLabel[lastRun.triggerType] || lastRun.triggerType} - ${statusLabel[lastRun.status] || lastRun.status}`
-                            : 'Chưa có lịch sử sync'}
+                            : 'Chưa có lần cập nhật nào'}
                     </strong>
                     {lastRun?.startedAt && <small>{new Date(lastRun.startedAt).toLocaleString('vi-VN')}</small>}
                 </div>
@@ -139,11 +148,11 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
                     <thead>
                     <tr>
                         <th>Thời gian</th>
-                        <th>Trigger</th>
-                        <th>Trạng thái</th>
-                        <th>Docs</th>
-                        <th>Events</th>
-                        <th>Entity</th>
+                        <th>Hình thức cập nhật</th>
+                        <th>Kết quả</th>
+                        <th>Số mục dữ liệu</th>
+                        <th>Số thay đổi</th>
+                        <th>Loại dữ liệu</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -158,13 +167,13 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
                             </td>
                             <td>{run.totalDocs ?? 0}</td>
                             <td>{run.eventCount ?? 0}</td>
-                            <td>{run.entityTypes || '-'}</td>
+                            <td>{entityLabel[run.entityTypes] || run.entityTypes || '-'}</td>
                         </tr>
                     ))}
                     {!loading && (!summary?.recentRuns || summary.recentRuns.length === 0) && (
                         <tr>
                             <td colSpan="6" className={styles.empty}>
-                                {allHistory ? 'Chưa có lịch sử sync nào' : 'Chưa có lần sync nào trong kỳ'}
+                                {allHistory ? 'Chưa có lần cập nhật nào' : 'Chưa có lần cập nhật nào trong kỳ'}
                             </td>
                         </tr>
                     )}
@@ -175,7 +184,7 @@ const VectorSyncSection = ({ dateRange, allHistory = false }) => {
             {recentRuns.length > pageSize && (
                 <div className={styles.pagination}>
                     <span>
-                        Trang {currentPage}/{totalPages} · {recentRuns.length} lần sync
+                        Trang {currentPage}/{totalPages} · {recentRuns.length} lần cập nhật
                     </span>
                     <div className={styles.pageActions}>
                         <button

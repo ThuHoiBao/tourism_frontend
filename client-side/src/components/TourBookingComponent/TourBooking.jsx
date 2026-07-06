@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './TourBooking.module.scss';
 import axios from '../../utils/axiosCustomize';
@@ -50,6 +50,15 @@ const TourBooking = () => {
     email: '',
     address: ''
   });
+  // Đánh dấu người dùng đã tự sửa -> ngừng mọi auto-fill để không đè lên.
+  const contactTouchedRef = useRef(false);
+  const [contactPrefilled, setContactPrefilled] = useState(false);
+
+  const updateContact = (field, value) => {
+    contactTouchedRef.current = true;
+    setContactPrefilled(false);
+    setContactInfo((prev) => ({ ...prev, [field]: value }));
+  };
 
   const [customerNote, setCustomerNote] = useState('');
 
@@ -125,6 +134,60 @@ const TourBooking = () => {
       console.log('✅ Auto selected best global coupon:', bestCoupon.code);
     }
   }, [bookingData, passengerData, appliedGlobalCoupon]);
+
+  // Tự động điền thông tin liên lạc:
+  //  1) Điền ngay từ hồ sơ đăng nhập (tức thì).
+  //  2) Ưu tiên ghi đè bằng thông tin từ lần đặt tour gần nhất (kèm địa chỉ).
+  // Không đụng vào nếu người dùng đã tự sửa (contactTouchedRef).
+  useEffect(() => {
+    if (!user || contactTouchedRef.current) return;
+
+    // (1) Prefill từ hồ sơ user
+    const profileHasData = user.fullName || user.phone || user.email;
+    if (profileHasData) {
+      setContactInfo((prev) => (contactTouchedRef.current ? prev : {
+        fullName: user.fullName || '',
+        phone: user.phone || '',
+        email: user.email || '',
+        address: ''
+      }));
+      setContactPrefilled(true);
+    }
+
+    // (2) Prefill từ booking gần nhất
+    const userId = user.userId || user.userID || user.id;
+    if (!userId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await axios.get(`/bookings/user/${userId}`);
+        const list = res.data || res || [];
+        if (cancelled || contactTouchedRef.current || !Array.isArray(list) || list.length === 0) return;
+
+        const latest = [...list].sort(
+          (a, b) => new Date(b.bookingDate || 0) - new Date(a.bookingDate || 0)
+        )[0];
+        if (!latest) return;
+
+        setContactInfo((prev) => {
+          if (contactTouchedRef.current) return prev;
+          return {
+            fullName: latest.contactFullName || prev.fullName || '',
+            phone: latest.contactPhone || prev.phone || '',
+            email: latest.contactEmail || prev.email || '',
+            address: latest.contactAddress || prev.address || ''
+          };
+        });
+        setContactPrefilled(true);
+      } catch (err) {
+        // Chưa có lịch sử hoặc lỗi -> giữ prefill từ hồ sơ, người dùng tự nhập.
+        console.debug('Prefill contact skipped:', err?.message);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [user]);
 
   const maxSlots = bookingData?.availableSlots || 0;
   const currentPaxCount = 
@@ -252,16 +315,41 @@ const TourBooking = () => {
       toast.warning(`Đơn hàng cần tối thiểu ${formatCurrency(coupon.minOrderValue)} để áp dụng mã này!`);
       return;
     }
-   
+
     setAppliedGlobalCoupon(coupon);
+    setShowCouponModal(false);
+  };
+
+  // Áp mã theo lịch khởi hành (user chọn trong danh sách)
+  const handleApplyDepartureCoupon = (coupon) => {
+    if (coupon.minOrderValue && subTotal < coupon.minOrderValue) {
+      toast.warning(`Đơn hàng cần tối thiểu ${formatCurrency(coupon.minOrderValue)} để áp dụng mã này!`);
+      return;
+    }
+    setAppliedDepartureCoupon(coupon);
     setShowCouponModal(false);
   };
 
   const handleManualCouponSubmit = () => {
     if (!bookingData) return;
-   
+
     const inputCode = couponInput.toUpperCase();
-   
+
+    // Ưu tiên tìm trong mã theo lịch khởi hành, rồi tới mã global
+    const foundDeparture = bookingData.departureCoupons?.find(c => c.code === inputCode);
+    if (foundDeparture) {
+      handleApplyDepartureCoupon({
+        code: foundDeparture.code,
+        discount: foundDeparture.discountAmount,
+        desc: foundDeparture.description,
+        type: 'fixed',
+        minOrderValue: foundDeparture.minOrderValue,
+        category: 'departure'
+      });
+      setCouponInput('');
+      return;
+    }
+
     const found = bookingData.globalCoupons?.find(c => c.code === inputCode);
     if (found) {
       handleApplyGlobalCoupon({
@@ -577,6 +665,63 @@ const TourBooking = () => {
 
   const { outboundFlight, inboundFlight } = bookingData;
   const availableGlobalCoupons = bookingData.globalCoupons || [];
+  const availableDepartureCoupons = bookingData.departureCoupons || [];
+
+  // Render 1 mục coupon trong modal (dùng chung cho mã theo lịch & mã global)
+  const renderCouponItem = (coupon, category) => {
+    const isDisabled = coupon.minOrderValue && subTotal < coupon.minOrderValue;
+    const applied = category === 'departure' ? appliedDepartureCoupon : appliedGlobalCoupon;
+    const isSelected = applied && applied.code === coupon.code;
+    const onPick = () => {
+      if (isDisabled) return;
+      const payload = {
+        code: coupon.code, discount: coupon.discountAmount, desc: coupon.description,
+        type: 'fixed', minOrderValue: coupon.minOrderValue, category
+      };
+      if (category === 'departure') handleApplyDepartureCoupon(payload);
+      else handleApplyGlobalCoupon(payload);
+    };
+    return (
+      <div
+        key={`${category}-${coupon.code}`}
+        className={`${styles.couponItem} ${isDisabled ? styles.disabled : ''} ${isSelected ? styles.selected : ''}`}
+        onClick={onPick}
+        style={{
+          opacity: isDisabled ? 0.5 : 1,
+          cursor: isDisabled ? 'not-allowed' : 'pointer',
+          backgroundColor: isSelected ? '#f6ffed' : 'white',
+          border: isSelected ? '2px solid #52c41a' : '1px solid #d9d9d9',
+          transition: 'all 0.3s'
+        }}
+      >
+        <div className={styles.couponIcon}>{category === 'departure' ? '📅' : '🎁'}</div>
+        <div className={styles.couponInfo}>
+          <div className={styles.code}>
+            {coupon.code}
+            {isSelected && (
+              <span style={{ marginLeft: '8px', fontSize: '11px', backgroundColor: '#52c41a', color: 'white', padding: '2px 6px', borderRadius: '3px', fontWeight: '600' }}>
+                ✓ Đang chọn
+              </span>
+            )}
+          </div>
+          <div className={styles.desc}>{coupon.description}</div>
+          <div style={{ color: '#52c41a', fontWeight: 'bold', marginTop: '4px' }}>
+            Giảm {formatCurrency(coupon.discountAmount)}
+          </div>
+          {isDisabled && (
+            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+              ⚠️ Đơn hàng cần tối thiểu {formatCurrency(coupon.minOrderValue)}
+            </div>
+          )}
+        </div>
+        {isSelected && (
+          <div className={styles.selectBtn} style={{ color: '#52c41a' }}>
+            <FaCheckCircle />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -607,41 +752,51 @@ const TourBooking = () => {
           <div className={styles.leftColumn}>
             <section className={styles.section}>
               <h2 className={styles.sectionHeader}>THÔNG TIN LIÊN LẠC</h2>
+              {contactPrefilled && (
+                <p style={{
+                  margin: '-4px 0 14px',
+                  fontSize: '13px',
+                  color: '#1f6fb2',
+                  fontWeight: 500
+                }}>
+                  Đã điền sẵn từ thông tin của bạn — bạn có thể chỉnh sửa lại nếu cần.
+                </p>
+              )}
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
                   <label>Họ tên <span className={styles.required}>*</span></label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Nhập họ tên"
                     value={contactInfo.fullName}
-                    onChange={(e) => setContactInfo({...contactInfo, fullName: e.target.value})}
+                    onChange={(e) => updateContact('fullName', e.target.value)}
                   />
                 </div>
                 <div className={styles.formGroup}>
                   <label>Điện thoại <span className={styles.required}>*</span></label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Nhập số điện thoại"
                     value={contactInfo.phone}
-                    onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                    onChange={(e) => updateContact('phone', e.target.value)}
                   />
                 </div>
                 <div className={styles.formGroup}>
                   <label>Email <span className={styles.required}>*</span></label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     placeholder="nguyenvana@gmail.com"
                     value={contactInfo.email}
-                    onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                    onChange={(e) => updateContact('email', e.target.value)}
                   />
                 </div>
                 <div className={styles.formGroup}>
                   <label>Địa chỉ</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Nhập địa chỉ"
                     value={contactInfo.address}
-                    onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
+                    onChange={(e) => updateContact('address', e.target.value)}
                   />
                 </div>
               </div>
@@ -1057,68 +1212,24 @@ const TourBooking = () => {
             <button onClick={handleManualCouponSubmit}>Áp dụng</button>
           </div>
           
-          {availableGlobalCoupons.length > 0 ? (
+          {(availableDepartureCoupons.length > 0 || availableGlobalCoupons.length > 0) ? (
             <div className={styles.couponList}>
-              {availableGlobalCoupons.map(coupon => {
-                const isDisabled = coupon.minOrderValue && subTotal < coupon.minOrderValue;
-                const isSelected = appliedGlobalCoupon && appliedGlobalCoupon.code === coupon.code;
-               
-                return (
-                  <div
-                    key={coupon.code}
-                    className={`${styles.couponItem} ${isDisabled ? styles.disabled : ''} ${isSelected ? styles.selected : ''}`}
-                    onClick={() => !isDisabled && handleApplyGlobalCoupon({
-                      code: coupon.code,
-                      discount: coupon.discountAmount,
-                      desc: coupon.description,
-                      type: 'fixed',
-                      minOrderValue: coupon.minOrderValue,
-                      category: 'global'
-                    })}
-                    style={{ 
-                      opacity: isDisabled ? 0.5 : 1, 
-                      cursor: isDisabled ? 'not-allowed' : 'pointer',
-                      backgroundColor: isSelected ? '#f6ffed' : 'white',
-                      border: isSelected ? '2px solid #52c41a' : '1px solid #d9d9d9',
-                      transition: 'all 0.3s'
-                    }}
-                  >
-                    <div className={styles.couponIcon}>🎁</div>
-                    <div className={styles.couponInfo}>
-                      <div className={styles.code}>
-                        {coupon.code}
-                        {isSelected && (
-                          <span style={{
-                            marginLeft: '8px',
-                            fontSize: '11px',
-                            backgroundColor: '#52c41a',
-                            color: 'white',
-                            padding: '2px 6px',
-                            borderRadius: '3px',
-                            fontWeight: '600'
-                          }}>
-                            ✓ Đang chọn
-                          </span>
-                        )}
-                      </div>
-                      <div className={styles.desc}>{coupon.description}</div>
-                      <div style={{ color: '#52c41a', fontWeight: 'bold', marginTop: '4px' }}>
-                        Giảm {formatCurrency(coupon.discountAmount)}
-                      </div>
-                      {isDisabled && (
-                        <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-                          ⚠️ Đơn hàng cần tối thiểu {formatCurrency(coupon.minOrderValue)}
-                        </div>
-                      )}
-                    </div>
-                    {isSelected && (
-                      <div className={styles.selectBtn} style={{ color: '#52c41a' }}>
-                        <FaCheckCircle />
-                      </div>
-                    )}
+              {availableDepartureCoupons.length > 0 && (
+                <>
+                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#555', margin: '4px 0 6px' }}>
+                    Mã giảm giá cho lịch khởi hành này
                   </div>
-                );
-              })}
+                  {availableDepartureCoupons.map(coupon => renderCouponItem(coupon, 'departure'))}
+                </>
+              )}
+              {availableGlobalCoupons.length > 0 && (
+                <>
+                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#555', margin: '12px 0 6px' }}>
+                    Mã giảm giá áp dụng toàn hệ thống
+                  </div>
+                  {availableGlobalCoupons.map(coupon => renderCouponItem(coupon, 'global'))}
+                </>
+              )}
             </div>
           ) : (
             <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>

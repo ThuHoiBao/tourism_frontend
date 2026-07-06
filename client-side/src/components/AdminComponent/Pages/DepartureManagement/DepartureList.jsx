@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar, Plus, Search, Eye, Edit2, Copy, Trash2, ChevronLeft, ChevronRight,
-  Plane, Users, MapPin, Filter, X, Download, ArrowUpDown, ArrowUp, ArrowDown,
-  AlertTriangle, Layers, CalendarRange, TrendingUp, CircleDot, Ban
+  Plane, Users, MapPin, Filter, X, Download, ChevronDown,
+  AlertTriangle, Layers, CalendarRange, TrendingUp, CircleDot, Ban, Package
 } from 'lucide-react';
 import axios from '../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
@@ -32,7 +32,7 @@ const ConfirmDeleteModal = ({ open, title, message, onCancel, onConfirm, busy })
 };
 
 const DepartureList = () => {
-  const [departures, setDepartures]       = useState([]);
+  const [groups, setGroups]               = useState([]);   // nhóm theo tour
   const [loading, setLoading]             = useState(false);
   const [searchTerm, setSearchTerm]       = useState('');
   const [statusFilter, setStatusFilter]   = useState('all');
@@ -41,9 +41,12 @@ const DepartureList = () => {
   const [customDateTo, setCustomDateTo]   = useState('');
   const [currentPage, setCurrentPage]     = useState(0);
   const [totalPages, setTotalPages]       = useState(0);
-  const [totalItems, setTotalItems]       = useState(0);
+  const [totalItems, setTotalItems]       = useState(0);       // số tour
+  const [totalDepartures, setTotalDepartures] = useState(0);   // tổng số lịch
   const [pageSize, setPageSize]           = useState(10);
   const [locations, setLocations]         = useState([]);
+
+  const [expandedTours, setExpandedTours] = useState(new Set());
 
   const [showFormModal, setShowFormModal]   = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -53,15 +56,8 @@ const DepartureList = () => {
   const [cloneLoading, setCloneLoading]     = useState(false);
   const [idToClone, setIdToClone]           = useState(null);
 
-  // Bulk select + sort + confirm
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [sortBy, setSortBy]           = useState('departureDate');
-  const [sortDir, setSortDir]         = useState('ASC');
   const [confirm, setConfirm]         = useState({ open: false, ids: [], busy: false });
-
-  const [stats, setStats] = useState({
-    total: 0, active: 0, totalSlots: 0, totalBookings: 0
-  });
 
   useEffect(() => { loadLocations(); }, []);
 
@@ -75,9 +71,9 @@ const DepartureList = () => {
   };
 
   useEffect(() => {
-    fetchDepartures();
+    fetchGroups();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize, statusFilter, dateFilter, customDateFrom, customDateTo, sortBy, sortDir]);
+  }, [currentPage, pageSize, statusFilter, dateFilter, customDateFrom, customDateTo]);
 
   // ── Date range helper ──────────────────────────────────────────────────
   const getDateRange = () => {
@@ -116,27 +112,24 @@ const DepartureList = () => {
     }
   };
 
-  const fetchDepartures = async () => {
+  const fetchGroups = async () => {
     setLoading(true);
     try {
-      const params = { page: currentPage, size: pageSize, sortBy, sortDirection: sortDir };
+      const params = { page: currentPage, size: pageSize };
       if (statusFilter !== 'all') params.status = statusFilter === 'active';
       const range = getDateRange();
       if (range) { params.startDate = range.from; params.endDate = range.to; }
 
-      const res = await axios.get('/admin/departures', { params });
+      const res = await axios.get('/admin/departures/grouped', { params });
       if (res.data.success) {
-        const data = res.data.data;
-        setDepartures(data);
-        setTotalPages(res.data.totalPages);
-        setTotalItems(res.data.totalItems);
+        const data = res.data.data || [];
+        setGroups(data);
+        setTotalPages(res.data.totalPages || 0);
+        setTotalItems(res.data.totalItems || 0);
+        setTotalDepartures(res.data.totalDepartures || 0);
         setSelectedIds(new Set());
-        setStats({
-          total: data.length,
-          active: data.filter(d => d.status).length,
-          totalSlots: data.reduce((s, d) => s + (d.availableSlots || 0), 0),
-          totalBookings: data.reduce((s, d) => s + (d.totalBookings || 0), 0),
-        });
+        // Mặc định mở rộng nếu chỉ có ít tour
+        setExpandedTours(new Set(data.length <= 3 ? data.map(g => g.tourID) : []));
       }
     } catch {
       toast.error('Không thể tải danh sách lịch khởi hành');
@@ -155,7 +148,7 @@ const DepartureList = () => {
     }
   };
 
-  // Single + bulk delete via confirm modal
+  // Single + bulk delete
   const askDeleteOne      = (id) => setConfirm({ open: true, ids: [id], busy: false });
   const askDeleteSelected = () => {
     if (selectedIds.size === 0) return;
@@ -167,7 +160,7 @@ const DepartureList = () => {
       await Promise.all(confirm.ids.map(id => axios.delete(`/admin/departures/${id}`)));
       toast.success(`Đã xóa ${confirm.ids.length} lịch khởi hành`);
       setConfirm({ open: false, ids: [], busy: false });
-      fetchDepartures();
+      fetchGroups();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Không thể xóa');
       setConfirm(c => ({ ...c, busy: false }));
@@ -185,7 +178,7 @@ const DepartureList = () => {
       if (res.data.success) {
         toast.success('Sao chép thành công!');
         setShowCloneModal(false); setIdToClone(null);
-        fetchDepartures();
+        fetchGroups();
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Không thể sao chép');
@@ -210,20 +203,18 @@ const DepartureList = () => {
     if (v !== 'custom') { setCustomDateFrom(''); setCustomDateTo(''); }
   };
 
-  // Sort handler
-  const toggleSort = (col) => {
-    if (sortBy === col) setSortDir(d => (d === 'ASC' ? 'DESC' : 'ASC'));
-    else { setSortBy(col); setSortDir('ASC'); }
-    setCurrentPage(0);
+  // Accordion
+  const toggleExpand = (tourID) => {
+    setExpandedTours(prev => {
+      const next = new Set(prev);
+      next.has(tourID) ? next.delete(tourID) : next.add(tourID);
+      return next;
+    });
   };
-  const SortIcon = ({ col }) => {
-    if (sortBy !== col) return <ArrowUpDown size={11} className={styles.sortIconIdle} />;
-    return sortDir === 'ASC'
-      ? <ArrowUp size={11} className={styles.sortIconActive} />
-      : <ArrowDown size={11} className={styles.sortIconActive} />;
-  };
+  const expandAll   = () => setExpandedTours(new Set(filtered.map(g => g.tourID)));
+  const collapseAll = () => setExpandedTours(new Set());
 
-  // Selection
+  // Selection (theo departure)
   const toggleSelect = (id) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
@@ -231,24 +222,31 @@ const DepartureList = () => {
       return next;
     });
   };
+  const allDepartureIds = useMemo(
+    () => filteredIds(groups, searchTerm),
+    [groups, searchTerm]
+  );
+  function filteredIds(gs, term) {
+    const t = term.toLowerCase();
+    return gs
+      .filter(g => g.tourName?.toLowerCase().includes(t) || g.tourCode?.toLowerCase().includes(t))
+      .flatMap(g => (g.departures || []).map(d => d.departureID));
+  }
   const toggleSelectAll = () => {
-    if (selectedIds.size === filtered.length && filtered.length > 0) setSelectedIds(new Set());
-    else setSelectedIds(new Set(filtered.map(d => d.departureID)));
+    if (selectedIds.size === allDepartureIds.length && allDepartureIds.length > 0) setSelectedIds(new Set());
+    else setSelectedIds(new Set(allDepartureIds));
   };
 
-  // Export CSV
+  // Export CSV (toàn bộ lịch trên trang)
   const exportCsv = () => {
-    if (filtered.length === 0) { toast.info('Không có dữ liệu để xuất'); return; }
-    const rows = [
-      ['ID', 'Mã tour', 'Tên tour', 'Ngày khởi hành', 'Thời gian', 'Chỗ trống', 'Đã đặt', 'Giá thấp nhất', 'Trạng thái'],
-      ...filtered.map(d => [
-        d.departureID, d.tourCode, d.tourName,
-        d.departureDate || '', d.tourDuration || '',
-        d.availableSlots || 0, d.totalBookings || 0,
-        d.lowestPrice || 0,
-        d.status ? 'Hoạt động' : 'Tạm dừng',
-      ])
-    ];
+    const rows = [['ID', 'Mã tour', 'Tên tour', 'Ngày khởi hành', 'Thời gian', 'Chỗ trống', 'Đã đặt', 'Giá thấp nhất', 'Trạng thái']];
+    filtered.forEach(g => (g.departures || []).forEach(d => rows.push([
+      d.departureID, g.tourCode, g.tourName,
+      d.departureDate || '', d.tourDuration || '',
+      d.availableSlots || 0, d.totalBookings || 0,
+      d.lowestPrice || 0, d.status ? 'Hoạt động' : 'Tạm dừng',
+    ])));
+    if (rows.length <= 1) { toast.info('Không có dữ liệu để xuất'); return; }
     const csv = rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
     const url  = URL.createObjectURL(blob);
@@ -275,15 +273,21 @@ const DepartureList = () => {
     } catch { return '—'; }
   };
 
-  // Filter client-side bằng searchTerm
-  const filtered = useMemo(() => departures.filter(d =>
-    d.tourName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    d.tourCode?.toLowerCase().includes(searchTerm.toLowerCase())
-  ), [departures, searchTerm]);
+  // Filter nhóm client-side
+  const filtered = useMemo(() => groups.filter(g =>
+    g.tourName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    g.tourCode?.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [groups, searchTerm]);
 
-  const allSelected = selectedIds.size > 0 && selectedIds.size === filtered.length;
+  const allSelected = selectedIds.size > 0 && selectedIds.size === allDepartureIds.length;
 
-  // Slot fill % (visual indicator)
+  // Stats trên trang
+  const pageStats = useMemo(() => ({
+    active: filtered.reduce((s, g) => s + (g.activeCount || 0), 0),
+    totalSlots: filtered.reduce((s, g) => s + (g.totalAvailableSlots || 0), 0),
+    totalBooked: filtered.reduce((s, g) => s + (g.totalBooked || 0), 0),
+  }), [filtered]);
+
   const slotFillPct = (dep) => {
     const total = (dep.availableSlots || 0) + (dep.totalBookings || 0);
     if (total === 0) return 0;
@@ -299,7 +303,7 @@ const DepartureList = () => {
           <div className={styles.titleIcon}><CalendarRange size={22} /></div>
           <div>
             <h1>Quản lý Lịch khởi hành</h1>
-            <p>Tạo, theo dõi và sắp xếp lịch khởi hành của các tour</p>
+            <p>Nhóm theo tour — bấm vào tour để xem các lịch khởi hành</p>
           </div>
         </div>
         <div className={styles.headerActions}>
@@ -315,17 +319,18 @@ const DepartureList = () => {
       {/* ── STAT CARDS ──────────────────────────────────────── */}
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <div className={`${styles.statIcon} ${styles.statBlue}`}><Calendar size={20} /></div>
+          <div className={`${styles.statIcon} ${styles.statBlue}`}><Package size={20} /></div>
           <div>
-            <div className={styles.statLabel}>Tổng lịch khởi hành</div>
+            <div className={styles.statLabel}>Tổng số tour</div>
             <div className={styles.statValue}>{totalItems.toLocaleString('vi-VN')}</div>
+            <div className={styles.statHint}>{totalDepartures.toLocaleString('vi-VN')} lịch khởi hành</div>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={`${styles.statIcon} ${styles.statGreen}`}><CircleDot size={20} /></div>
           <div>
-            <div className={styles.statLabel}>Đang hoạt động</div>
-            <div className={styles.statValue}>{stats.active}</div>
+            <div className={styles.statLabel}>Lịch đang hoạt động</div>
+            <div className={styles.statValue}>{pageStats.active}</div>
             <div className={styles.statHint}>trên trang hiện tại</div>
           </div>
         </div>
@@ -333,7 +338,7 @@ const DepartureList = () => {
           <div className={`${styles.statIcon} ${styles.statPurple}`}><Users size={20} /></div>
           <div>
             <div className={styles.statLabel}>Tổng chỗ trống</div>
-            <div className={styles.statValue}>{stats.totalSlots}</div>
+            <div className={styles.statValue}>{pageStats.totalSlots}</div>
             <div className={styles.statHint}>còn trống trên trang</div>
           </div>
         </div>
@@ -341,8 +346,8 @@ const DepartureList = () => {
           <div className={`${styles.statIcon} ${styles.statAmber}`}><TrendingUp size={20} /></div>
           <div>
             <div className={styles.statLabel}>Đã đặt</div>
-            <div className={styles.statValue}>{stats.totalBookings}</div>
-            <div className={styles.statHint}>booking trên trang</div>
+            <div className={styles.statValue}>{pageStats.totalBooked}</div>
+            <div className={styles.statHint}>khách trên trang</div>
           </div>
         </div>
       </section>
@@ -395,10 +400,17 @@ const DepartureList = () => {
 
           <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(0); }}
             className={styles.filterSelect}>
-            <option value={10}>10 / trang</option>
-            <option value={20}>20 / trang</option>
-            <option value={50}>50 / trang</option>
+            <option value={10}>10 tour / trang</option>
+            <option value={20}>20 tour / trang</option>
+            <option value={50}>50 tour / trang</option>
           </select>
+
+          <button className={styles.btnGhost} onClick={expandAll} title="Mở rộng tất cả">
+            <ChevronDown size={13} /> Mở tất cả
+          </button>
+          <button className={styles.btnGhost} onClick={collapseAll} title="Thu gọn tất cả">
+            <ChevronRight size={13} /> Thu gọn
+          </button>
         </div>
 
         {dateFilter === 'custom' && (
@@ -446,134 +458,133 @@ const DepartureList = () => {
         </div>
       ) : (
         <>
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.cbCol}>
-                    <input type="checkbox" checked={allSelected}
-                      onChange={toggleSelectAll}
-                      aria-label="Chọn tất cả" />
-                  </th>
-                  <th className={styles.sortable} onClick={() => toggleSort('tourName')}>
-                    Tour <SortIcon col="tourName" />
-                  </th>
-                  <th className={styles.sortable} onClick={() => toggleSort('departureDate')}>
-                    Ngày khởi hành <SortIcon col="departureDate" />
-                  </th>
-                  <th>Tình trạng chỗ</th>
-                  <th>Giá từ</th>
-                  <th>Vận chuyển</th>
-                  <th>Trạng thái</th>
-                  <th className={styles.actionsCol}>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((d, idx) => {
-                  const isSel = selectedIds.has(d.departureID);
-                  const pct = slotFillPct(d);
-                  return (
-                    <tr key={d.departureID}
-                        className={`${isSel ? styles.rowSel : ''}`}
-                        style={{ animationDelay: `${Math.min(idx * 0.03, 0.25)}s` }}>
-                      <td className={styles.cbCol}>
-                        <input type="checkbox" checked={isSel}
-                          onChange={() => toggleSelect(d.departureID)}
-                          aria-label={`Chọn ${d.tourName}`} />
-                      </td>
-                      <td>
-                        <div className={styles.tourInfo}>
-                          <strong title={d.tourName}>{d.tourName}</strong>
-                          <div className={styles.tourMeta}>
-                            <span className={styles.tourCode}>{d.tourCode}</span>
-                            {d.tourDuration && (
-                              <span className={styles.tourDuration}>
-                                <Layers size={11} /> {d.tourDuration}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className={styles.metaCell}>
-                        <Calendar size={12} /> {formatDate(d.departureDate)}
-                      </td>
-                      <td>
-                        <div className={styles.slotCell}>
-                          <div className={styles.slotNums}>
-                            <span className={styles.slotAvail}>
-                              {d.availableSlots} <small>còn</small>
-                            </span>
-                            <span className={styles.slotSep}>·</span>
-                            <span className={styles.slotBooked}>
-                              {d.totalBookings || 0} <small>đã đặt</small>
-                            </span>
-                          </div>
-                          <div className={styles.slotBar}>
-                            <div className={styles.slotFill}
-                              style={{ width: `${pct}%` }}
-                              data-pct={pct} />
-                          </div>
-                        </div>
-                      </td>
-                      <td className={styles.priceCell}>
-                        {d.lowestPrice ? formatPrice(d.lowestPrice) : '—'}
-                      </td>
-                      <td>
-                        <div className={styles.transportIcons}>
-                          {d.hasOutboundTransport && (
-                            <span className={styles.transportIcon} title="Có chiều đi">
-                              <Plane size={12} style={{ transform: 'rotate(-45deg)' }} />
-                            </span>
-                          )}
-                          {d.hasInboundTransport && (
-                            <span className={`${styles.transportIcon} ${styles.inbound}`} title="Có chiều về">
-                              <Plane size={12} style={{ transform: 'rotate(135deg)' }} />
-                            </span>
-                          )}
-                          {!d.hasOutboundTransport && !d.hasInboundTransport && (
-                            <span className={styles.muted}>—</span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`${styles.status} ${d.status ? styles.active : styles.inactive}`}>
-                          {d.status ? <CircleDot size={11} /> : <Ban size={11} />}
-                          {d.status ? 'Hoạt động' : 'Tạm dừng'}
-                        </span>
-                      </td>
-                      <td className={styles.actionsCol}>
-                        <div className={styles.actions}>
-                          <button className={styles.btnView} title="Xem chi tiết"
-                            onClick={() => handleViewDetail(d)}>
-                            <Eye size={14} />
-                          </button>
-                          <button className={styles.btnEdit} title="Chỉnh sửa"
-                            onClick={() => handleEdit(d)}>
-                            <Edit2 size={14} />
-                          </button>
-                          <button className={styles.btnClone} title="Sao chép sang ngày khác"
-                            onClick={() => handleClone(d.departureID)}>
-                            <Copy size={14} />
-                          </button>
-                          <button className={styles.btnDelete} title="Xóa"
-                            onClick={() => askDeleteOne(d.departureID)}>
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className={styles.accordion}>
+            {filtered.map((g, gi) => {
+              const expanded = expandedTours.has(g.tourID);
+              return (
+                <div key={g.tourID} className={styles.groupCard}
+                     style={{ animationDelay: `${Math.min(gi * 0.03, 0.25)}s` }}>
+                  {/* Header tour */}
+                  <div className={styles.groupHeader} onClick={() => toggleExpand(g.tourID)}>
+                    <div className={styles.groupChevron} data-open={expanded}>
+                      <ChevronRight size={18} />
+                    </div>
+                    <div className={styles.groupTitle}>
+                      <strong title={g.tourName}>{g.tourName}</strong>
+                      <div className={styles.tourMeta}>
+                        <span className={styles.tourCode}>{g.tourCode}</span>
+                        {g.tourDuration && (
+                          <span className={styles.tourDuration}><Layers size={11} /> {g.tourDuration}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={styles.groupMetrics}>
+                      <span className={styles.metricPill}>
+                        <Calendar size={12} /> {g.departureCount} lịch
+                      </span>
+                      <span className={styles.metricMuted}>Gần nhất: {formatDate(g.nextDepartureDate)}</span>
+                      <span className={styles.slotAvail}>{g.totalAvailableSlots} <small>còn</small></span>
+                      <span className={styles.slotBooked}>{g.totalBooked} <small>đã đặt</small></span>
+                      <span className={styles.priceCell}>{g.lowestPrice ? formatPrice(g.lowestPrice) : '—'}</span>
+                    </div>
+                  </div>
+
+                  {/* Body: bảng lịch của tour */}
+                  {expanded && (
+                    <div className={styles.groupBody}>
+                      <table className={styles.table}>
+                        <thead>
+                          <tr>
+                            <th className={styles.cbCol}></th>
+                            <th>Ngày khởi hành</th>
+                            <th>Tình trạng chỗ</th>
+                            <th>Giá từ</th>
+                            <th>Vận chuyển</th>
+                            <th>Trạng thái</th>
+                            <th className={styles.actionsCol}>Thao tác</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(g.departures || []).map((d) => {
+                            const isSel = selectedIds.has(d.departureID);
+                            const pct = slotFillPct(d);
+                            return (
+                              <tr key={d.departureID} className={isSel ? styles.rowSel : ''}>
+                                <td className={styles.cbCol}>
+                                  <input type="checkbox" checked={isSel}
+                                    onChange={() => toggleSelect(d.departureID)}
+                                    aria-label={`Chọn lịch ${formatDate(d.departureDate)}`} />
+                                </td>
+                                <td className={styles.metaCell}>
+                                  <Calendar size={12} /> {formatDate(d.departureDate)}
+                                </td>
+                                <td>
+                                  <div className={styles.slotCell}>
+                                    <div className={styles.slotNums}>
+                                      <span className={styles.slotAvail}>{d.availableSlots} <small>còn</small></span>
+                                      <span className={styles.slotSep}>·</span>
+                                      <span className={styles.slotBooked}>{d.totalBookings || 0} <small>đã đặt</small></span>
+                                    </div>
+                                    <div className={styles.slotBar}>
+                                      <div className={styles.slotFill} style={{ width: `${pct}%` }} data-pct={pct} />
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className={styles.priceCell}>
+                                  {d.lowestPrice ? formatPrice(d.lowestPrice) : '—'}
+                                </td>
+                                <td>
+                                  <div className={styles.transportIcons}>
+                                    {d.hasOutboundTransport && (
+                                      <span className={styles.transportIcon} title="Có chiều đi">
+                                        <Plane size={12} style={{ transform: 'rotate(-45deg)' }} />
+                                      </span>
+                                    )}
+                                    {d.hasInboundTransport && (
+                                      <span className={`${styles.transportIcon} ${styles.inbound}`} title="Có chiều về">
+                                        <Plane size={12} style={{ transform: 'rotate(135deg)' }} />
+                                      </span>
+                                    )}
+                                    {!d.hasOutboundTransport && !d.hasInboundTransport && (
+                                      <span className={styles.muted}>—</span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td>
+                                  <span className={`${styles.status} ${d.status ? styles.active : styles.inactive}`}>
+                                    {d.status ? <CircleDot size={11} /> : <Ban size={11} />}
+                                    {d.status ? 'Hoạt động' : 'Tạm dừng'}
+                                  </span>
+                                </td>
+                                <td className={styles.actionsCol}>
+                                  <div className={styles.actions}>
+                                    <button className={styles.btnView} title="Xem chi tiết"
+                                      onClick={() => handleViewDetail(d)}><Eye size={14} /></button>
+                                    <button className={styles.btnEdit} title="Chỉnh sửa"
+                                      onClick={() => handleEdit(d)}><Edit2 size={14} /></button>
+                                    <button className={styles.btnClone} title="Sao chép sang ngày khác"
+                                      onClick={() => handleClone(d.departureID)}><Copy size={14} /></button>
+                                    <button className={styles.btnDelete} title="Xóa"
+                                      onClick={() => askDeleteOne(d.departureID)}><Trash2 size={14} /></button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* ── PAGINATION ───────────────────────────────────── */}
+          {/* ── PAGINATION (theo tour) ───────────────────────── */}
           {totalPages > 1 && (
             <div className={styles.pagination}>
               <button onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                disabled={currentPage === 0}
-                className={styles.pageBtn}>
+                disabled={currentPage === 0} className={styles.pageBtn}>
                 <ChevronLeft size={15} /> Trước
               </button>
               <div className={styles.pageNumbers}>
@@ -590,8 +601,7 @@ const DepartureList = () => {
                 })}
               </div>
               <button onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={currentPage === totalPages - 1}
-                className={styles.pageBtn}>
+                disabled={currentPage === totalPages - 1} className={styles.pageBtn}>
                 Sau <ChevronRight size={15} />
               </button>
             </div>
@@ -605,7 +615,7 @@ const DepartureList = () => {
           departure={selectedDeparture}
           locations={locations}
           onClose={() => { setShowFormModal(false); setSelectedDeparture(null); }}
-          onSuccess={() => { setShowFormModal(false); setSelectedDeparture(null); fetchDepartures(); }}
+          onSuccess={() => { setShowFormModal(false); setSelectedDeparture(null); fetchGroups(); }}
         />
       )}
 

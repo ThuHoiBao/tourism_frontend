@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, CheckCircle, AlertCircle, Trash2, BellRing } from 'lucide-react';
 import axios from '../../../../../utils/axiosCustomize';
 import { toast } from 'react-toastify';
@@ -46,7 +47,7 @@ const CouponModal = ({ isOpen, onClose, onSubmit, editingCoupon }) => {
         sendNotification: false
       });
 
-      if (editingCoupon.departureDetails) {
+      if (editingCoupon.departureDetails && editingCoupon.departureDetails.length > 0) {
          // Map lại field name cho khớp với logic hiển thị nếu cần (tuỳ vào DTO backend trả về)
          const mappedDetails = editingCoupon.departureDetails.map(d => ({
              id: d.departureId,
@@ -55,7 +56,12 @@ const CouponModal = ({ isOpen, onClose, onSubmit, editingCoupon }) => {
              tourCode: d.tourCode,
              tourName: d.tourName
          }));
-         setSelectedDetails(mappedDetails); 
+         setSelectedDetails(mappedDetails);
+
+         // Tự chọn lại tour của coupon và nạp lịch để checkbox tick sẵn khi mở Sửa
+         const first = editingCoupon.departureDetails[0];
+         if (first?.tourId) setSelectedTourId(String(first.tourId));
+         if (first?.tourCode) loadDepartures(first.tourCode);
       }
     } else {
       setFormData({
@@ -72,35 +78,52 @@ const CouponModal = ({ isOpen, onClose, onSubmit, editingCoupon }) => {
 
   const fetchTours = async () => {
     try {
-      const res = await axios.get('/tours?page=0&size=100'); 
-      if (res && res.data && res.data.content) {
-        setTours(res.data.content);
-      }
+      const res = await axios.get('/admin/tours', {
+        params: { page: 0, size: 1000 }
+      });
+      // Response có thể ở dạng { success, data: { content: [...] } } hoặc { data: [...] }
+      const tourData =
+        res.data?.data?.content || res.data?.data || res.data?.content || [];
+      setTours(tourData);
     } catch (error) {
       console.error("Error fetching tours", error);
       toast.error("Không thể tải danh sách tour");
     }
   };
 
-  const handleTourChange = async (e) => {
-    const tourId = e.target.value;
-    setSelectedTourId(tourId);
-    setDepartures([]); 
-    
-    if (!tourId) return;
-
+  // Nạp danh sách lịch khởi hành của 1 tour theo tourCode (dùng chung cho chọn tour & mở Sửa)
+  const loadDepartures = async (tourCode) => {
+    if (!tourCode) return;
     setLoadingDepartures(true);
     try {
-      const res = await axios.get(`/tours/${tourId}/departures`);
-      if (res && res.data) {
-        setDepartures(res.data);
-      }
+      const res = await axios.get(`/tours/${tourCode}`);
+      const rawDeps = res.data?.departures || res.data?.data?.departures || [];
+      // Chuẩn hoá field: API trả 'departureId', giao diện dùng 'departureID'
+      const deps = rawDeps.map(d => ({ ...d, departureID: d.departureID ?? d.departureId }));
+      setDepartures(deps);
     } catch (error) {
       console.error("Error fetching departures", error);
       toast.error("Lỗi tải lịch khởi hành");
     } finally {
       setLoadingDepartures(false);
     }
+  };
+
+  const handleTourChange = async (e) => {
+    const tourId = e.target.value;
+    setSelectedTourId(tourId);
+    setDepartures([]);
+
+    if (!tourId) return;
+
+    // API chi tiết tour tra theo tourCode, nên lấy tourCode của tour đã chọn
+    const tour = tours.find(t => String(t.tourID) === String(tourId));
+    if (!tour || !tour.tourCode) {
+      toast.error("Không tìm thấy mã tour");
+      return;
+    }
+
+    await loadDepartures(tour.tourCode);
   };
 
   const handleDepartureSelect = (dep, currentTour) => {
@@ -170,7 +193,7 @@ const CouponModal = ({ isOpen, onClose, onSubmit, editingCoupon }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         
@@ -365,7 +388,8 @@ const CouponModal = ({ isOpen, onClose, onSubmit, editingCoupon }) => {
 
         </form>
       </div>
-    </div> 
+    </div>,
+    document.body
   );
 };
 
