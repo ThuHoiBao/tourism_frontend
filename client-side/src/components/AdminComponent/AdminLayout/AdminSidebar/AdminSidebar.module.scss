@@ -124,10 +124,130 @@ $border: #dbe4ef;
 }
 
 .menuLabel {
+    flex: 1;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* ── Dropdown group ──────────────────────────────────────────── */
+.groupItem {
+    margin-bottom: 3px;
+}
+
+.groupHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    padding: 0 13px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: $text-sub;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+
+    &:hover {
+        background: $primary-hover;
+        color: $primary-strong;
+
+        .menuIcon {
+            color: $primary;
+        }
+    }
+}
+
+.groupHeaderActive {
+    color: $primary-strong;
+    font-weight: 760;
+
+    .menuIcon {
+        color: $primary;
+    }
+}
+
+.chevron {
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: transform 0.22s ease;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.submenu {
+    list-style: none;
+    margin: 2px 0 2px 25px;
+    padding-left: 8px;
+    border-left: 1px solid #e5edf5;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.2s ease;
+}
+
+.submenuOpen {
+    max-height: 360px;
+    opacity: 1;
+}
+
+.subItem {
+    position: relative;
+    margin-bottom: 2px;
+    border-radius: 8px;
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 38px;
+        padding: 0 12px;
+        border-radius: 8px;
+        color: $text-sub;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    &:hover a {
+        background: $primary-hover;
+        color: $primary-strong;
+        transform: translateX(2px);
+
+        .subIcon {
+            color: $primary;
+        }
+    }
+}
+
+.subItemActive {
+    a {
+        background: $primary-soft !important;
+        color: $primary-strong !important;
+        font-weight: 720;
+        box-shadow: inset 0 0 0 1px #bae6fd;
+
+        .subIcon {
+            color: $primary !important;
+        }
+    }
+}
+
+.subIcon {
+    width: 16px;
+    height: 16px;
+    color: #8497ad;
+    flex-shrink: 0;
+    transition: color 0.18s ease;
 }
 
 .footerSection {
@@ -183,13 +303,37 @@ $border: #dbe4ef;
         }
     }
 
-    .menuItem {
+    .menuItem,
+    .subItem {
         flex: 0 0 auto;
 
         a {
             min-height: 38px;
             padding: 0 12px;
         }
+    }
+
+    /* Làm phẳng dropdown: ẩn header nhóm, hiện thẳng các item con */
+    .groupItem {
+        display: contents;
+    }
+
+    .groupHeader {
+        display: none;
+    }
+
+    .submenu {
+        display: contents;
+        max-height: none;
+        opacity: 1;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        overflow: visible;
+    }
+
+    .subItem a {
+        border-radius: 8px;
     }
 }
 

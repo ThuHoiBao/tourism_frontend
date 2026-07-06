@@ -40,12 +40,16 @@ export const getVectorSyncSummaryApi = async (from?: Date, to?: Date, all: boole
 };
 
 export const manualVectorSyncApi = async () => {
-    const response = await api.post('/admin/dashboard/vector-sync/manual-sync');
+    // Sync duyệt toàn bộ tour/location/review/coupon và gọi Pinecone embedding cho từng doc
+    // nên có thể chạy lâu hơn timeout mặc định (30s). Nới lên 5 phút để tránh FE báo
+    // timeout trong khi BE vẫn đang chạy tiếp.
+    const response = await api.post('/admin/dashboard/vector-sync/manual-sync', null, { timeout: 300000 });
     return response.data;
 };
 
 export const manualVectorClearApi = async () => {
-    const response = await api.delete('/admin/dashboard/vector-sync/manual-clear');
+    // Clear gọi Pinecone deleteAll, thường nhanh nhưng vẫn nới rộng phòng khi mạng chậm.
+    const response = await api.delete('/admin/dashboard/vector-sync/manual-clear', { timeout: 120000 });
     return response.data;
 };
 
