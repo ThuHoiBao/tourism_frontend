@@ -13,7 +13,8 @@ import tourRouteApi from '../../services/tour/tourRouteApi';
 import TourReviews from './TourReview/TourReviews';
 import ConsultationModal from './ConsultationModal/ConsultationModal';
 import RelatedTours from './RelatedTours/RelatedTours';
-import axios from '../../utils/axiosCustomize'; 
+import ChatbotWidget from '../ChatbotWidget/ChatbotWidget';
+import axios from '../../utils/axiosCustomize';
 import { FaMapMarkerAlt, FaCalendarAlt, FaClock, FaBarcode, FaPhoneAlt, FaPlay, FaTicketAlt, FaGift, FaPiggyBank, FaCheck } from 'react-icons/fa';
 import { BsPeopleFill } from "react-icons/bs";
 import { set } from 'date-fns';
@@ -42,6 +43,14 @@ import { set } from 'date-fns';
 
   // Sprint Consultation: modal yêu cầu tư vấn
   const [showConsultation, setShowConsultation] = useState(false);
+  const [greenFund, setGreenFund] = useState(null);
+
+  // Lấy % trích Quỹ Xanh (công khai) để hiển thị minh bạch trên trang tour
+  useEffect(() => {
+    axios.get('/green-fund/summary')
+      .then(res => setGreenFund(res.data?.data || null))
+      .catch(() => {});
+  }, []);
 
   const calendarRef = useRef(null);
   const scrollToCalendar = () => {
@@ -463,11 +472,35 @@ import { set } from 'date-fns';
                 >Đặt ngay</button>
               </div>
 
-              <button className={styles.btnConsult}>
+              <button className={styles.btnConsult} onClick={() => setShowConsultation(true)}>
                 <FaPhoneAlt /> Liên hệ tư vấn
               </button>
               </>
               )}
+
+              {/* Minh bạch Quỹ Xanh: mỗi đơn đặt tour trích % vào quỹ trồng cây */}
+              {greenFund?.bookingContributionPercent > 0 && (() => {
+                const base = priceData.finalPrice || priceData.salePrice || 0;
+                const contribution = Math.round(base * greenFund.bookingContributionPercent / 100);
+                return (
+                  <div style={{ marginTop: 14, padding: '12px 14px', background: '#ecfdf5',
+                                border: '1px solid #a7f3d0', borderRadius: 10 }}>
+                    <div style={{ fontWeight: 700, color: '#047857', marginBottom: 6, fontSize: 14 }}>
+                      🌳 Quỹ Xanh — Du lịch bền vững
+                    </div>
+                    <p style={{ margin: 0, fontSize: 13, color: '#065f46', lineHeight: 1.5 }}>
+                      Khi đặt tour này, <b>{greenFund.bookingContributionPercent}%</b> giá trị đơn
+                      {base > 0 && <> (~<b>{formatCurrency(contribution)}</b>/khách)</>} được trích vào
+                      <b> Quỹ Xanh</b> để trồng cây — công khai, minh bạch.
+                    </p>
+                    {greenFund.treesPlanted != null && (
+                      <div style={{ marginTop: 6, fontSize: 12.5, color: '#047857' }}>
+                        Cộng đồng đã đóng góp trồng <b>{Number(greenFund.treesPlanted).toLocaleString('vi-VN')}</b> cây 🌱
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
@@ -493,6 +526,7 @@ import { set } from 'date-fns';
             tourName={tourData.tourName}
         />
       </main>
+      <ChatbotWidget />
     </div>
   );
 };

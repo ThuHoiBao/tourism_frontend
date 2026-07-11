@@ -50,7 +50,11 @@ const ChromaKeyCanvas = ({ src, className }) => {
     canvas.width  = PROCESS_SIZE;
     canvas.height = PROCESS_SIZE;
 
+    let stopped = false;
+    let started = false;
+
     const drawFrame = () => {
+      if (stopped) return;
       if (video.readyState >= 2) {
         ctx.drawImage(video, 0, 0, PROCESS_SIZE, PROCESS_SIZE);
 
@@ -77,16 +81,35 @@ const ChromaKeyCanvas = ({ src, className }) => {
       }
     };
 
-    video.addEventListener('loadeddata', () => {
+    // Bắt đầu phát + vòng vẽ (chỉ chạy 1 lần)
+    const start = () => {
+      if (started || stopped) return;
+      started = true;
       video.play().catch(() => {});
       if ('requestVideoFrameCallback' in video) {
         video.requestVideoFrameCallback(drawFrame);
       } else {
         rafRef.current = requestAnimationFrame(drawFrame);
       }
-    });
+    };
 
-    return () => cancelAnimationFrame(rafRef.current);
+    // QUAN TRỌNG: khi quay lại trang, video đã được cache nên sự kiện 'loadeddata'
+    // có thể đã bắn xong trước khi listener kịp gắn. Nếu video đã sẵn sàng thì chạy ngay,
+    // đồng thời vẫn lắng nghe sự kiện cho trường hợp chưa tải xong.
+    if (video.readyState >= 2) {
+      start();
+    } else {
+      video.addEventListener('loadeddata', start);
+      video.addEventListener('canplay', start);
+      video.play().catch(() => {});
+    }
+
+    return () => {
+      stopped = true;
+      cancelAnimationFrame(rafRef.current);
+      video.removeEventListener('loadeddata', start);
+      video.removeEventListener('canplay', start);
+    };
   }, [src]);
 
   return (
@@ -316,6 +339,7 @@ const ChatbotWidget = () => {
   const [bubbleExiting, setBubbleExiting] = useState(false);
 
   const messagesEndRef = useRef(null);
+  const messagesAreaRef = useRef(null);
   const inputRef = useRef(null);
   const actionMenuRef = useRef(null);
   const historyPanelRef = useRef(null);
@@ -353,10 +377,35 @@ const ChatbotWidget = () => {
     }
   }, [activeThread, threads]);
 
-  // Auto scroll xuống cuối khi có tin nhắn mới hoặc đang loading
+  // Nhảy tức thì (không animation) xuống tin nhắn mới nhất
+  const scrollToBottom = (behavior = 'auto') => {
+    const area = messagesAreaRef.current;
+    if (area) {
+      area.scrollTop = area.scrollHeight;
+    }
+    messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });
+  };
+
+  // Auto scroll mượt khi có tin nhắn mới hoặc đang loading (chỉ khi đang mở)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, showLoading]);
+    if (isOpen) {
+      scrollToBottom('smooth');
+    }
+  }, [messages, showLoading, isOpen]);
+
+  // Khi mới mở chat: nhảy thẳng xuống tin nhắn cuối cùng (như Messenger),
+  // không hiển thị đoạn cũ rồi mới cuộn. Chạy sau khi cửa sổ hiện xong.
+  useEffect(() => {
+    if (!isOpen) return;
+    // Nhảy ngay lập tức + lặp lại sau khi animation mở cửa sổ hoàn tất
+    scrollToBottom('auto');
+    const raf = requestAnimationFrame(() => scrollToBottom('auto'));
+    const t = setTimeout(() => scrollToBottom('auto'), 320);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
+  }, [isOpen, activeThreadId]);
 
   // Auto focus vào input khi mở chat
   useEffect(() => {
@@ -825,7 +874,7 @@ const ChatbotWidget = () => {
           )}
 
           {/* Khu vực tin nhắn */}
-          <div className={styles.messagesArea}>
+          <div className={styles.messagesArea} ref={messagesAreaRef}>
             {messages.map((message) => (
             <div key={message.id} className={`${styles.messageRow} ${message.sender === 'user' ? styles.userRow : styles.botRow}`}>
               

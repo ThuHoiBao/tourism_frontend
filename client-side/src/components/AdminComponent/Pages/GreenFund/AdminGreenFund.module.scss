@@ -51,6 +51,17 @@
     display: block;
 }
 
+.batchThumbFallback {
+    width: 56px;
+    height: 38px;
+    border-radius: 6px;
+    border: 1px solid #d1fae5;
+    background: linear-gradient(135deg, #059669, #10b981);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .actionsCell {
     text-align: right;
     white-space: nowrap;

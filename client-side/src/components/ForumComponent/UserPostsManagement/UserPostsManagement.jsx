@@ -12,6 +12,21 @@ import CreatePost from '../CreatePost/CreatePost';
 import axios from '../../../utils/axiosCustomize';
 import styles from './UserPostsManagement.module.scss';
 
+// Ảnh dự phòng bên ngoài (ổn định) khi bài viết chưa có ảnh riêng
+const fallbackImage = (post) =>
+  `https://picsum.photos/seed/forum${post?.postID || (post?.title?.length ?? 1)}/400/300`;
+
+// Chọn ảnh hiển thị cho thẻ: ưu tiên thumbnail → ảnh trong nội dung → ảnh dự phòng
+const getPostImage = (post) => {
+  if (post?.thumbnailUrl) return post.thumbnailUrl;
+  if (post?.coverImage) return post.coverImage;
+  if (post?.content) {
+    const m = post.content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (m && m[1]) return m[1];
+  }
+  return fallbackImage(post);
+};
+
 const UserPostsManagement = () => {
   const { user } = useAuth();
   const userId = user?.userId || user?.userID;
@@ -324,10 +339,12 @@ const UserPostsManagement = () => {
                 <div key={post.postID} className={styles.postCard}>
                   <div className={styles.postCardInner}>
                     <div className={styles.postThumbnail}>
-                      {post.thumbnailUrl
-                        ? <img src={post.thumbnailUrl} alt={post.title} />
-                        : <div className={styles.thumbnailPlaceholder}><ImageIcon size={28} /></div>
-                      }
+                      <img
+                        src={getPostImage(post)}
+                        alt={post.title}
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImage(post); }}
+                      />
                       <span className={`${styles.statusBadge} ${styles['status_' + (post.status || 'DRAFT')]}`}>
                         {post.status === 'PUBLISHED'    && <><Eye size={10} /> Xuất bản</>}
                         {post.status === 'DRAFT'        && <><FileText size={10} /> Nháp</>}

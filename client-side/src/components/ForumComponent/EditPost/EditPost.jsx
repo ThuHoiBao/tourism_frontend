@@ -68,6 +68,7 @@ const EditPost = () => {
         initialPost={post}
         categories={categories}
         onSuccess={handleUpdateSuccess}
+        onClose={() => navigate('/forum/my-posts')}
       />
     </div>
   );

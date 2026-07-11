@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { FaHome } from 'react-icons/fa';
 import { FiSearch, FiMapPin, FiCompass } from 'react-icons/fi';
 import toursHeroImage from '../../assets/images/digitalarbyter-maJ7hJBE654-unsplash.jpg';
+import ChatbotWidget from '../ChatbotWidget/ChatbotWidget';
 // Định nghĩa các Tùy chọn Sắp xếp
 const SORT_OPTIONS = [
     { value: 'ALL', label: 'Tất cả' },
@@ -206,6 +207,7 @@ const heroDescription = isSpecificDestinationSelected
                     
                 </div>
             </div>
+            <ChatbotWidget />
         </>
     );
 };
