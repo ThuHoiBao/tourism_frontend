@@ -229,12 +229,12 @@ const BookingsPage = () => {
                         { title: 'QUÁ HẠN TT',      value: bookingStats.overduePayment,      Icon: AlertTriangle, color: '#ef4444', bg: '#ffe4e6' },
                         { title: 'ĐÃ ĐÁNH GIÁ',     value: bookingStats.reviewed,            Icon: Star,          color: '#7c3aed', bg: '#f3e8ff' },
                     ].map(({ title, value, Icon, color, bg }) => (
-                        <div key={title} className={styles.statCard}>
+                        <div key={title} className={styles.statCard} title={title}>
                             <div className={styles.iconWrapper} style={{ backgroundColor: bg, color }}>
                                 <Icon size={18} />
                             </div>
                             <div className={styles.cardBody}>
-                                <h3 className={styles.cardTitle}>{title}</h3>
+                                <h3 className={styles.cardTitle} title={title}>{title}</h3>
                                 <p className={styles.cardValue}>{value ?? '—'}</p>
                             </div>
                         </div>

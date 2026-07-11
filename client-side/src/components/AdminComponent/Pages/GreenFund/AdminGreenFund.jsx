@@ -35,6 +35,30 @@ const SourceBadge = ({ source }) => {
     );
 };
 
+// ── Thumbnail đợt trồng (fallback khi ảnh trống / lỗi) ───────────────────────
+const BatchThumb = ({ url }) => {
+    const [failed, setFailed] = useState(false);
+
+    if (!url || failed) {
+        return (
+            <div className={styles.batchThumbFallback} title="Chưa có ảnh">
+                <TreePine size={18} strokeWidth={1.6} color="#fff" />
+            </div>
+        );
+    }
+    return (
+        <a href={url} target="_blank" rel="noreferrer">
+            <img
+                className={styles.batchThumb}
+                src={url}
+                alt=""
+                loading="lazy"
+                onError={() => setFailed(true)}
+            />
+        </a>
+    );
+};
+
 // ── Modal thêm / sửa đợt trồng ───────────────────────────────────────────────
 const BatchModal = ({ initial, onClose, onDone }) => {
     const isEdit = initial?.id != null;
@@ -185,11 +209,7 @@ const BatchesTab = () => {
                                 <td>{fmtDate(b.plantedDate)}</td>
                                 <td className={styles.treeCell}>🌱 {fmtNum(b.treeCount)}</td>
                                 <td>
-                                    {b.imageUrl ? (
-                                        <a href={b.imageUrl} target="_blank" rel="noreferrer">
-                                            <img className={styles.batchThumb} src={b.imageUrl} alt="" />
-                                        </a>
-                                    ) : <span className={forumStyles.muted}>—</span>}
+                                    <BatchThumb url={b.imageUrl} />
                                 </td>
                                 <td className={styles.noteCell} title={b.note || ''}>{b.note || '—'}</td>
                                 <td className={forumStyles.muted}>{fmtDateTime(b.createdAt)}</td>

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Eye, Check, EyeOff, Pin, Star, Trash2 } from 'lucide-react';
+import { Eye, Check, EyeOff, Pin, Star, Trash2, Mountain, Palmtree, Plane, Compass, Camera, Map } from 'lucide-react';
 import adminForumApi from '../../../../services/forum/adminForumApi';
 import { isAdmin } from '../../../../services/forum/adminRole';
 import StatusBadge from './shared/StatusBadge';
@@ -20,6 +20,40 @@ const PAGE_SIZE = 10;
 const emptyFilters = {
     status: '', postType: '', categoryId: '', moderationLabel: '',
     search: '', dateFrom: '', dateTo: '',
+};
+
+// Placeholder trang trí cho bài viết không có ảnh (đồng bộ với PostCard ngoài forum)
+const THUMB_PLACEHOLDERS = [
+    { Icon: Mountain, gradient: 'linear-gradient(135deg, #0c4a6e, #0ea5e9)' },
+    { Icon: Palmtree, gradient: 'linear-gradient(135deg, #059669, #10b981)' },
+    { Icon: Plane,    gradient: 'linear-gradient(135deg, #0369a1, #06b6d4)' },
+    { Icon: Compass,  gradient: 'linear-gradient(135deg, #0891b2, #22d3ee)' },
+    { Icon: Camera,   gradient: 'linear-gradient(135deg, #7c3aed, #6366f1)' },
+    { Icon: Map,      gradient: 'linear-gradient(135deg, #ea580c, #f59e0b)' },
+];
+
+const PostThumb = ({ post }) => {
+    const [failed, setFailed] = useState(false);
+    const ph = THUMB_PLACEHOLDERS[(post.postID || 0) % THUMB_PLACEHOLDERS.length];
+    const { Icon } = ph;
+    const imgSrc = post.thumbnailUrl || post.coverImageUrl || post.imageUrl || post.firstImageUrl;
+
+    if (imgSrc && !failed) {
+        return (
+            <img
+                className={styles.thumb}
+                src={imgSrc}
+                alt={post.title || ''}
+                loading="lazy"
+                onError={() => setFailed(true)}
+            />
+        );
+    }
+    return (
+        <div className={styles.thumb} style={{ background: ph.gradient }} title={post.categoryName || 'Du lịch'}>
+            <Icon size={20} strokeWidth={1.6} color="#fff" />
+        </div>
+    );
 };
 
 const AdminPostManagement = () => {
@@ -202,9 +236,7 @@ const AdminPostManagement = () => {
                                            checked={selected.has(post.postID)}
                                            onChange={() => toggleSelect(post.postID)} /></td>
                                 <td>
-                                    {post.thumbnailUrl
-                                        ? <img className={styles.thumb} src={post.thumbnailUrl} alt="" />
-                                        : <div className={styles.thumb} />}
+                                    <PostThumb post={post} />
                                 </td>
                                 <td className={styles.titleCell}
                                     title={post.title}

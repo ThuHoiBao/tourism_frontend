@@ -43,8 +43,9 @@ const DepartureDetailModal = ({ departureId, onClose, onEdit }) => {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '';
+    if (!dateStr) return '—';
     const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return '—';
     return new Intl.DateTimeFormat('vi-VN', {
       day: '2-digit',
       month: '2-digit',
@@ -53,8 +54,9 @@ const DepartureDetailModal = ({ departureId, onClose, onEdit }) => {
   };
 
   const formatDateTime = (dateStr) => {
-    if (!dateStr) return '';
+    if (!dateStr) return '—';
     const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return '—';
     return new Intl.DateTimeFormat('vi-VN', {
       day: '2-digit',
       month: '2-digit',

@@ -68,6 +68,12 @@ const TourBooking = () => {
   const [couponInput, setCouponInput] = useState('');
   const [isAgreed, setIsAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Khóa idempotency: sinh 1 lần cho phiên đặt tour này, gửi kèm để backend chống tạo đơn trùng
+  const idempotencyKeyRef = useRef(
+    (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : `bk-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -492,7 +498,8 @@ const TourBooking = () => {
       customerNote: customerNote || '',
       passengers: passengers,
       couponCode: couponCodes.length > 0 ? couponCodes : null,
-      pointsUsed: pointsUsed || null
+      pointsUsed: pointsUsed || null,
+      idempotencyKey: idempotencyKeyRef.current
     };
 
     console.log('Sending booking request:', requestData);
@@ -500,13 +507,38 @@ const TourBooking = () => {
   try {
   setSubmitting(true);
   
-  const response = await axios.post('/bookings/create', requestData);
-  const bookingCode = response.data?.bookingCode || response.data?.code || response.data?.id;
-  
-  console.log(' Booking created:', { bookingCode, data: response.data });
-  
+  // Đặt tour BẤT ĐỒNG BỘ qua hàng đợi Kafka: gửi yêu cầu → nhận requestId → poll trạng thái
+  const submitRes = await axios.post('/bookings/create-async', requestData);
+  const requestId = submitRes.data?.requestId;
+  if (!requestId) {
+    throw new Error('Không nhận được mã yêu cầu đặt tour. Vui lòng thử lại.');
+  }
+
+  let result = null;
+  for (let i = 0; i < 25; i++) {            // poll tối đa ~30 giây
+    await new Promise(r => setTimeout(r, 1200));
+    try {
+      const st = await axios.get(`/bookings/create-status/${requestId}`);
+      const s = st.data;
+      if (s && s.status && s.status !== 'PROCESSING') { result = s; break; }
+    } catch (e) {
+      // 404 khi kết quả chưa kịp lưu — tiếp tục poll
+    }
+  }
+
+  if (!result) {
+    throw new Error('Hệ thống đang xử lý yêu cầu, vui lòng kiểm tra lại trong giây lát.');
+  }
+  if (result.status === 'FAILED') {
+    const e = new Error(result.message || 'Đặt tour thất bại.');
+    e.response = { data: { message: result.message } };
+    throw e;
+  }
+
+  const bookingCode = result.bookingCode;
+  console.log(' Booking created (async):', result);
+
   if (!bookingCode) {
-    console.error(' No booking code in response:', response.data);
     toast.error('Đặt tour thành công nhưng không nhận được mã booking.\nVui lòng kiểm tra email hoặc liên hệ CSKH: 1900-xxxx');
     return;
   }
@@ -514,7 +546,7 @@ const TourBooking = () => {
   toast.success(` Đặt tour thành công!\n\nMã đặt tour: ${bookingCode}\n\nVui lòng thanh toán trong vòng 24 giờ.`);
 
   navigate(`/payment-booking?bookingCode=${bookingCode}`, {
-    state: { bookingData: response.data }
+    state: { bookingData: result }
   });
   
 } catch (err) {

@@ -374,6 +374,8 @@ const DepartureFormModal = ({ departure, locations, onClose, onSuccess }) => {
                       value={formData.tourId}
                       onChange={(e) => setFormData({ ...formData, tourId: e.target.value })}
                       required
+                      disabled={!!departure}
+                      title={departure ? 'Không thể đổi tour của lịch đã tạo' : ''}
                     >
                       <option value="">-- Chọn tour --</option>
                       {tours.map(tour => (

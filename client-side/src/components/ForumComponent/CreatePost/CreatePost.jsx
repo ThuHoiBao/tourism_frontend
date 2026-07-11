@@ -44,8 +44,8 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
   const populateFormWithPost = (post) => {
     setTitle(post.title || '');
     setContent(post.content || '');
-    setCategoryId(post.categoryId || '');
-    setSelectedTags(post.tags?.map(t => t.tagName) || []);
+    setCategoryId(post.categoryId ?? post.categoryID ?? '');
+    setSelectedTags(post.tags?.map(t => t.tagName ?? t.name) || []);
     setTagInput('');
   };
 
@@ -90,19 +90,30 @@ const CreatePost = ({ isOpen, onClose, categories = [], onSuccess, isEditing = f
     }
     const plainText = content.replace(/<[^>]*>/g, '').trim();
     const summary = plainText.length > 200 ? plainText.substring(0, 197) + '...' : plainText;
+    const uid = user?.userId || user?.userID || user?.id;
     const payload = {
-      userId: user?.userId || user?.userID || user?.id,
+      userId: uid,
       title: title.trim(),
       content,
       summary,
       categoryId: Number(categoryId),
       tagNames: selectedTags,
     };
+
+    // Lấy ID bài viết khi sửa — chấp nhận nhiều tên field (postID/postId/id) để tránh gửi "undefined"
+    const editId = isEditing && initialPost
+      ? (initialPost.postID ?? initialPost.postId ?? initialPost.id)
+      : null;
+    if (isEditing && (editId === undefined || editId === null)) {
+      alert('Không xác định được bài viết cần cập nhật.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = isEditing && initialPost
-        ? await axios.put(`/forum/posts/${initialPost.postID}`, payload, {
-            params: { userId: user?.userId || user?.userID || user?.id }
+        ? await axios.put(`/forum/posts/${editId}`, payload, {
+            params: { userId: uid }
           })
         : await axios.post('/forum/posts', payload);
 
